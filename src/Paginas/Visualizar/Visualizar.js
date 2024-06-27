@@ -18,7 +18,13 @@ const Visualizar = ({ role }) => {
     const [todasSeleccionadas, setTodasSeleccionadas] = useState(false);
 
     const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo')
+        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role }),
+        })
             .then(response => response.json())
             .then(data => {
                 setDatos(data);
