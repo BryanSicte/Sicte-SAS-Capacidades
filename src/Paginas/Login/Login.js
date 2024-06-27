@@ -63,7 +63,7 @@ const Login = () => {
                     </div>
 
                     <div id='Login-Boton-Envio'>
-                        <button type="submit" id='Login-Boton-Envio-Estilo' class="btn btn-primary">Iniciar sesión</button>
+                        <button type="submit" id='Login-Boton-Envio-Estilo' className="btn btn-primary">Iniciar sesión</button>
                     </div>
                 </form>
                 {error && <p className="error-message">{error}</p>}

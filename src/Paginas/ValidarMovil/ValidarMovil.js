@@ -24,7 +24,13 @@ const ValidarMovil = ({ role }) => {
     };
 
     const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo')
+        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role }),
+        })
             .then(response => response.json())
             .then(data => {
 
@@ -211,19 +217,19 @@ const ValidarMovil = ({ role }) => {
                         </div>
                         <div id="Filtros">
                             <h3>Filtros</h3>
-                            <div class="row">
-                                <div class="col-sm-6">
+                            <div className="row">
+                                <div className="col-sm-6">
                                     <button id='Blanco' className='btn btn-light' onClick={() => setFiltroColor('blanco')}>Todo</button>
                                 </div>
-                                <div class="col-sm-6">
+                                <div className="col-sm-6">
                                     <button id='Naranja' className='btn btn-warning' onClick={() => setFiltroColor('naranja')}>Falta Personal</button>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-6">
+                            <div className="row">
+                                <div className="col-sm-6">
                                     <button id='Verde' className='btn btn-success' onClick={() => setFiltroColor('verde')}>Movil OK</button>
                                 </div>
-                                <div class="col-sm-6">
+                                <div className="col-sm-6">
                                     <button id='Rojo' className='btn btn-danger' onClick={() => setFiltroColor('rojo')}>Mucho Personal</button>
                                 </div>
                             </div>

@@ -52,7 +52,13 @@ const Agregar = ({ role }) => {
     };
 
     const cargarDatosAgregados = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo')
+        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role }),
+        })
             .then(response => response.json())
             .then(data => {
                 const datosFiltrados = data.filter(item => {
@@ -445,7 +451,7 @@ const Agregar = ({ role }) => {
                         </Dropdown>
                     </div>
                     <div>
-                        <label for="uname">Tipo Movil:</label>
+                        <label htmlFor="uname">Tipo Movil:</label>
                         <Dropdown isOpen={dropdownOpenTipoMovil} toggle={toggleTipoMovil}>
                             <DropdownToggle caret className="btn btn-primary">
                                 {selectedItemTipoMovil}
@@ -458,7 +464,7 @@ const Agregar = ({ role }) => {
                         </Dropdown>
                     </div>
                     <div>
-                        <label for="uname">Coordinador:</label>
+                        <label htmlFor="uname">Coordinador:</label>
                         <Dropdown isOpen={dropdownOpenCoordinador} toggle={toggleCoordinador}>
                             <DropdownToggle caret className="btn btn-primary">
                                 {selectedItemCoordinador}
@@ -471,17 +477,17 @@ const Agregar = ({ role }) => {
                         </Dropdown>
                     </div>
 
-                    <div id="Principal-Agregar-Botones-Red" class="form-group">
-                        <label for="carpeta" class="form-label">Carpeta:</label>
-                        <input type="text" class="form-control" id="carpeta" placeholder="Ingresa la Carpeta" value={carpeta} onChange={(e) => setCarpeta(e.target.value)} required />
-                        <div class="invalid-feedback">Campo Obligatorio</div>
+                    <div id="Principal-Agregar-Botones-Red" className="form-group">
+                        <label htmlFor="carpeta" className="form-label">Carpeta:</label>
+                        <input type="text" className="form-control" id="carpeta" placeholder="Ingresa la Carpeta" value={carpeta} onChange={(e) => setCarpeta(e.target.value)} required />
+                        <div className="invalid-feedback">Campo Obligatorio</div>
                     </div>
 
-                    <div id="Principal-Agregar-Botones-Red" class="form-group">
-                        <label for="placa" class="form-label">Placa:</label>
-                        <input type="text" class="form-control" id="placa" placeholder="Ingresa la Placa" value={placa} onChange={(e) => setPlaca(e.target.value)} maxLength={6} required />
+                    <div id="Principal-Agregar-Botones-Red" className="form-group">
+                        <label htmlFor="placa" className="form-label">Placa:</label>
+                        <input type="text" className="form-control" id="placa" placeholder="Ingresa la Placa" value={placa} onChange={(e) => setPlaca(e.target.value)} maxLength={6} required />
                         {!isPlacaValida && <p style={{ color: 'red' }}>Placa no válida</p>}
-                        <div class="invalid-feedback">Campo Obligatorio</div>
+                        <div className="invalid-feedback">Campo Obligatorio</div>
                     </div>
 
                     <div id='Botones-Accion'>

@@ -179,7 +179,7 @@ const Visualizar = ({ role }) => {
     return (
         <div id='Principal-Visualizar'>
             <div id='Botones-Encabezado'>
-                <button id='Boton-Borrar-Filtros' class="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
+                <button id='Boton-Borrar-Filtros' className="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
                 <div>
                     <button id='Boton-Editar' className={`btn btn-secondary ${modoEdicion ? 'btn-naranja' : ''}`} onClick={clickModoEdicion}><i className="fas fa-trash-alt"></i> Borrar Filas</button>
                     <button id='Boton-Exportar-Excel' className="btn btn-secondary" onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
