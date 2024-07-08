@@ -97,12 +97,18 @@
     height: 98vh; /* Toma casi toda la altura del viewport */
     border-radius: 10px; /* Bordes redondeados */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    display: flex;
+    flex-direction: column;
+    height: 98vh;
 }
 
 #Principal-Visualizar #Botones-Encabezado {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex: 0 0 auto;
+    height: 6vh;
+    margin-bottom: 5px;
 }
 
 #Principal-Visualizar #Botones-Encabezado #Boton-Borrar-Filtros {
@@ -143,34 +149,35 @@
 /* Contenedor para tablas */
 #Principal-Visualizar .tabla-container {
     overflow: auto;
-    height: 82vh;
+    height: 86vh;
     width: 100%;
     border-radius: 5px;
+    flex: 1 1 auto;
 }
 
 /* Estilos para las barras de desplazamiento */
-#Principal-ValidarMovil .carta-container::-webkit-scrollbar,
+#Principal-ValidarMoviles .carta-container::-webkit-scrollbar, #Principal-Agregar-Botones::-webkit-scrollbar,
 #Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar, #Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar,
 #Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar, #Principal-Visualizar .tabla-container::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 8px;
+    height: 8px;
 }
 
-#Principal-ValidarMovil .carta-container::-webkit-scrollbar-thumb,
+#Principal-ValidarMoviles .carta-container::-webkit-scrollbar-thumb, #Principal-Agregar-Botones::-webkit-scrollbar-thumb,
 #Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar-thumb, #Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-thumb,
 #Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-thumb, #Principal-Visualizar .tabla-container::-webkit-scrollbar-thumb {
     background-color: #e0792a;
     border-radius: 5px;
 }
 
-#Principal-ValidarMovil .carta-container::-webkit-scrollbar-thumb:hover,
+#Principal-ValidarMoviles .carta-container::-webkit-scrollbar-thumb:hover, #Principal-Agregar-Botones::-webkit-scrollbar-thumb:hover,
 #Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar-thumb:hover, #Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-thumb:hover,
 #Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-thumb:hover, #Principal-Visualizar .tabla-container::-webkit-scrollbar-thumb:hover {
     background-color: #ff6f00;
 }
 
-#Principal-ValidarMovil .carta-container::-webkit-scrollbar-track,
-#Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-track,
+#Principal-ValidarMoviles .carta-container::-webkit-scrollbar-track,
+#Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-track, #Principal-Agregar-Botones::-webkit-scrollbar-track,
 #Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-track, #Principal-Visualizar .tabla-container::-webkit-scrollbar-track {
     background-color: #ddd;
 }
@@ -307,13 +314,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 7px;
+    height: 6vh;
+    margin-top: 7px;
 }
 
 #Principal-Visualizar #Botones-piePagina{
     display: flex;
-    justify-content: end;
     align-items: center;
+    flex: 0 0 auto;
+    justify-content: space-between;
 }
 
 #Principal-Agregar-Botones #Boton-Aplicar,
@@ -361,6 +370,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+#Principal-Agregar-Botones div {
+    margin: 0px 5px 0px 5px;
 }
 
 #Principal-Agregar-Botones label {
@@ -421,7 +434,7 @@
     position: fixed; /* Posicionamiento fijo */
     top: 0; /* Desde la parte superior */
     left: 0; /* Desde la parte izquierda */
-    width: calc(50% - 150px); /* Ancho dinámico basado en el ancho del menú lateral */
+    width: calc(60% - 150px); /* Ancho dinámico basado en el ancho del menú lateral */
     flex-grow: 1; /* Ocupa el espacio restante */
     background-color: white; /* Color de fondo */
     padding: 15px 15px; /* Relleno interno */
@@ -436,8 +449,6 @@
 #Principal-Agregar-Pendientes #Titulo {
     display: flex;
     justify-content: center;
-    padding-bottom: 2px;
-    
     font-size: 24px;          /* Tamaño de fuente */
     font-weight: bold;        /* Negrita */
     color: #333;              /* Color del texto */
@@ -445,6 +456,8 @@
     background-color: #f0f0f0;/* Color de fondo */
     border-radius: 8px;       /* Bordes redondeados */
     box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra */
+    height: 4vh;
+    margin-bottom: 5px;
 }
 
 #Principal-Agregar-Agregados #Titulo span,
@@ -455,7 +468,7 @@
 #Principal-Agregar-Agregados .tabla-container,
 #Principal-Agregar-Pendientes .tabla-container {
     overflow: auto;
-    height: 72vh;
+    height: 70vh;
     width: 100%;
     border-radius: 5px;
 }
@@ -469,11 +482,11 @@
     position: fixed; /* Posicionamiento fijo */
     top: 0; /* Desde la parte superior */
     left: 0; /* Desde la parte izquierda */
-    width: calc(50% - 72px); /* Ancho dinámico basado en el ancho del menú lateral */
+    width: calc(40% - 72px); /* Ancho dinámico basado en el ancho del menú lateral */
     flex-grow: 1; /* Ocupa el espacio restante */
     background-color: white; /* Color de fondo */
     padding: 15px 15px; /* Relleno interno */
-    margin: calc(14vh + 10px) 5px 5px calc(50% + 66px); /* Margen exterior */
+    margin: calc(14vh + 10px) 5px 5px calc(60% + 66px); /* Margen exterior */
     height: calc(98vh - 14vh - 5px); /* Toma casi toda la altura del viewport */
     border-radius: 10px; /* Bordes redondeados */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
@@ -485,23 +498,23 @@
 
 
 
-#Principal-Visualizar #Principal-ValidarMovil {
+#Principal-Visualizar #Principal-ValidarMoviles {
     text-align: center;
 }
 
-#Principal-ValidarMovil #Cartas {
+#Principal-ValidarMoviles #Cartas {
     display: flex;
     width: 100%;
 }
 
-#Principal-ValidarMovil .carta-container {
+#Principal-ValidarMoviles .carta-container {
     overflow: auto;
     height: 86vh;
     width: 75%;
     border-radius: 5px;
 }
 
-#Principal-ValidarMovil .Carta {
+#Principal-ValidarMoviles .Carta {
     border: 1px solid #223775;
     border-radius: 8px;
     padding-left: 12px;
@@ -509,42 +522,42 @@
     margin: 10px 0px 10px 0px;
 }
 
-#Principal-ValidarMovil .Carta h1, #Principal-ValidarMovil .Carta h2, #Principal-ValidarMovil .Carta h5 {
+#Principal-ValidarMoviles .Carta h1, #Principal-ValidarMoviles .Carta h2, #Principal-ValidarMoviles .Carta h5 {
     color: #fff;
     margin-bottom: 10px;
 }
 
-#Principal-ValidarMovil .Carta p, #Principal-ValidarMovil .Carta ul li {
+#Principal-ValidarMoviles .Carta p, #Principal-ValidarMoviles .Carta ul li {
     color: #fff;
     font-size: 15px;
 }
 
-#Principal-ValidarMovil .Carta #Integrantes {
+#Principal-ValidarMoviles .Carta #Integrantes {
     text-align: left;
     padding: 20px 10px 20px 20px;
 }
 
-#Principal-ValidarMovil .Carta #Movil {
+#Principal-ValidarMoviles .Carta #Movil {
     text-align: left;
     padding: 20px 10px 20px 10px;
 }
 
-#Principal-ValidarMovil .Carta #Movil p {
+#Principal-ValidarMoviles .Carta #Movil p {
     width: 340px;
 }
 
-#Principal-ValidarMovil .Carta #Placa {
+#Principal-ValidarMoviles .Carta #Placa {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px 20px 20px 10px;
 }
 
-#Principal-ValidarMovil .Carta #Placa h1 {
+#Principal-ValidarMoviles .Carta #Placa h1 {
     font-size: 34px;
 }
 
-#Principal-ValidarMovil #Carta-naranja {
+#Principal-ValidarMoviles #Carta-naranja {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -552,7 +565,7 @@
     background-color: orange;
 }
 
-#Principal-ValidarMovil #Carta-verde {
+#Principal-ValidarMoviles #Carta-verde {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -560,7 +573,7 @@
     background-color: green;
 }
 
-#Principal-ValidarMovil #Carta-rojo {
+#Principal-ValidarMoviles #Carta-rojo {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -568,37 +581,37 @@
     background-color: red;
 }
 
-#Principal-ValidarMovil #Filtros {
+#Principal-ValidarMoviles #Filtros {
     padding: 0 10px 0 10px;
 }
 
-#Principal-ValidarMovil #Filtros h3 {
+#Principal-ValidarMoviles #Filtros h3 {
     padding: 5px 0px 0px 0px;
 }
 
-#Principal-ValidarMovil #Filtros .row {
+#Principal-ValidarMoviles #Filtros .row {
     padding: 5px 0px 5px 0px;
 }
 
-#Principal-ValidarMovil #Filtros button {
+#Principal-ValidarMoviles #Filtros button {
     width: 150px;
 }
 
-#Principal-ValidarMovil #Datos {
+#Principal-ValidarMoviles #Datos {
     width: 25%;
 }
 
-#Principal-ValidarMovil #BACK-UP h3 {
+#Principal-ValidarMoviles #BACK-UP h3 {
     margin: 20px 0px 10px 0px;
 }
 
-#Principal-ValidarMovil .Carta #IntegrantesBackUp {
+#Principal-ValidarMoviles .Carta #IntegrantesBackUp {
     text-align: left;
     padding: 20px 10px 20px 20px;
     background-color: #373e72;
 }
 
-#Principal-ValidarMovil #Tabla-Backup {
+#Principal-ValidarMoviles #Tabla-Backup {
     width: 100%; /* Ancho dinámico basado en =el ancho del menú lateral */
     flex-grow: 1; /* Ocupa el espacio restante */
     background-color: white; /* Color de fondo */
@@ -606,13 +619,13 @@
     padding: 0px 10px;
 }
 
-#Principal-ValidarMovil .tabla-container {
+#Principal-ValidarMoviles .tabla-container {
     overflow: auto;
     height: 45vh;
     width: 100%;
     border-radius: 5px;
 }
 
-#Principal-ValidarMovil #piePagina {
+#Principal-ValidarMoviles #piePagina {
     padding-left: 10px;
 }

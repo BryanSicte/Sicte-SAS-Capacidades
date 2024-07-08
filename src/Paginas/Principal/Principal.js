@@ -4,7 +4,7 @@ import Visualizar from '../Visualizar/Visualizar';
 import Agregar from '../Agregar/Agregar';
 import ValidarPersonal from '../ValidarPersonas/ValidarPersonal';
 import Retirados from '../Retirados/Retirados';
-import ValidarMovil from '../ValidarMovil/ValidarMovil';
+import ValidarMoviles from '../ValidarMoviles/ValidarMoviles';
 
 const Principal = () => {
     const location = useLocation();
@@ -29,8 +29,8 @@ const Principal = () => {
                 return <Agregar {...paginaProps} />;
             case 'Retirados':
                 return <Retirados {...paginaProps} />;
-            case 'ValidarMovil':
-                return <ValidarMovil {...paginaProps} />;
+            case 'ValidarMoviles':
+                return <ValidarMoviles {...paginaProps} />;
             default:
                 return null;
         }
@@ -56,8 +56,8 @@ const Principal = () => {
                         <li onClick={() => cambiarPagina('Retirados')} className={paginaActiva === 'Retirados' ? 'active' : ''}>
                             <i className="fas fa-user-times"></i>Retirados
                         </li>
-                        <li onClick={() => cambiarPagina('ValidarMovil')} className={paginaActiva === 'ValidarMovil' ? 'active' : ''}>
-                            <i className="fas fa-car"></i>Validar Movil
+                        <li onClick={() => cambiarPagina('ValidarMoviles')} className={paginaActiva === 'ValidarMoviles' ? 'active' : ''}>
+                            <i className="fas fa-car"></i>Validar Moviles
                         </li>
                     </ul>
                 </div>

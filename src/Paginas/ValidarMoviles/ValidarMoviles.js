@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import  '../Principal/Principal.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-const ValidarMovil = ({ role }) => {
+const ValidarMoviles = ({ role }) => {
     const [datos, setDatos] = useState([]);
     const [datosBackUp, setDatosBackUp] = useState([]);
     const [error, setError] = useState('');
@@ -172,7 +172,7 @@ const ValidarMovil = ({ role }) => {
 
     return (
         <div id='Principal-Visualizar'>
-            <div id="Principal-ValidarMovil">
+            <div id="Principal-ValidarMoviles">
                 <h2>Listado de Moviles</h2>
                 <div id='Cartas'>
                     <div className="carta-container">
@@ -277,4 +277,4 @@ const ValidarMovil = ({ role }) => {
     );
 };
 
-export default ValidarMovil;
+export default ValidarMoviles;
