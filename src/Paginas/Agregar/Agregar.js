@@ -272,6 +272,9 @@ const Agregar = ({ role }) => {
             return;
         }
 
+        setFiltrosAgregados({});
+        setFiltros({});
+
         const cedulasSeleccionadas = Array.from(filasSeleccionadas).map(cedula => {
             return ordenarDatos.find(item => item.nit === cedula).nit;
         });

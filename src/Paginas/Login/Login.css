@@ -46,6 +46,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
     width: 350px; /* Ancho fijo */
     height: 600px; /* Altura fija */
+    position: relative;
 }
 
 /* Estilos para el logo dentro del contenedor */
@@ -96,6 +97,13 @@ body {
     --bs-btn-border-color: #0B1A46; /* Color del borde del botón */
     --bs-btn-disabled-bg: #0B1A46; /* Color de fondo del botón cuando está desactivado */
     --bs-btn-disabled-border-color: #0B1A46; /* Color del borde del botón cuando está desactivado */
+}
+
+#Login-Contenido_2 #Version {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: 30px;
 }
 
 .error-message {

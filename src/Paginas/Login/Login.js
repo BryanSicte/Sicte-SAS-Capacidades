@@ -67,6 +67,9 @@ const Login = () => {
                     </div>
                 </form>
                 {error && <p className="error-message">{error}</p>}
+                <div id='Version'>
+                    <p>Version 1.04</p>
+                </div>
             </div>
         </div>
     );
