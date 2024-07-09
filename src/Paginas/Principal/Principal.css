@@ -507,10 +507,22 @@
     width: 100%;
 }
 
+#Principal-ValidarMoviles #Listado-Moviles {
+    width: 70%;
+}
+
+#Principal-ValidarMoviles #Datos {
+    width: 30%;
+}
+
+#Principal-ValidarMoviles #Datos p {
+    margin-bottom: 5px;
+}
+
 #Principal-ValidarMoviles .carta-container {
     overflow: auto;
-    height: 86vh;
-    width: 75%;
+    height: 79vh;
+    width: 100%;
     border-radius: 5px;
 }
 
@@ -594,15 +606,56 @@
 }
 
 #Principal-ValidarMoviles #Filtros button {
-    width: 150px;
+    width: 130px;
 }
 
-#Principal-ValidarMoviles #Datos {
-    width: 25%;
+#Principal-ValidarMoviles .Grupo-Personal-Movil {
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 80%;
+    background-color: #fff;
+    position: relative;
 }
 
-#Principal-ValidarMoviles #BACK-UP h3 {
-    margin: 20px 0px 10px 0px;
+#Principal-ValidarMoviles .Grupo-Coordinador .Titulo,
+#Principal-ValidarMoviles .Grupo-Personal-Movil .Titulo {
+    font-size: 13px;
+    font-weight: bold;
+    color: black;
+    padding: 0 5px;
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background-color: white;
+}
+
+#Principal-ValidarMoviles .Grupo-Coordinador {
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 20%;
+    background-color: #fff;
+    position: relative;
+}
+
+#Principal-ValidarMoviles .button-group #Blanco,
+#Principal-ValidarMoviles .button-group #Naranja,
+#Principal-ValidarMoviles .button-group #Verde,
+#Principal-ValidarMoviles .button-group #Rojo {
+    margin: 0px 5px 0px 5px;
+}
+
+#Principal-ValidarMoviles #BACK-UP h4 {
+    margin: 8px 0px 8px 0px;
 }
 
 #Principal-ValidarMoviles .Carta #IntegrantesBackUp {
@@ -621,9 +674,17 @@
 
 #Principal-ValidarMoviles .tabla-container {
     overflow: auto;
-    height: 45vh;
+    height: 35vh;
     width: 100%;
     border-radius: 5px;
+}
+
+#Principal-ValidarMoviles #Tabla-Moviles {
+    width: 100%; /* Ancho dinámico basado en =el ancho del menú lateral */
+    flex-grow: 1; /* Ocupa el espacio restante */
+    background-color: white; /* Color de fondo */
+    border-radius: 10px; /* Bordes redondeados */
+    padding: 0px 10px;
 }
 
 #Principal-ValidarMoviles #piePagina {
