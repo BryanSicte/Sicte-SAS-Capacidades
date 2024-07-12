@@ -12,6 +12,9 @@ const Agregar = ({ role }) => {
     const [datosAgregados, setDatosAgregados] = useState([]);
     const [datosCompletosAgregados, setDatosCompletosAgregados] = useState([]);
     const [datosMovil, setDatosMovil] = useState([]);
+    const [tipoMovilAdmon, setTipoMovilAdmon] = useState([]);
+    const [tipoMovilEvento, setTipoMovilEvento] = useState([]);
+    const [listadoCoordinadores, setListadoCoordinadores] = useState([]);
     const [filtrosAgregados, setFiltrosAgregados] = useState({});
     const [ordenarCampo, setOrdenarCampo] = useState('nombre');
     const [ordenarCampoAgregados, setOrdenarCampoAgregados] = useState('nombreCompleto');
@@ -26,11 +29,36 @@ const Agregar = ({ role }) => {
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const [isPlacaValida, setIsPlacaValida] = useState(true);
 
+    const cargarDatosCoordinador = () => {
+        fetch('https://sicteferias.from-co.net:8120/capacidad/Coordinador')
+            .then(response => response.json())
+            .then(data => {
+                const coordinador = data
+                    .sort((a, b) => a.coordinador.localeCompare(b.coordinador))
+                    .map(item => item.coordinador);
+                
+                setListadoCoordinadores(coordinador);
+            })
+            .catch(error => setError('Error al cargar los datos: ' + error.message));
+    };
+
     const cargarDatosMovil = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/Movil')
             .then(response => response.json())
             .then(data => {
+                const admon = data
+                    .filter(item => item.tipoFacturacion === 'ADMON')
+                    .sort((a, b) => a.tipoMovil.localeCompare(b.tipoMovil))
+                    .map(item => item.tipoMovil);
+                
+                const evento = data
+                    .filter(item => item.tipoFacturacion === 'EVENTO')
+                    .sort((a, b) => a.tipoMovil.localeCompare(b.tipoMovil))
+                    .map(item => item.tipoMovil);
+
                 setDatosMovil(data);
+                setTipoMovilAdmon(admon);
+                setTipoMovilEvento(evento);
             })
             .catch(error => setError('Error al cargar los datos: ' + error.message));
     };
@@ -82,6 +110,7 @@ const Agregar = ({ role }) => {
         cargarDatos();
         cargarDatosAgregados();
         cargarDatosMovil();
+        cargarDatosCoordinador();
     }, []);
 
     const BotonLimpiarFiltros = () => {
@@ -90,7 +119,7 @@ const Agregar = ({ role }) => {
         setSelectedItemTipoFacturacion('Seleccionar opción');
         setSelectedItemTipoMovil('Seleccionar opción');
         setSelectedItemCoordinador('Seleccionar opción');
-        setCoordinadores(['ALBERTO DE CASTRO', 'ALEXANDER ROMERO', 'CARLOS GOMEZ', 'CARLOS PALMA', 'CAROLINA FERNANDEZ', 'DANIELA PEDRAZA', 'DAVID MORA', 'DAVID SALCEDO', 'DIEGO MEJIA', 'EDUARD SILVA', 'GABRIEL CORREA', 'JAVIER GARCIA', 'JIMMY RAMIREZ', 'JORGE ROZO', 'JUAN BERNARDO DUQUE', 'JUAN CARLOS GARCIA', 'LIDA QUINTERO', 'MAURICIO CARDENAS', 'MILLER SILVA', 'OSCAR PACHON', 'RAUL CONTRERAS', 'VIVIANA HIGUERA', 'WILSON ORTIZ','YEHISON BARON', 'YEISON PACHECO']);
+        setCoordinadores(listadoCoordinadores);
         setTipoMovilOptions([]);
         setCarpeta("");
         setPlaca("");
@@ -186,9 +215,9 @@ const Agregar = ({ role }) => {
     const handleSelectTipoFacturacion = (item) => {
         setSelectedItemTipoFacturacion(item);
         if (item === 'ADMON') {
-            setTipoMovilOptions(['AUXILIAR DE PROYECTO', 'BACKOFFICE', 'CONTRATISTA', 'COORDINADOR', 'DIBUJANTE', 'DISEÑADOR DE REDES HFC Y FIBRA', 'FORMADOR', 'GESTOR DE RUTA', 'INCAPACITADO','LIDER DE ACOMETIDAS', 'LIDER DE DISEÑO', 'MOVIL DE APOYO (UNI/BIDI)', 'RESTRINGIDO', 'SUPERVISOR']);
+            setTipoMovilOptions(tipoMovilAdmon);
         } else if (item === 'EVENTO') {
-            setTipoMovilOptions(['BACKUP', 'CUADRILLA INSTALACIÓN DOBLE EN CARRO', 'CUADRILLA INSTALACIÓN DOBLE EN MOTO', 'CUADRILLA INSTALACIÓN SENCILLA EN CARRO', 'CUADRILLA INSTALACIÓN SENCILLA EN MOTO', 'CUADRILLA MANTENIMIENTO SENCILLA EN MOTO', 'INGENIERO CONFIGURACIONES NO ESTÁNDAR F.O', 'MO PEFO MOVIL 3P 1T', 'MO PEFO MOVIL 3P 2T', 'MOTORIZADO - SDS', 'MOVIL DE EMPALMERIA 2P', 'MOVIL DE EMPALMERIA 3P', 'MOVIL DE EMPALMERIA 4P', 'MOVIL DE TENDIDO 3P', 'MOVIL DE TENDIDO 4P', 'MOVIL INFRAESTRUCTURA - ELECTRIFICADORAS 3P 1T', 'MOVIL INFRAESTRUCTURA - ELECTRIFICADORAS 4P 1T', 'MOVIL MANTENIMIENTO DROP F.O', 'MOVIL PROYECTOS HFC 4P', 'PEFO MEDIDOR DIURNO', 'PL CUADRILLA ACOMETIDAS', 'PL CUADRILLA VISITA TECNICA', 'TIPO CUADRILLA 1 - 2P 1T + Moto', 'TIPO CUADRILLA 2 - 2P 2T + Moto', 'TIPO CUADRILLA 3 - 2P 3T + Moto', 'TIPO CUADRILLA 4 - 3P 3T + Moto', 'UNIDAD DE SERVICIO  INTEGRAL_ COAXIAL+FO TIPO FURGON 3P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E  RUIDO TIPO FURGON 3P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E  TIPO FURGON POTENCIA 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO EDIFICIOS TIPO CARRY 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO EDIFICIOS TIPO CARRY 3P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO CARRY 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGON 10P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGÓN 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGÓN 2P - 2T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGON 4P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGON 5P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGON 6P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGON 8P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E TIPO CARRY 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E TIPO FURGÓN 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E TIPO FURGÓN 2P - 2T', 'UNIDAD DE SERVICIO INTEGRAL _P.E TIPO FURGÓN 2P - 3T', 'UNIDAD DE SERVICIO INTEGRAL _P.E TIPO MOTO 1P - 1T']);
+            setTipoMovilOptions(tipoMovilEvento);
         }
         setSelectedItemTipoMovil('Seleccionar opción');
     };
