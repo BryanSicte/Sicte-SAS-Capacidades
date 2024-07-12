@@ -14,7 +14,6 @@ const Agregar = ({ role }) => {
     const [datosMovil, setDatosMovil] = useState([]);
     const [tipoMovilAdmon, setTipoMovilAdmon] = useState([]);
     const [tipoMovilEvento, setTipoMovilEvento] = useState([]);
-    const [listadoCoordinadores, setListadoCoordinadores] = useState([]);
     const [filtrosAgregados, setFiltrosAgregados] = useState({});
     const [ordenarCampo, setOrdenarCampo] = useState('nombre');
     const [ordenarCampoAgregados, setOrdenarCampoAgregados] = useState('nombreCompleto');
@@ -28,16 +27,28 @@ const Agregar = ({ role }) => {
     const [placa, setPlaca] = useState("");
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const [isPlacaValida, setIsPlacaValida] = useState(true);
+    const [dropdownOpenTipoFacturacion, setDropdownOpenTipoFacturacion] = useState(false);
+    const [selectedItemTipoFacturacion, setSelectedItemTipoFacturacion] = useState('Seleccionar opción');
+    const [dropdownOpenTipoMovil, setDropdownOpenTipoMovil] = useState(false);
+    const [selectedItemTipoMovil, setSelectedItemTipoMovil] = useState('Seleccionar opción');
+    const [dropdownOpenCoordinador, setDropdownOpenCoordinador] = useState(false);
+    const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Seleccionar opción');
+    const [tipoMovilOptions, setTipoMovilOptions] = useState([]);
+    const [coordinadores, setCoordinadores] = useState([]);
 
     const cargarDatosCoordinador = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/Coordinador')
             .then(response => response.json())
             .then(data => {
-                const coordinador = data
-                    .sort((a, b) => a.coordinador.localeCompare(b.coordinador))
-                    .map(item => item.coordinador);
+                const coordDirect = new Set();
+                data.forEach(item => {
+                    coordDirect.add(item.coordinador);
+                    coordDirect.add(item.director);
+                });
+                const unirCoordDirect = Array.from(coordDirect).sort((a, b) => a.localeCompare(b));
                 
-                setListadoCoordinadores(coordinador);
+                console.log(unirCoordDirect)
+                setCoordinadores(unirCoordDirect);
             })
             .catch(error => setError('Error al cargar los datos: ' + error.message));
     };
@@ -103,7 +114,6 @@ const Agregar = ({ role }) => {
 
     useEffect(() => {
         cargarDatosCoordinador();
-        BotonLimpiarFiltros();
         setDatosCompletosAgregados([]);
         setDatosAgregados([]);
         datosAgregadosBandera = [];
@@ -111,6 +121,7 @@ const Agregar = ({ role }) => {
         cargarDatos();
         cargarDatosAgregados();
         cargarDatosMovil();
+        BotonLimpiarFiltros();
     }, []);
 
     const BotonLimpiarFiltros = () => {
@@ -119,8 +130,6 @@ const Agregar = ({ role }) => {
         setSelectedItemTipoFacturacion('Seleccionar opción');
         setSelectedItemTipoMovil('Seleccionar opción');
         setSelectedItemCoordinador('Seleccionar opción');
-
-        setCoordinadores(listadoCoordinadores);
         setTipoMovilOptions([]);
         setCarpeta("");
         setPlaca("");
@@ -199,15 +208,6 @@ const Agregar = ({ role }) => {
             setTodasSeleccionadas(true);
         }
     };
-
-    const [dropdownOpenTipoFacturacion, setDropdownOpenTipoFacturacion] = useState(false);
-    const [selectedItemTipoFacturacion, setSelectedItemTipoFacturacion] = useState('Seleccionar opción');
-    const [dropdownOpenTipoMovil, setDropdownOpenTipoMovil] = useState(false);
-    const [selectedItemTipoMovil, setSelectedItemTipoMovil] = useState('Seleccionar opción');
-    const [dropdownOpenCoordinador, setDropdownOpenCoordinador] = useState(false);
-    const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Seleccionar opción');
-    const [tipoMovilOptions, setTipoMovilOptions] = useState([]);
-    const [coordinadores, setCoordinadores] = useState([]);
 
     const toggleTipoFacturacion = () => setDropdownOpenTipoFacturacion(prevState => !prevState);
     const toggleTipoMovil = () => setDropdownOpenTipoMovil(prevState => !prevState);
