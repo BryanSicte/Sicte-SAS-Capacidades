@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Sicte-SAS-Capacidades/static/css/main.0ae45cde.css",
-    "main.js": "/Sicte-SAS-Capacidades/static/js/main.894d1da1.js",
+    "main.js": "/Sicte-SAS-Capacidades/static/js/main.c89ec828.js",
     "static/js/453.b643ba8c.chunk.js": "/Sicte-SAS-Capacidades/static/js/453.b643ba8c.chunk.js",
     "static/media/fa-solid-900.ttf": "/Sicte-SAS-Capacidades/static/media/fa-solid-900.bacd5de623fb563b961a.ttf",
     "static/media/fa-brands-400.ttf": "/Sicte-SAS-Capacidades/static/media/fa-brands-400.60127e352b7a11f7f1bc.ttf",
@@ -14,11 +14,11 @@
     "static/media/fa-v4compatibility.woff2": "/Sicte-SAS-Capacidades/static/media/fa-v4compatibility.cf7f5903d06b79ad60f1.woff2",
     "index.html": "/Sicte-SAS-Capacidades/index.html",
     "main.0ae45cde.css.map": "/Sicte-SAS-Capacidades/static/css/main.0ae45cde.css.map",
-    "main.894d1da1.js.map": "/Sicte-SAS-Capacidades/static/js/main.894d1da1.js.map",
+    "main.c89ec828.js.map": "/Sicte-SAS-Capacidades/static/js/main.c89ec828.js.map",
     "453.b643ba8c.chunk.js.map": "/Sicte-SAS-Capacidades/static/js/453.b643ba8c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.0ae45cde.css",
-    "static/js/main.894d1da1.js"
+    "static/js/main.c89ec828.js"
   ]
 }
