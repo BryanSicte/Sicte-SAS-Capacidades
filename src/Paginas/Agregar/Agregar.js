@@ -102,6 +102,7 @@ const Agregar = ({ role }) => {
     };
 
     useEffect(() => {
+        cargarDatosCoordinador();
         BotonLimpiarFiltros();
         setDatosCompletosAgregados([]);
         setDatosAgregados([]);
@@ -110,7 +111,6 @@ const Agregar = ({ role }) => {
         cargarDatos();
         cargarDatosAgregados();
         cargarDatosMovil();
-        cargarDatosCoordinador();
     }, []);
 
     const BotonLimpiarFiltros = () => {
@@ -119,6 +119,7 @@ const Agregar = ({ role }) => {
         setSelectedItemTipoFacturacion('Seleccionar opción');
         setSelectedItemTipoMovil('Seleccionar opción');
         setSelectedItemCoordinador('Seleccionar opción');
+
         setCoordinadores(listadoCoordinadores);
         setTipoMovilOptions([]);
         setCarpeta("");
