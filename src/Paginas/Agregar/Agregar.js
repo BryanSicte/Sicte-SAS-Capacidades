@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
-
+import { ThreeDots } from 'react-loader-spinner';
 
 let datosAgregadosBandera = [];
 
@@ -35,6 +35,7 @@ const Agregar = ({ role }) => {
     const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Seleccionar opción');
     const [tipoMovilOptions, setTipoMovilOptions] = useState([]);
     const [coordinadores, setCoordinadores] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const cargarDatosCoordinador = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/Coordinador')
@@ -47,7 +48,6 @@ const Agregar = ({ role }) => {
                 });
                 const unirCoordDirect = Array.from(coordDirect).sort((a, b) => a.localeCompare(b));
                 
-                console.log(unirCoordDirect)
                 setCoordinadores(unirCoordDirect);
             })
             .catch(error => setError('Error al cargar los datos: ' + error.message));
@@ -86,8 +86,12 @@ const Agregar = ({ role }) => {
             .then(data => {
                 setDatos(data);
                 setTotalItems(data.length);
+                setLoading(false);
             })
-            .catch(error => setError('Error al cargar los datos: ' + error.message));
+            .catch(error => {
+                setError('Error al cargar los datos: ' + error.message);
+                setLoading(false); 
+            });
     };
 
     const cargarDatosAgregados = () => {
@@ -468,159 +472,173 @@ const Agregar = ({ role }) => {
     };
 
     return (
-        <div id="Principal-Container">
-            <div id='Principal-Agregar'>
-                <div id="Principal-Agregar-Botones">
-                    <div>
-                        <label htmlFor="uname">Tipo Facturación:</label>
-                        <Dropdown isOpen={dropdownOpenTipoFacturacion} toggle={toggleTipoFacturacion}>
-                            <DropdownToggle caret className="btn btn-primary">
-                                {selectedItemTipoFacturacion}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                                <DropdownItem onClick={() => handleSelectTipoFacturacion('ADMON')}>ADMON</DropdownItem>
-                                <DropdownItem onClick={() => handleSelectTipoFacturacion('EVENTO')}>EVENTO</DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
-                    </div>
-                    <div>
-                        <label htmlFor="uname">Tipo Movil:</label>
-                        <Dropdown isOpen={dropdownOpenTipoMovil} toggle={toggleTipoMovil}>
-                            <DropdownToggle caret className="btn btn-primary">
-                                {selectedItemTipoMovil}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                                {tipoMovilOptions.map((option, index) => (
-                                    <DropdownItem key={index} onClick={() => handleSelectTipoMovil(option)}>{option}</DropdownItem>
-                                ))}
-                            </DropdownMenu>
-                        </Dropdown>
-                    </div>
-                    <div>
-                        <label htmlFor="uname">Coordinador:</label>
-                        <Dropdown isOpen={dropdownOpenCoordinador} toggle={toggleCoordinador}>
-                            <DropdownToggle caret className="btn btn-primary">
-                                {selectedItemCoordinador}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                                {coordinadores.map((option, index) => (
-                                    <DropdownItem key={index} onClick={() => handleSelectCoordinador(option)}>{option}</DropdownItem>
-                                ))}
-                            </DropdownMenu>
-                        </Dropdown>
-                    </div>
-
-                    <div id="Principal-Agregar-Botones-Red" className="form-group">
-                        <label htmlFor="carpeta" className="form-label">Carpeta:</label>
-                        <input type="text" className="form-control" id="carpeta" placeholder="Ingresa la Carpeta" value={carpeta} onChange={(e) => setCarpeta(e.target.value)} required />
-                        <div className="invalid-feedback">Campo Obligatorio</div>
-                    </div>
-
-                    <div id="Principal-Agregar-Botones-Red" className="form-group">
-                        <label htmlFor="placa" className="form-label">Placa:</label>
-                        <input type="text" className="form-control" id="placa" placeholder="Ingresa la Placa" value={placa} onChange={(e) => setPlaca(e.target.value)} maxLength={6} required />
-                        {!isPlacaValida && <p style={{ color: 'red' }}>Placa no válida</p>}
-                        <div className="invalid-feedback">Campo Obligatorio</div>
-                    </div>
-
-                    <div id='Botones-Accion'>
-                        <button id='Boton-Limpiar' className="btn btn-secondary" onClick={BotonLimpiarFiltros}>Limpiar</button>
-                        <button id='Boton-Aplicar' className="btn btn-secondary" onClick={botonAplicar}>Aplicar</button>
-                    </div>
+        <div>
+            {loading ? (
+                <div id="CargandoPagina">
+                    <ThreeDots
+                        type="ThreeDots"
+                        color="#0B1A46"
+                        height={200}
+                        width={200}
+                    />
+                    <p>... Cargando Datos ...</p>
                 </div>
+            ) : (
+                <div id="Principal-Container">
+                    <div id='Principal-Agregar'>
+                        <div id="Principal-Agregar-Botones">
+                            <div>
+                                <label htmlFor="uname">Tipo Facturación:</label>
+                                <Dropdown isOpen={dropdownOpenTipoFacturacion} toggle={toggleTipoFacturacion}>
+                                    <DropdownToggle caret className="btn btn-primary">
+                                        {selectedItemTipoFacturacion}
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                        <DropdownItem onClick={() => handleSelectTipoFacturacion('ADMON')}>ADMON</DropdownItem>
+                                        <DropdownItem onClick={() => handleSelectTipoFacturacion('EVENTO')}>EVENTO</DropdownItem>
+                                    </DropdownMenu>
+                                </Dropdown>
+                            </div>
+                            <div>
+                                <label htmlFor="uname">Tipo Movil:</label>
+                                <Dropdown isOpen={dropdownOpenTipoMovil} toggle={toggleTipoMovil}>
+                                    <DropdownToggle caret className="btn btn-primary">
+                                        {selectedItemTipoMovil}
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                        {tipoMovilOptions.map((option, index) => (
+                                            <DropdownItem key={index} onClick={() => handleSelectTipoMovil(option)}>{option}</DropdownItem>
+                                        ))}
+                                    </DropdownMenu>
+                                </Dropdown>
+                            </div>
+                            <div>
+                                <label htmlFor="uname">Coordinador:</label>
+                                <Dropdown isOpen={dropdownOpenCoordinador} toggle={toggleCoordinador}>
+                                    <DropdownToggle caret className="btn btn-primary">
+                                        {selectedItemCoordinador}
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                        {coordinadores.map((option, index) => (
+                                            <DropdownItem key={index} onClick={() => handleSelectCoordinador(option)}>{option}</DropdownItem>
+                                        ))}
+                                    </DropdownMenu>
+                                </Dropdown>
+                            </div>
 
-                <div id="Principal-Agregar-Pendientes">
-                    <div id='Titulo'>
-                        <span>Pendientes</span>
-                    </div>
-                    <div className="tabla-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <div>
-                                            <span>Seleccionar</span>
-                                            <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
-                                        </div>
-                                    </th>
-                                    {['nit', 'nombre', 'cargo', 'perfil', 'director'].map(columna => (
-                                        <th key={columna}>
-                                            <div>
-                                                {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
-                                            </div>
-                                            <input type="text" onChange={e => clickAplicarFiltros(e, columna)} />
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {ordenarDatos.map((item) => (
-                                    <tr key={item.nit} className={filasSeleccionadas.has(item.nit) ? 'fila-seleccionada' : ''}>
-                                        <td>
-                                            <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.nit)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.nit)} />
-                                        </td>
-                                        <td>{item.nit}</td>
-                                        <td>{item.nombre}</td>
-                                        <td>{item.cargo}</td>
-                                        <td>{item.perfil}</td>
-                                        <td>{item.director}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id='piePagina'>
-                        <p>Total de items: {totalItems}</p>
-                        <div id='Botones-piePagina'>
+                            <div id="Principal-Agregar-Botones-Red" className="form-group">
+                                <label htmlFor="carpeta" className="form-label">Carpeta:</label>
+                                <input type="text" className="form-control" id="carpeta" placeholder="Ingresa la Carpeta" value={carpeta} onChange={(e) => setCarpeta(e.target.value)} required />
+                                <div className="invalid-feedback">Campo Obligatorio</div>
+                            </div>
 
+                            <div id="Principal-Agregar-Botones-Red" className="form-group">
+                                <label htmlFor="placa" className="form-label">Placa:</label>
+                                <input type="text" className="form-control" id="placa" placeholder="Ingresa la Placa" value={placa} onChange={(e) => setPlaca(e.target.value)} maxLength={6} required />
+                                {!isPlacaValida && <p style={{ color: 'red' }}>Placa no válida</p>}
+                                <div className="invalid-feedback">Campo Obligatorio</div>
+                            </div>
+
+                            <div id='Botones-Accion'>
+                                <button id='Boton-Limpiar' className="btn btn-secondary" onClick={BotonLimpiarFiltros}>Limpiar</button>
+                                <button id='Boton-Aplicar' className="btn btn-secondary" onClick={botonAplicar}>Aplicar</button>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div id="Principal-Agregar-Agregados">
-                    <div id='Titulo'>
-                        <span>Agregados</span>
-                    </div>
-                    <div className="tabla-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas'].map(columna => (
-                                        <th key={columna}>
-                                            <div>
-                                                {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltroAgregados(columna)} onClick={() => clickEncabezadosAgregados(columna)} style={{ cursor: 'pointer' }}></i>
-                                            </div>
-                                            <input type="text" onChange={e => clickAplicarFiltrosAgregados(e, columna)} />
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {ordenarDatosAgregados.map((item) => (
-                                    <tr key={item.cedula}>
-                                        {Object.keys(item).slice(1)
-                                            .filter(key => key !== 'codigoSap')
-                                            .filter(key => key !== 'contratista')
-                                            .filter(key => key !== 'tipoCarro')
-                                            .map((key, i) => (
-                                                <td key={i}>
-                                                    {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
-                                                </td>
+                        <div id="Principal-Agregar-Pendientes">
+                            <div id='Titulo'>
+                                <span>Pendientes</span>
+                            </div>
+                            <div className="tabla-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <div>
+                                                    <span>Seleccionar</span>
+                                                    <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
+                                                </div>
+                                            </th>
+                                            {['nit', 'nombre', 'cargo', 'perfil', 'director'].map(columna => (
+                                                <th key={columna}>
+                                                    <div>
+                                                        {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
+                                                    </div>
+                                                    <input type="text" onChange={e => clickAplicarFiltros(e, columna)} />
+                                                </th>
                                             ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id='piePagina'>
-                        <p>Total de items: {totalItemsAgregados}</p>
-                        <div id='Botones-piePagina'>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {ordenarDatos.map((item) => (
+                                            <tr key={item.nit} className={filasSeleccionadas.has(item.nit) ? 'fila-seleccionada' : ''}>
+                                                <td>
+                                                    <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.nit)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.nit)} />
+                                                </td>
+                                                <td>{item.nit}</td>
+                                                <td>{item.nombre}</td>
+                                                <td>{item.cargo}</td>
+                                                <td>{item.perfil}</td>
+                                                <td>{item.director}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id='piePagina'>
+                                <p>Total de items: {totalItems}</p>
+                                <div id='Botones-piePagina'>
 
+                                </div>
+                            </div>
                         </div>
+
+                        <div id="Principal-Agregar-Agregados">
+                            <div id='Titulo'>
+                                <span>Agregados</span>
+                            </div>
+                            <div className="tabla-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas'].map(columna => (
+                                                <th key={columna}>
+                                                    <div>
+                                                        {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltroAgregados(columna)} onClick={() => clickEncabezadosAgregados(columna)} style={{ cursor: 'pointer' }}></i>
+                                                    </div>
+                                                    <input type="text" onChange={e => clickAplicarFiltrosAgregados(e, columna)} />
+                                                </th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {ordenarDatosAgregados.map((item) => (
+                                            <tr key={item.cedula}>
+                                                {Object.keys(item).slice(1)
+                                                    .filter(key => key !== 'codigoSap')
+                                                    .filter(key => key !== 'contratista')
+                                                    .filter(key => key !== 'tipoCarro')
+                                                    .map((key, i) => (
+                                                        <td key={i}>
+                                                            {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
+                                                        </td>
+                                                    ))}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id='piePagina'>
+                                <p>Total de items: {totalItemsAgregados}</p>
+                                <div id='Botones-piePagina'>
+
+                                </div>
+                            </div>
+                        </div>
+                        <ToastContainer />
                     </div>
                 </div>
-                <ToastContainer />
-            </div>
+            )} 
         </div>
     );
 };

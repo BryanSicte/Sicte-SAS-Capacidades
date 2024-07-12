@@ -4,6 +4,7 @@ import  '../Principal/Principal.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { ThreeDots } from 'react-loader-spinner';
 
 const Retirados = ({ role }) => {
     const [datos, setDatos] = useState([]);
@@ -12,6 +13,7 @@ const Retirados = ({ role }) => {
     const [ordenarCampo, setOrdenarCampo] = useState('nombreCompleto');
     const [ordenarOrden, setOrdenarOrden] = useState('asc');
     const [totalItems, setTotalItems] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     const cargarDatos = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/NoContinuaEnPlanta')
@@ -19,8 +21,12 @@ const Retirados = ({ role }) => {
             .then(data => {
                 setDatos(data);
                 setTotalItems(data.length);
+                setLoading(false);
             })
-            .catch(error => setError('Error al cargar los datos: ' + error.message));
+            .catch(error => {
+                setError('Error al cargar los datos: ' + error.message);
+                setLoading(false); 
+            });
     };
 
     useEffect(() => {
@@ -104,48 +110,62 @@ const Retirados = ({ role }) => {
     };
 
     return (
-        <div id='Principal-Visualizar'>
-            <div id='Botones-Encabezado'>
-                <button id='Boton-Borrar-Filtros' className="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
-                <button id='Boton-Exportar-Excel' className="btn btn-secondary" onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
-            </div>
-            <div className="tabla-container">
-                <table>
-                    <thead>
-                        <tr>
-                            {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas'].map(columna => (
-                                <th key={columna}>
-                                    <div>
-                                        {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
-                                    </div>
-                                    <input type="text" onChange={e => clickAplicarFiltros(e, columna)} />
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {ordenarDatos.map((item, index) => (
-                            <tr key={index}>
-                                {Object.keys(item).slice(1)
-                                .filter(key => key !== 'codigoSap')
-                                .filter(key => key !== 'contratista')
-                                .filter(key => key !== 'tipoCarro')
-                                .map((key, i) => (
-                                    <td key={i}>
-                                        {key === 'movil' ? (parseFloat(item[key]).toFixed(3)) : key === 'personas' ? (parseFloat(item[key]).toFixed(0)) : key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <div id='piePagina'>
-                <p>Total de items: {totalItems}</p> 
-                <div id='Botones-piePagina'>
-                    
+        <div>
+            {loading ? (
+                <div id="CargandoPagina">
+                    <ThreeDots
+                        type="ThreeDots"
+                        color="#0B1A46"
+                        height={200}
+                        width={200}
+                    />
+                    <p>Cargando datos...</p>
                 </div>
-            </div>
+            ) : (
+                <div id='Principal-Visualizar'>
+                    <div id='Botones-Encabezado'>
+                        <button id='Boton-Borrar-Filtros' className="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
+                        <button id='Boton-Exportar-Excel' className="btn btn-secondary" onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
+                    </div>
+                    <div className="tabla-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas'].map(columna => (
+                                        <th key={columna}>
+                                            <div>
+                                                {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
+                                            </div>
+                                            <input type="text" onChange={e => clickAplicarFiltros(e, columna)} />
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {ordenarDatos.map((item, index) => (
+                                    <tr key={index}>
+                                        {Object.keys(item).slice(1)
+                                        .filter(key => key !== 'codigoSap')
+                                        .filter(key => key !== 'contratista')
+                                        .filter(key => key !== 'tipoCarro')
+                                        .map((key, i) => (
+                                            <td key={i}>
+                                                {key === 'movil' ? (parseFloat(item[key]).toFixed(3)) : key === 'personas' ? (parseFloat(item[key]).toFixed(0)) : key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id='piePagina'>
+                        <p>Total de items: {totalItems}</p> 
+                        <div id='Botones-piePagina'>
+                            
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

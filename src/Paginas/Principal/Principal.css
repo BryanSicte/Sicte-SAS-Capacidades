@@ -102,6 +102,26 @@
     height: 98vh;
 }
 
+#CargandoPagina {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    position: fixed; /* Posicionamiento fijo */
+    top: 0; /* Desde la parte superior */
+    left: 0; /* Desde la parte izquierda */
+    width: calc(100% - 215px); /* Ancho dinámico basado en el ancho del menú lateral */
+    flex-grow: 1; /* Ocupa el espacio restante */
+    background-color: white; /* Color de fondo */
+    padding: 15px; /* Relleno interno */
+    margin: 5px 5px 5px 210px; /* Margen exterior */
+    height: 98vh; /* Toma casi toda la altura del viewport */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    height: 98vh;
+}
+
 #Principal-Visualizar #Botones-Encabezado {
     display: flex;
     justify-content: space-between;

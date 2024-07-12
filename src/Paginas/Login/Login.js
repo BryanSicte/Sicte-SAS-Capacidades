@@ -68,7 +68,7 @@ const Login = () => {
                 </form>
                 {error && <p className="error-message">{error}</p>}
                 <div id='Version'>
-                    <p>v1.09</p>
+                    <p>v1.10</p>
                 </div>
             </div>
         </div>

@@ -5,6 +5,7 @@ import '../Principal/Principal.css';
 import { ToastContainer, toast } from 'react-toastify';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'react-toastify/dist/ReactToastify.css';
+import { ThreeDots } from 'react-loader-spinner';
 
 const Visualizar = ({ role }) => {
     const [datos, setDatos] = useState([]);
@@ -16,6 +17,7 @@ const Visualizar = ({ role }) => {
     const [modoEdicion, setModoEdicion] = useState(false);
     const [filasSeleccionadas, setFilasSeleccionadas] = useState(new Set());
     const [todasSeleccionadas, setTodasSeleccionadas] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const cargarDatos = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
@@ -29,8 +31,12 @@ const Visualizar = ({ role }) => {
             .then(data => {
                 setDatos(data);
                 setTotalItems(data.length);
+                setLoading(false);
             })
-            .catch(error => setError('Error al cargar los datos: ' + error.message));
+            .catch(error => {
+                setError('Error al cargar los datos: ' + error.message);
+                setLoading(false); 
+            });
     };
 
     useEffect(() => {
@@ -177,70 +183,85 @@ const Visualizar = ({ role }) => {
     };
 
     return (
-        <div id='Principal-Visualizar'>
-            <div id='Botones-Encabezado'>
-                <button id='Boton-Borrar-Filtros' className="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
-                <div>
-                    <button id='Boton-Editar' className={`btn btn-secondary ${modoEdicion ? 'btn-naranja' : ''}`} onClick={clickModoEdicion}><i className="fas fa-trash-alt"></i> Borrar Filas</button>
-                    <button id='Boton-Exportar-Excel' className="btn btn-secondary" onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
+        <div>
+            {loading ? (
+                <div id="CargandoPagina">
+                    <ThreeDots
+                        type="ThreeDots"
+                        color="#0B1A46"
+                        height={200}
+                        width={200}
+                    />
+                    <p>... Cargando Datos ...</p>
                 </div>
-            </div>
-            <div className="tabla-container">
-                <table>
-                    <thead>
-                        <tr>
-                            {modoEdicion && (
-                                <th>
-                                    <div>
-                                        <span>Eliminar</span>
-                                        <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
-                                    </div>
-                                </th>
-                            )}
-                            {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas'].map(columna => (
-                                <th key={columna}>
-                                    <div>
-                                        {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)}   ></i>
-                                    </div>
-                                    <input type="text" onChange={e => clickAplicarFiltros(e, columna)} />
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {ordenarDatos.map((item, index) => (
-                            <tr key={item.cedula} className={filasSeleccionadas.has(item.cedula) ? 'fila-seleccionada' : ''}>
-                                {modoEdicion && (
-                                    <td>
-                                        <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.cedula)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.cedula)} />
-                                    </td>
-                                )}
-                                {Object.keys(item).slice(1)
-                                    .filter(key => key !== 'codigoSap')
-                                    .filter(key => key !== 'contratista')
-                                    .filter(key => key !== 'tipoCarro')
-                                    .map((key, i) => (
-                                        <td key={i}>
-                                            {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
-                                        </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <ToastContainer />
-            <div id='piePagina'>
-                <p>Total de items: {totalItems}</p>
-                <div id='Botones-piePagina'>
-                    {modoEdicion && (
+            ) : (
+                <div id='Principal-Visualizar'>
+                    <div id='Botones-Encabezado'>
+                        <button id='Boton-Borrar-Filtros' className="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
                         <div>
-                            <button id='Boton-Limpiar' className="btn btn-secondary" onClick={limpiarSeleccionados}>Limpiar</button>
-                            <button id='Boton-Aplicar' className="btn btn-secondary" onClick={clickAplicar}>Aplicar</button>
+                            <button id='Boton-Editar' className={`btn btn-secondary ${modoEdicion ? 'btn-naranja' : ''}`} onClick={clickModoEdicion}><i className="fas fa-trash-alt"></i> Borrar Filas</button>
+                            <button id='Boton-Exportar-Excel' className="btn btn-secondary" onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
                         </div>
-                    )}
+                    </div>
+                    <div className="tabla-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    {modoEdicion && (
+                                        <th>
+                                            <div>
+                                                <span>Eliminar</span>
+                                                <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
+                                            </div>
+                                        </th>
+                                    )}
+                                    {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas'].map(columna => (
+                                        <th key={columna}>
+                                            <div>
+                                                {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)}   ></i>
+                                            </div>
+                                            <input type="text" onChange={e => clickAplicarFiltros(e, columna)} />
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {ordenarDatos.map((item, index) => (
+                                        <tr key={item.cedula} className={filasSeleccionadas.has(item.cedula) ? 'fila-seleccionada' : ''}>
+                                            {modoEdicion && (
+                                                <td>
+                                                    <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.cedula)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.cedula)} />
+                                                </td>
+                                            )}
+                                            {Object.keys(item).slice(1)
+                                                .filter(key => key !== 'codigoSap')
+                                                .filter(key => key !== 'contratista')
+                                                .filter(key => key !== 'tipoCarro')
+                                                .map((key, i) => (
+                                                    <td key={i}>
+                                                        {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
+                                                    </td>
+                                            ))}
+                                        </tr>
+                                    ))
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <ToastContainer />
+                    <div id='piePagina'>
+                        <p>Total de items: {totalItems}</p>
+                        <div id='Botones-piePagina'>
+                            {modoEdicion && (
+                                <div>
+                                    <button id='Boton-Limpiar' className="btn btn-secondary" onClick={limpiarSeleccionados}>Limpiar</button>
+                                    <button id='Boton-Aplicar' className="btn btn-secondary" onClick={clickAplicar}>Aplicar</button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
