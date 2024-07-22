@@ -66,9 +66,20 @@ const Login = () => {
                         <button type="submit" id='Login-Boton-Envio-Estilo' className="btn btn-primary">Iniciar sesión</button>
                     </div>
                 </form>
-                {error && <p className="error-message">{error}</p>}
+                {error === "Error al conectar con el servidor" ? (
+                    <div className='contenedor-error-message'>
+                        <span className="error-message">
+                            Por favor hacer click <a href="https://sicteferias.from-co.net:8120/" target="_blank" rel="noopener noreferrer">aqui</a> y dar acceso al enlace
+                        </span>
+                    </div>
+                ) : (
+                    <p className="error-message">
+                        {error}
+                    </p>
+                )}
+
                 <div id='Version'>
-                    <p>v1.10</p>
+                    <p>v1.11</p>
                 </div>
             </div>
         </div>
