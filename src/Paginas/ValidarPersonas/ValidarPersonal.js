@@ -375,7 +375,12 @@ const ValidarPersonal = ({
                                                 <div>
                                                     {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
                                                 </div>
-                                                <input type="text" onChange={e => clickAplicarFiltros(e, columna)} />
+                                                <input type="text" onKeyDown={e => {
+                                                    if (e.key === 'Enter') {
+                                                        clickAplicarFiltros(e, columna);
+                                                    }
+                                                }}
+                                            />
                                             </th>
                                         ))}
                                     </tr>

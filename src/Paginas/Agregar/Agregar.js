@@ -584,7 +584,12 @@ const Agregar = ({ role }) => {
                                                     <div>
                                                         {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
                                                     </div>
-                                                    <input type="text" onChange={e => clickAplicarFiltros(e, columna)} />
+                                                    <input type="text" onKeyDown={e => {
+                                                            if (e.key === 'Enter') {
+                                                                clickAplicarFiltros(e, columna);
+                                                            }
+                                                        }}
+                                                    />
                                                 </th>
                                             ))}
                                         </tr>
@@ -626,7 +631,12 @@ const Agregar = ({ role }) => {
                                                     <div>
                                                         {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltroAgregados(columna)} onClick={() => clickEncabezadosAgregados(columna)} style={{ cursor: 'pointer' }}></i>
                                                     </div>
-                                                    <input type="text" onChange={e => clickAplicarFiltrosAgregados(e, columna)} />
+                                                    <input type="text" onKeyDown={e => {
+                                                            if (e.key === 'Enter') {
+                                                                clickAplicarFiltrosAgregados(e, columna);
+                                                            }
+                                                        }}
+                                                    />
                                                 </th>
                                             ))}
                                         </tr>
