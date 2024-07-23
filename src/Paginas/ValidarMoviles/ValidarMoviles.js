@@ -21,6 +21,7 @@ const ValidarMoviles = ({ role }) => {
     const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Todo');
     const toggleCoordinador = () => setDropdownOpenCoordinador(prevState => !prevState);
     const [loading, setLoading] = useState(true);
+    const [totalitemsInicial, setTotalitemsInicial] = useState(false);
 
     const obtenerValorEsperado = (valor) => {
         const numero = parseFloat(valor);
@@ -72,10 +73,15 @@ const ValidarMoviles = ({ role }) => {
 
                 const coordinadores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.coordinador))];
 
+                if (datosBackUpFiltrados.length === 0 && !totalitemsInicial) {
+                    setTotalItemsBackup(filtrarDatosBackUp.length);
+                    setTotalitemsInicial(true);
+                } else {
+                    setTotalItemsBackup(datosBackUpFiltrados.length);
+                }
                 setSumaValorEsperado(suma);
                 setDatos(grupoDatos);
                 setDatosBackUp(filtrarDatosBackUp);
-                setTotalItemsBackup(filtrarDatosBackUp.length);
                 setTotalItems(Object.keys(grupoDatos).length);
                 setCoordinadores(coordinadores)
                 setLoading(false);
@@ -89,7 +95,7 @@ const ValidarMoviles = ({ role }) => {
     useEffect(() => {
         setDatos([]);
         cargarDatos();
-    }, []);
+    }, [selectedItemCoordinador]);
 
     const formatearValorEsperado = (valorEsperado) => {
         const formatter = new Intl.NumberFormat('es-CO', {
@@ -143,7 +149,12 @@ const ValidarMoviles = ({ role }) => {
         }
     };
 
-    const filtrarDatos = datosBackUp.filter(item => {
+    const datosBackUpFiltrados = datosBackUp.filter(item => {
+        const filtroCoordinador = selectedItemCoordinador === 'Todo' || item.coordinador === selectedItemCoordinador;
+        return filtroCoordinador;
+    });
+
+    const filtrarDatos = datosBackUpFiltrados.filter(item => {
         for (let key in filtros) {
             if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
                 return false;
@@ -196,7 +207,7 @@ const ValidarMoviles = ({ role }) => {
                         height={200}
                         width={200}
                     />
-                    <p>Cargando datos...</p>
+                    <p>... Cargando Datos ...</p>
                 </div>
             ) : (
         

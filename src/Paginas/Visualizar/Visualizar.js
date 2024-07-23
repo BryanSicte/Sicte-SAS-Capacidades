@@ -18,6 +18,7 @@ const Visualizar = ({ role }) => {
     const [filasSeleccionadas, setFilasSeleccionadas] = useState(new Set());
     const [todasSeleccionadas, setTodasSeleccionadas] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [totalitemsInicial, setTotalitemsInicial] = useState(false);
 
     const cargarDatos = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
@@ -30,7 +31,12 @@ const Visualizar = ({ role }) => {
             .then(response => response.json())
             .then(data => {
                 setDatos(data);
-                setTotalItems(data.length);
+                if (filtrarDatos.length === 0 && !totalitemsInicial) {
+                    setTotalItems(data.length);
+                    setTotalitemsInicial(true);
+                } else {
+                    setTotalItems(filtrarDatos.length);
+                }
                 setLoading(false);
             })
             .catch(error => {
@@ -39,11 +45,20 @@ const Visualizar = ({ role }) => {
             });
     };
 
+    const filtrarDatos = datos.filter(item => {
+        for (let key in filtros) {
+            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
+                return false;
+            }
+        }
+        return true;
+    });
+
     useEffect(() => {
-        BotonLimpiarFiltros();
-        setDatos([]);
+        //BotonLimpiarFiltros();
+        //setDatos([]);
         cargarDatos();
-    }, []);
+    }, [filtrarDatos]);
 
     const BotonLimpiarFiltros = () => {
         setFiltros({});
@@ -64,16 +79,8 @@ const Visualizar = ({ role }) => {
     const clickAplicarFiltros = (e, columna) => {
         const Valor = e.target.value;
         setFiltros({ ...filtros, [columna]: Valor });
+        setTotalItems(filtrarDatos.length);
     };
-
-    const filtrarDatos = datos.filter(item => {
-        for (let key in filtros) {
-            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    });
 
     const ordenarDatos = filtrarDatos.sort((a, b) => {
         if (ordenarCampo) {

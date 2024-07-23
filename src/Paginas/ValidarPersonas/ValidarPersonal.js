@@ -9,32 +9,29 @@ import { ThreeDots } from 'react-loader-spinner';
 
 let datosAgregadosBandera = [];
 
-const ValidarPersonal = ({ role }) => {
+const ValidarPersonal = ({
+    role,
+    error,
+    setError,
+    datosMovil,
+    setDatosMovil,
+    tipoMovilValidas,
+    setTipoMovilValidas,
+    tipoFacturacionValidas,
+    setTipoFacturacionValidas,
+    coordinadores,
+    setCoordinadores
+}) => {
     const [datos, setDatos] = useState([]);
     const [datosAgregados, setDatosAgregados] = useState([]);
-    const [datosMovil, setDatosMovil] = useState([]);
     const [filtros, setFiltros] = useState({});
-    const [error, setError] = useState('');
     const [ordenarCampo, setOrdenarCampo] = useState('nombreCompleto');
     const [ordenarOrden, setOrdenarOrden] = useState('asc');
     const [totalItems, setTotalItems] = useState(0);
     const [filasSeleccionadas, setFilasSeleccionadas] = useState(new Set());
     const [todasSeleccionadas, setTodasSeleccionadas] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    const opcionesTipoMovilValidas = new Set([
-        'AUXILIAR DE PROYECTO', 'BACKOFFICE', 'CONTRATISTA', 'COORDINADOR', 'DIBUJANTE', 'DISEÑADOR DE REDES HFC Y FIBRA', 'FORMADOR', 'GESTOR DE RUTA', 'LIDER DE ACOMETIDAS', 'LIDER DE DISEÑO', 'MOVIL DE APOYO (UNI/BIDI)', 'SUPERVISOR',
-        'BACKUP', 'CUADRILLA INSTALACIÓN DOBLE EN CARRO', 'CUADRILLA INSTALACIÓN DOBLE EN MOTO', 'CUADRILLA INSTALACIÓN SENCILLA EN CARRO', 'CUADRILLA INSTALACIÓN SENCILLA EN MOTO', 'CUADRILLA MANTENIMIENTO SENCILLA EN MOTO', 'INGENIERO CONFIGURACIONES NO ESTÁNDAR F.O', 'MO PEFO MOVIL 3P 1T', 'MO PEFO MOVIL 3P 2T', 'MOTORIZADO - SDS', 'MOVIL DE EMPALMERIA 2P', 'MOVIL DE EMPALMERIA 3P', 'MOVIL DE EMPALMERIA 4P', 'MOVIL DE TENDIDO 3P', 'MOVIL DE TENDIDO 4P', 'MOVIL INFRAESTRUCTURA - ELECTRIFICADORAS 3P 1T', 'MOVIL INFRAESTRUCTURA - ELECTRIFICADORAS 4P 1T', 'MOVIL MANTENIMIENTO DROP F.O', 'MOVIL PROYECTOS HFC 4P', 'PEFO MEDIDOR DIURNO', 'PL CUADRILLA ACOMETIDAS', 'PL CUADRILLA VISITA TECNICA', 'TIPO CUADRILLA 1 - 2P 1T + Moto', 'TIPO CUADRILLA 2 - 2P 2T + Moto', 'TIPO CUADRILLA 3 - 2P 3T + Moto', 'TIPO CUADRILLA 4 - 3P 3T + Moto', 'UNIDAD DE SERVICIO  INTEGRAL_ COAXIAL+FO TIPO FURGON 3P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E  RUIDO TIPO FURGON 3P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E  TIPO FURGON POTENCIA 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO EDIFICIOS TIPO CARRY 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO EDIFICIOS TIPO CARRY 3P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO CARRY 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGON 10P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGÓN 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGÓN 2P - 2T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGON 4P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGON 5P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGON 6P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E PREVENTIVO TIPO FURGON 8P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E TIPO CARRY 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E TIPO FURGÓN 2P - 1T', 'UNIDAD DE SERVICIO INTEGRAL _P.E TIPO FURGÓN 2P - 2T', 'UNIDAD DE SERVICIO INTEGRAL _P.E TIPO FURGÓN 2P - 3T', 'UNIDAD DE SERVICIO INTEGRAL _P.E TIPO MOTO 1P - 1T'
-    ]);
-
-    const cargarDatosMovil = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Movil')
-            .then(response => response.json())
-            .then(data => {
-                setDatosMovil(data);
-            })
-            .catch(error => setError('Error al cargar los datos: ' + error.message));
-    };
+    const [totalitemsInicial, setTotalitemsInicial] = useState(false);
 
     const cargarDatos = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/ContinuaEnPlanta', {
@@ -62,10 +59,20 @@ const ValidarPersonal = ({ role }) => {
     
                     return newItem;
                 });
-                const datosFiltrados = datosFormateados.filter(item => opcionesTipoMovilValidas.has(item.tipoDeMovil));
-                const datosFiltrados2 = datosFiltrados.filter(item => validarPlaca(item));
-                setDatos(datosFiltrados2);
-                setTotalItems(datosFiltrados2.length);
+                const tipoMovilValidas2 = new Set(tipoMovilValidas);
+                const datosFiltrados = datosFormateados.filter(item => tipoMovilValidas2.has(item.tipoDeMovil));
+                const tipoFacturacionValidas2 = new Set(tipoFacturacionValidas);
+                const datosFiltrados2 = datosFiltrados.filter(item => tipoFacturacionValidas2.has(item.tipoFacturacion));
+                const coordinadores2 = new Set(coordinadores);
+                const datosFiltrados3 = datosFiltrados2.filter(item => coordinadores2.has(item.coordinador));
+                const datosFiltrados4 = datosFiltrados3.filter(item => validarPlaca(item));
+                setDatos(datosFiltrados4);
+                if (filtrarDatos.length === 0 && !totalitemsInicial) {
+                    setTotalItems(datosFiltrados4.length);
+                    setTotalitemsInicial(true);
+                } else {
+                    setTotalItems(filtrarDatos.length);
+                }
                 setLoading(false);
             })
             .catch(error => {
@@ -74,14 +81,23 @@ const ValidarPersonal = ({ role }) => {
             });
     };
 
+    const filtrarDatos = datos.filter(item => {
+        for (let key in filtros) {
+            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
+                return false;
+            }
+        }
+        return true;
+    });
+
     useEffect(() => {
-        BotonLimpiarFiltros();
-        setDatos([]);
+        //BotonLimpiarFiltros();
+        //setDatos([]);
         datosAgregadosBandera = [];
         cargarDatos();
         cargarDatosAgregados();
-        cargarDatosMovil();
-    }, []);
+        
+    }, [filtrarDatos]);
 
     const BotonLimpiarFiltros = () => {
         setFiltros({});
@@ -102,6 +118,7 @@ const ValidarPersonal = ({ role }) => {
     const clickAplicarFiltros = (e, columna) => {
         const Valor = e.target.value;
         setFiltros({ ...filtros, [columna]: Valor });
+        setTotalItems(filtrarDatos.length);
     };
 
     const validarPlaca = (item) => {
@@ -138,16 +155,7 @@ const ValidarPersonal = ({ role }) => {
             }
         }
         return false;
-    };
-
-    const filtrarDatos = datos.filter(item => {
-        for (let key in filtros) {
-            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    });
+    };    
 
     const ordenarDatos = filtrarDatos.sort((a, b) => {
         if (ordenarCampo) {
@@ -273,16 +281,25 @@ const ValidarPersonal = ({ role }) => {
         const filasArray = Array.from(filasSeleccionadas);
         const promises = filasArray.map(cedula => {
             const item = ordenarDatos.find(item => item.cedula === cedula);
+            const data = {
+                id: 1,
+                carpeta: "",
+                placa: item.placa,
+                tipoFacturacion: item.tipoFacturacion,
+                tipoMovil: item.tipoDeMovil,
+                cedula: item.cedula,
+                coordinador: item.coordinador
+            };
 
-            if (!validarCapacidadMovil(item)) {
-                toast.error(`La movil con placa ${item.placa} ha excedido su capacidad.`);
+            if (!validarCapacidadMovil(data)) {
+                toast.error(`La movil con placa ${data.placa} ha excedido su capacidad.`);
             } else {
-                fetch('https://sicteferias.from-co.net:8120/capacidad/AgregarCapacidad', {
+                fetch('https://sicteferias.from-co.net:8120/capacidad/agregarPersonalValidarPersonal', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(item),
+                    body: JSON.stringify(data),
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -297,6 +314,7 @@ const ValidarPersonal = ({ role }) => {
                 .catch(error => {
                     console.error('Error:', error);
                     toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
+                    setError('Error al enviar los datos al backend: ' + error.message);
                 });
             }
         });
@@ -333,7 +351,7 @@ const ValidarPersonal = ({ role }) => {
                         height={200}
                         width={200}
                     />
-                    <p>Cargando datos...</p>
+                    <p>... Cargando Datos ...</p>
                 </div>
             ) : (
                 <div id='Principal-ValidarPersonal'>

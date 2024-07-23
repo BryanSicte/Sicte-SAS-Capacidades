@@ -36,6 +36,8 @@ const Agregar = ({ role }) => {
     const [tipoMovilOptions, setTipoMovilOptions] = useState([]);
     const [coordinadores, setCoordinadores] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [totalitemsInicial, setTotalitemsInicial] = useState(false);
+    const [totalitemsAgregadosInicial, setTotalItemsAgregadosInicial] = useState(false);
 
     const cargarDatosCoordinador = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/Coordinador')
@@ -85,7 +87,12 @@ const Agregar = ({ role }) => {
             .then(response => response.json())
             .then(data => {
                 setDatos(data);
-                setTotalItems(data.length);
+                if (filtrarDatos.length === 0 && !totalitemsInicial) {
+                    setTotalItems(data.length);
+                    setTotalitemsInicial(true);
+                } else {
+                    setTotalItems(filtrarDatos.length);
+                }
                 setLoading(false);
             })
             .catch(error => {
@@ -111,26 +118,53 @@ const Agregar = ({ role }) => {
                 });
                 setDatosCompletosAgregados(data);
                 setDatosAgregados(datosFiltrados);
-                setTotalItemsAgregados(datosFiltrados.length);
+                if (filtrarDatosAgregados.length === 0 && !totalitemsAgregadosInicial) {
+                    setTotalItemsAgregados(datosFiltrados.length);
+                    setTotalItemsAgregadosInicial(true);
+                } else {
+                    setTotalItemsAgregados(filtrarDatosAgregados.length);
+                }
             })
             .catch(error => setError('Error al cargar los datos: ' + error.message));
     };
 
+    const filtrarDatos = datos.filter(item => {
+        for (let key in filtros) {
+            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
+                return false;
+            }
+        }
+        return true;
+    });
+
+    const filtrarDatosAgregados = datosAgregados.filter(item => {
+        for (let key in filtrosAgregados) {
+            if (filtrosAgregados[key] && item[key] && !item[key].toLowerCase().includes(filtrosAgregados[key].toLowerCase())) {
+                return false;
+            }
+        }
+        return true;
+    });
+
+
     useEffect(() => {
         cargarDatosCoordinador();
-        setDatosCompletosAgregados([]);
-        setDatosAgregados([]);
-        datosAgregadosBandera = [];
-        setDatos([]);
+        //setDatosCompletosAgregados([]);
+        //setDatosAgregados([]);
+        //datosAgregadosBandera = [];
+        //setDatos([]);
         cargarDatos();
         cargarDatosAgregados();
         cargarDatosMovil();
-        BotonLimpiarFiltros();
-    }, []);
+        //BotonLimpiarFiltros();
+    }, [filtrarDatos, filtrarDatosAgregados]);
 
     const BotonLimpiarFiltros = () => {
         setFiltrosAgregados({});
         setFiltros({});
+        document.querySelectorAll('.tabla-container input[type="text"]').forEach(input => {
+            input.value = '';
+        });
         setSelectedItemTipoFacturacion('Seleccionar opción');
         setSelectedItemTipoMovil('Seleccionar opción');
         setSelectedItemCoordinador('Seleccionar opción');
@@ -153,16 +187,8 @@ const Agregar = ({ role }) => {
     const clickAplicarFiltros = (e, columna) => {
         const Valor = e.target.value;
         setFiltros({ ...filtros, [columna]: Valor });
+        setTotalItems(filtrarDatos.length);
     };
-
-    const filtrarDatos = datos.filter(item => {
-        for (let key in filtros) {
-            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    });
 
     const ordenarDatos = filtrarDatos.sort((a, b) => {
         if (ordenarCampo) {
@@ -285,6 +311,11 @@ const Agregar = ({ role }) => {
     };
 
     const botonAplicar = () => {
+
+        document.querySelectorAll('.tabla-container input[type="text"]').forEach(input => {
+            input.value = '';
+        });
+
         if (!selectedItemTipoFacturacion || selectedItemTipoFacturacion === 'Seleccionar opción') {
             toast.error('Por favor selecciona un Tipo de Facturación', { className: 'toast-error' });
             return;
@@ -305,9 +336,6 @@ const Agregar = ({ role }) => {
             toast.error('Por favor selecciona al menos una cédula', { className: 'toast-error' });
             return;
         }
-
-        setFiltrosAgregados({});
-        setFiltros({});
 
         const cedulasSeleccionadas = Array.from(filasSeleccionadas).map(cedula => {
             return ordenarDatos.find(item => item.nit === cedula).nit;
@@ -339,21 +367,21 @@ const Agregar = ({ role }) => {
                     },
                     body: JSON.stringify(data),
                 })
-                    .then(response => {
-                        if (!response.ok) {
-                            toast.error('No se cargaron los datos', { className: 'toast-error' });
-                            throw new Error(`Error al agregar los datos: ${response.status}`);
-                        } else {
-                            console.log('Fila enviada correctamente');
-                            toast.success('Datos cargados', { className: 'toast-success' });
-                        }
-                        return response.json();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
-                        setError('Error al enviar los datos al backend: ' + error.message);
-                    });
+                .then(response => {
+                    if (!response.ok) {
+                        toast.error('No se cargaron los datos', { className: 'toast-error' });
+                        throw new Error(`Error al agregar los datos: ${response.status}`);
+                    } else {
+                        console.log('Fila enviada correctamente');
+                        toast.success('Datos cargados', { className: 'toast-success' });
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
+                    setError('Error al enviar los datos al backend: ' + error.message);
+                });
             }
         });
 
@@ -391,16 +419,8 @@ const Agregar = ({ role }) => {
     const clickAplicarFiltrosAgregados = (e, columna) => {
         const Valor = e.target.value;
         setFiltrosAgregados({ ...filtrosAgregados, [columna]: Valor });
+        setTotalItemsAgregados(filtrarDatosAgregados.length);
     };
-
-    const filtrarDatosAgregados = datosAgregados.filter(item => {
-        for (let key in filtrosAgregados) {
-            if (filtrosAgregados[key] && item[key] && !item[key].toLowerCase().includes(filtrosAgregados[key].toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    });
 
     const ordenarDatosAgregados = filtrarDatosAgregados.sort((c, d) => {
         if (ordenarCampoAgregados) {

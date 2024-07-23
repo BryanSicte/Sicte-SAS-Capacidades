@@ -14,13 +14,21 @@ const Retirados = ({ role }) => {
     const [ordenarOrden, setOrdenarOrden] = useState('asc');
     const [totalItems, setTotalItems] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [totalitemsInicial, setTotalitemsInicial] = useState(false);
 
     const cargarDatos = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/NoContinuaEnPlanta')
             .then(response => response.json())
             .then(data => {
                 setDatos(data);
+                
                 setTotalItems(data.length);
+                if (filtrarDatos.length === 0 && !totalitemsInicial) {
+                    setTotalItems(data.length);
+                    setTotalitemsInicial(true);
+                } else {
+                    setTotalItems(filtrarDatos.length);
+                }
                 setLoading(false);
             })
             .catch(error => {
@@ -29,11 +37,20 @@ const Retirados = ({ role }) => {
             });
     };
 
+    const filtrarDatos = datos.filter(item => {
+        for (let key in filtros) {
+            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
+                return false;
+            }
+        }
+        return true;
+    });
+
     useEffect(() => {
-        BotonLimpiarFiltros();
-        setDatos([]);
+        //BotonLimpiarFiltros();
+        //setDatos([]);
         cargarDatos();
-    }, []);
+    }, [filtrarDatos]);
 
     const BotonLimpiarFiltros = () => {
         setFiltros({});
@@ -56,16 +73,8 @@ const Retirados = ({ role }) => {
     const clickAplicarFiltros = (e, columna) => {
         const Valor = e.target.value;
         setFiltros({ ...filtros, [columna]: Valor });
+        setTotalItems(filtrarDatos.length);
     };
-
-    const filtrarDatos = datos.filter(item => {
-        for (let key in filtros) {
-            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    });
 
     const ordenarDatos = filtrarDatos.sort((a, b) => {
         if (ordenarCampo) {
@@ -119,7 +128,7 @@ const Retirados = ({ role }) => {
                         height={200}
                         width={200}
                     />
-                    <p>Cargando datos...</p>
+                    <p>... Cargando Datos ...</p>
                 </div>
             ) : (
                 <div id='Principal-Visualizar'>
