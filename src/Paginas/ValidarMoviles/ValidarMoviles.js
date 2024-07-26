@@ -20,8 +20,12 @@ const ValidarMoviles = ({ role }) => {
     const [dropdownOpenCoordinador, setDropdownOpenCoordinador] = useState(false);
     const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Todo');
     const toggleCoordinador = () => setDropdownOpenCoordinador(prevState => !prevState);
+    const [directores, setDirectores] = useState([]);
+    const [dropdownOpenDirector, setDropdownOpenDirector] = useState(false);
+    const [selectedItemDirector, setSelectedItemDirector] = useState('Todo');
+    const toggleDirector = () => setDropdownOpenDirector(prevState => !prevState);
     const [loading, setLoading] = useState(true);
-    const duplicados = new Set();
+    const [duplicados, setDuplicados] = useState([]);
 
     const obtenerValorEsperado = (valor) => {
         const numero = parseFloat(valor);
@@ -71,7 +75,8 @@ const ValidarMoviles = ({ role }) => {
                     acc[key].items.push({
                         nombreCompleto: item.nombreCompleto,
                         cedula: item.cedula,
-                        coordinador: item.coordinador
+                        coordinador: item.coordinador,
+                        director: item.director
                     });
 
                     return acc;
@@ -80,27 +85,28 @@ const ValidarMoviles = ({ role }) => {
                 const suma = Object.values(grupoDatos).reduce((acc, item) => acc + obtenerValorEsperado(item.valorEsperado), 0);
 
                 const coordinadores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.coordinador))];
+                const directores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.director))];
 
                 setSumaValorEsperado(suma);
                 setDatos(grupoDatos);   
                 setDatosBackUp(filtrarDatosBackUp);
                 setTotalItemsBackup(filtrarDatosBackUp.length);
                 setTotalItems(Object.keys(grupoDatos).length);
-                setCoordinadores(coordinadores)
+                setCoordinadores(coordinadores);
+                setDirectores(directores);
                 setLoading(false);
 
                 const placasVistas = new Set();
-                const duplicados = new Set();
+                const duplicadosData = new Set();
 
                 Object.values(grupoDatos).forEach(item => {
                     if (placasVistas.has(item.placa)) {
-                        duplicados.add(item.placa);
+                        duplicadosData.add(item.placa);
                     } else {
                         placasVistas.add(item.placa);
                     }
                 });
-
-                console.log('Placas duplicadas:', Array.from(duplicados));
+                setDuplicados(duplicadosData);
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
@@ -125,6 +131,10 @@ const ValidarMoviles = ({ role }) => {
         const persona = parseFloat(data.personas);
         const turno = parseFloat(data.turnos);
         const cantidadEsperada = persona * turno;
+
+        if (duplicados.has(data.placa)) {
+            return 'morado';
+        }
         
         if (data.items.length < cantidadEsperada) {
             return 'naranja';
@@ -133,23 +143,20 @@ const ValidarMoviles = ({ role }) => {
         } else if (data.items.length > cantidadEsperada) {
             return 'rojo';
         }
-
-        if (duplicados.has(data.placa)) {
-            return 'azul';
-        }
     };
 
     const datosFiltrados = Object.entries(datos).filter(([placa, data]) => {
         const alertaColor = validarCantidadIntegrantes(data);
         const filtroCoordinador = selectedItemCoordinador === 'Todo' || data.items.some(item => item.coordinador === selectedItemCoordinador);
-        return (filtroColor === 'blanco' || alertaColor === filtroColor) && filtroCoordinador;
+        const filtroDirector = selectedItemDirector === 'Todo' || data.items.some(item => item.director === selectedItemDirector);
+        return (filtroColor === 'blanco' || alertaColor === filtroColor) && filtroCoordinador && filtroDirector;
     });
 
     const sumaValorFiltrada = datosFiltrados.reduce((acc, [placa, data]) => acc + obtenerValorEsperado(data.valorEsperado), 0);
 
     useEffect(() => {
         setTotalItemsBackup(filtrarDatos.length);
-    }, [filtros, selectedItemCoordinador]);
+    }, [filtros, selectedItemCoordinador, selectedItemDirector]);
 
     const clickAplicarFiltros = (e, columna) => {
         const Valor = e.target.value;
@@ -179,7 +186,12 @@ const ValidarMoviles = ({ role }) => {
         return filtroCoordinador;
     });
 
-    const filtrarDatos = datosBackUpFiltrados.filter(item => {
+    const datosBackUpFiltrados2 = datosBackUpFiltrados.filter(item => {
+        const filtroDirector = selectedItemDirector === 'Todo' || item.director === selectedItemDirector;
+        return filtroDirector;
+    });
+
+    const filtrarDatos = datosBackUpFiltrados2.filter(item => {
         for (let key in filtros) {
             if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
                 return false;
@@ -208,6 +220,10 @@ const ValidarMoviles = ({ role }) => {
 
     const handleSelectCoordinador = (item) => {
         setSelectedItemCoordinador(item);
+    };
+
+    const handleSelectDirector = (item) => {
+        setSelectedItemDirector(item);
     };
     
     const resumenMoviles = datosFiltrados.reduce((acc, [placa, data]) => {
@@ -244,25 +260,34 @@ const ValidarMoviles = ({ role }) => {
                                     <h2>Listado de Moviles</h2>
                                 </div>
                                 <div id="Filtros">
-                                    <div className="row">
-                                        <div className="Grupo-Personal-Movil">
-                                            <span className="Titulo">Filtro de Personal en la Movil</span>
-                                            <div className="col-sm-3">
-                                                <button id='Blanco' className='btn btn-light' onClick={() => setFiltroColor('blanco')}>Todo</button>
+                                    <div className="Grupo-Personal-Movil">
+                                        <span className="Titulo">Filtros</span>
+                                        <div className="row">
+                                            <div className="col-sm-4">
+                                                <h6>Personal en la Movil</h6>
+                                                <div className="row">
+                                                    <div className="col-sm-6">
+                                                        <button id='Blanco' className='btn btn-light' onClick={() => setFiltroColor('blanco')}>Todo</button>
+                                                    </div>
+                                                    <div className="col-sm-6">
+                                                        <button id='Naranja' className='btn btn-warning' onClick={() => setFiltroColor('naranja')}>Falta</button>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-sm-6">
+                                                        <button id='Verde' className='btn btn-success' onClick={() => setFiltroColor('verde')}>Correcta</button>
+                                                    </div>
+                                                    <div className="col-sm-6">
+                                                        <button id='Rojo' className='btn btn-danger' onClick={() => setFiltroColor('rojo')}>Excedida</button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="col-sm-3">
-                                                <button id='Naranja' className='btn btn-warning' onClick={() => setFiltroColor('naranja')}>Falta</button>
+                                            <div className="col-sm-4">
+                                                <h6>Placa</h6>
+                                                <button id='Morado' className='btn btn-primary' onClick={() => setFiltroColor('morado')}>Duplicada</button>
                                             </div>
-                                            <div className="col-sm-3">
-                                                <button id='Verde' className='btn btn-success' onClick={() => setFiltroColor('verde')}>Correcta</button>
-                                            </div>
-                                            <div className="col-sm-3">
-                                                <button id='Rojo' className='btn btn-danger' onClick={() => setFiltroColor('rojo')}>Excedida</button>
-                                            </div>
-                                        </div>
-                                        <div className="Grupo-Coordinador">
-                                            <span className="Titulo">Filtro Coordinador</span>
-                                            <div className="col-sm-12">
+                                            <div className="col-sm-4" id='Coordinador'>
+                                                <h6>Coordinador</h6>
                                                 <Dropdown isOpen={dropdownOpenCoordinador} toggle={toggleCoordinador}>
                                                     <DropdownToggle caret className="btn btn-primary">
                                                         {selectedItemCoordinador}
@@ -270,6 +295,17 @@ const ValidarMoviles = ({ role }) => {
                                                     <DropdownMenu>
                                                         {coordinadores.map((option, index) => (
                                                             <DropdownItem key={index} onClick={() => handleSelectCoordinador(option)}>{option}</DropdownItem>
+                                                        ))}
+                                                    </DropdownMenu>
+                                                </Dropdown>
+                                                <h6>Director</h6>
+                                                <Dropdown isOpen={dropdownOpenDirector} toggle={toggleDirector}>
+                                                    <DropdownToggle caret className="btn btn-primary">
+                                                        {selectedItemDirector}
+                                                    </DropdownToggle>
+                                                    <DropdownMenu>
+                                                        {directores.map((option, index) => (
+                                                            <DropdownItem key={index} onClick={() => handleSelectDirector(option)}>{option}</DropdownItem>
                                                         ))}
                                                     </DropdownMenu>
                                                 </Dropdown>

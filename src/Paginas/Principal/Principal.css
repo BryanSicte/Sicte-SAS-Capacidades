@@ -541,17 +541,21 @@
 
 #Principal-ValidarMoviles .carta-container {
     overflow: auto;
-    height: 79vh;
+    height: 71vh;
     width: 100%;
     border-radius: 5px;
+    margin-top: 5px;
 }
 
 #Principal-ValidarMoviles .Carta {
     border: 1px solid #223775;
     border-radius: 8px;
-    padding-left: 12px;
-    padding-right: 12px;
-    margin: 10px 0px 10px 0px;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+#Principal-ValidarMoviles .Carta .row {
+    width: 100%;
 }
 
 #Principal-ValidarMoviles .Carta h1, #Principal-ValidarMoviles .Carta h2, #Principal-ValidarMoviles .Carta h5 {
@@ -567,15 +571,13 @@
 #Principal-ValidarMoviles .Carta #Integrantes {
     text-align: left;
     padding: 20px 10px 20px 20px;
+    width: 40%;
 }
 
 #Principal-ValidarMoviles .Carta #Movil {
     text-align: left;
     padding: 20px 10px 20px 10px;
-}
-
-#Principal-ValidarMoviles .Carta #Movil p {
-    width: 340px;
+    width: 40%;
 }
 
 #Principal-ValidarMoviles .Carta #Placa {
@@ -583,6 +585,7 @@
     justify-content: center;
     align-items: center;
     padding: 20px 20px 20px 10px;
+    width: 20%;
 }
 
 #Principal-ValidarMoviles .Carta #Placa h1 {
@@ -593,7 +596,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 20px 20px 10px;
     background-color: orange;
 }
 
@@ -601,7 +603,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 20px 20px 10px;
     background-color: green;
 }
 
@@ -609,20 +610,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 20px 20px 10px;
     background-color: red;
 }
 
-#Principal-ValidarMoviles #Carta-azul {
+#Principal-ValidarMoviles #Carta-morado {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 20px 20px 10px;
-    background-color: blue;
-}
-
-#Principal-ValidarMoviles #Filtros {
-    padding: 0 10px 0 10px;
+    background-color: rgb(95, 23, 102);
 }
 
 #Principal-ValidarMoviles #Filtros h3 {
@@ -642,16 +637,20 @@
     border-radius: 5px;
     padding: 5px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 75%;
+    width: 100%;
     background-color: #fff;
     position: relative;
-    height: 8vh;
+    height: 17vh;
 }
 
-#Principal-ValidarMoviles .Grupo-Coordinador .Titulo,
+#Principal-ValidarMoviles .Grupo-Personal-Movil .row{
+    width: 100%;
+}
+
 #Principal-ValidarMoviles .Grupo-Personal-Movil .Titulo {
     font-size: 13px;
     font-weight: bold;
@@ -663,28 +662,31 @@
     background-color: white;
 }
 
-#Principal-ValidarMoviles .Grupo-Coordinador {
-    border: 2px solid black;
-    border-radius: 5px;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    width: 25%;
-    background-color: #fff;
-    position: relative;
-}
-
-#Principal-ValidarMoviles #Filtros .Grupo-Coordinador button {
-    width: 190px;
-}
-
 #Principal-ValidarMoviles .button-group #Blanco,
 #Principal-ValidarMoviles .button-group #Naranja,
 #Principal-ValidarMoviles .button-group #Verde,
+#Principal-ValidarMoviles .button-group #Azul,
 #Principal-ValidarMoviles .button-group #Rojo {
     margin: 0px 5px 0px 5px;
+}
+
+#Principal-ValidarMoviles .Grupo-Personal-Movil #Morado {
+    background-color: rgb(95, 23, 102);
+    width: 150px;
+}
+
+#Principal-ValidarMoviles .Grupo-Personal-Movil h6 {
+    font-size: 13px;
+    font-weight: bold;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2px 0px 2px 0;
+}
+
+#Principal-ValidarMoviles .Grupo-Personal-Movil #Coordinador button {
+    width: 190px;
 }
 
 #Principal-ValidarMoviles #BACK-UP h4 {
