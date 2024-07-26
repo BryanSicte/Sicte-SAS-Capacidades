@@ -36,8 +36,7 @@ const Agregar = ({ role }) => {
     const [tipoMovilOptions, setTipoMovilOptions] = useState([]);
     const [coordinadores, setCoordinadores] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [totalitemsInicial, setTotalitemsInicial] = useState(false);
-    const [totalitemsAgregadosInicial, setTotalItemsAgregadosInicial] = useState(false);
+    const [filtrosLimpiados, setFiltrosLimpiados] = useState(false);
 
     const cargarDatosCoordinador = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/Coordinador')
@@ -87,12 +86,7 @@ const Agregar = ({ role }) => {
             .then(response => response.json())
             .then(data => {
                 setDatos(data);
-                if (filtrarDatos.length === 0 && !totalitemsInicial) {
-                    setTotalItems(data.length);
-                    setTotalitemsInicial(true);
-                } else {
-                    setTotalItems(filtrarDatos.length);
-                }
+                setTotalItems(data.length);
                 setLoading(false);
             })
             .catch(error => {
@@ -118,34 +112,10 @@ const Agregar = ({ role }) => {
                 });
                 setDatosCompletosAgregados(data);
                 setDatosAgregados(datosFiltrados);
-                if (filtrarDatosAgregados.length === 0 && !totalitemsAgregadosInicial) {
-                    setTotalItemsAgregados(datosFiltrados.length);
-                    setTotalItemsAgregadosInicial(true);
-                } else {
-                    setTotalItemsAgregados(filtrarDatosAgregados.length);
-                }
+                setTotalItemsAgregados(datosFiltrados.length);
             })
             .catch(error => setError('Error al cargar los datos: ' + error.message));
     };
-
-    const filtrarDatos = datos.filter(item => {
-        for (let key in filtros) {
-            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    });
-
-    const filtrarDatosAgregados = datosAgregados.filter(item => {
-        for (let key in filtrosAgregados) {
-            if (filtrosAgregados[key] && item[key] && !item[key].toLowerCase().includes(filtrosAgregados[key].toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    });
-
 
     useEffect(() => {
         cargarDatosCoordinador();
@@ -157,7 +127,7 @@ const Agregar = ({ role }) => {
         cargarDatosAgregados();
         cargarDatosMovil();
         //BotonLimpiarFiltros();
-    }, [filtrarDatos, filtrarDatosAgregados]);
+    }, []);
 
     const BotonLimpiarFiltros = () => {
         setFiltrosAgregados({});
@@ -184,11 +154,24 @@ const Agregar = ({ role }) => {
         }
     };
 
+    useEffect(() => {
+        setTotalItems(filtrarDatos.length);
+        setTotalItemsAgregados(filtrarDatosAgregados.length);
+    }, [filtros, filtrosAgregados]);
+
     const clickAplicarFiltros = (e, columna) => {
         const Valor = e.target.value;
         setFiltros({ ...filtros, [columna]: Valor });
-        setTotalItems(filtrarDatos.length);
     };
+
+    const filtrarDatos = datos.filter(item => {
+        for (let key in filtros) {
+            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
+                return false;
+            }
+        }
+        return true;
+    });
 
     const ordenarDatos = filtrarDatos.sort((a, b) => {
         if (ordenarCampo) {
@@ -310,99 +293,109 @@ const Agregar = ({ role }) => {
         }
     };
 
-    const botonAplicar = () => {
-
+    const limpiarFiltros = () => {
+        setFiltrosAgregados({});
+        setFiltros({});
         document.querySelectorAll('.tabla-container input[type="text"]').forEach(input => {
             input.value = '';
         });
+        setFiltrosLimpiados(true);
+    };
 
-        if (!selectedItemTipoFacturacion || selectedItemTipoFacturacion === 'Seleccionar opción') {
-            toast.error('Por favor selecciona un Tipo de Facturación', { className: 'toast-error' });
-            return;
-        }
-        if (!selectedItemTipoMovil || selectedItemTipoMovil === 'Seleccionar opción') {
-            toast.error('Por favor selecciona un Tipo de Móvil', { className: 'toast-error' });
-            return;
-        }
-        if (!selectedItemCoordinador || selectedItemCoordinador === 'Seleccionar opción') {
-            toast.error('Por favor selecciona un Coordinador', { className: 'toast-error' });
-            return;
-        }
-        if (!carpeta) {
-            toast.error('Por favor ingresa una Carpeta', { className: 'toast-error' });
-            return;
-        }
-        if (filasSeleccionadas.size === 0) {
-            toast.error('Por favor selecciona al menos una cédula', { className: 'toast-error' });
-            return;
-        }
-
-        const cedulasSeleccionadas = Array.from(filasSeleccionadas).map(cedula => {
-            return ordenarDatos.find(item => item.nit === cedula).nit;
-        });
-
-        const promises = cedulasSeleccionadas.map(cedula => {
-            const data = {
-                id: 1,
-                carpeta: carpeta,
-                placa: placa,
-                tipoFacturacion: selectedItemTipoFacturacion,
-                tipoMovil: selectedItemTipoMovil,
-                cedula: cedula,
-                coordinador: selectedItemCoordinador
-            };
-
-            if (!validarPlaca(data)) {
-                toast.error('Placa no válida, Ejemplo: ABC001 o ABC01D', { className: 'toast-error' });
-                return Promise.reject('Placa no válida');
+    useEffect(() => {
+        if (filtrosLimpiados) {
+            if (!selectedItemTipoFacturacion || selectedItemTipoFacturacion === 'Seleccionar opción') {
+                toast.error('Por favor selecciona un Tipo de Facturación', { className: 'toast-error' });
+                return;
+            }
+            if (!selectedItemTipoMovil || selectedItemTipoMovil === 'Seleccionar opción') {
+                toast.error('Por favor selecciona un Tipo de Móvil', { className: 'toast-error' });
+                return;
+            }
+            if (!selectedItemCoordinador || selectedItemCoordinador === 'Seleccionar opción') {
+                toast.error('Por favor selecciona un Coordinador', { className: 'toast-error' });
+                return;
+            }
+            if (!carpeta) {
+                toast.error('Por favor ingresa una Carpeta', { className: 'toast-error' });
+                return;
+            }
+            if (filasSeleccionadas.size === 0) {
+                toast.error('Por favor selecciona al menos una cédula', { className: 'toast-error' });
+                return;
             }
 
-            if (!validarCapacidadMovil(data)) {
-                toast.error(`La movil con placa ${data.placa} ha excedido su capacidad.`);
-            } else {
-                return fetch('https://sicteferias.from-co.net:8120/capacidad/agregarPersonal', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
+            const cedulasSeleccionadas = Array.from(filasSeleccionadas).map(cedula => {
+                return ordenarDatos.find(item => item.nit === cedula).nit;
+            });
+
+            const promises = cedulasSeleccionadas.map(cedula => {
+                const data = {
+                    id: 1,
+                    carpeta: carpeta,
+                    placa: placa,
+                    tipoFacturacion: selectedItemTipoFacturacion,
+                    tipoMovil: selectedItemTipoMovil,
+                    cedula: cedula,
+                    coordinador: selectedItemCoordinador
+                };
+
+                if (!validarPlaca(data)) {
+                    toast.error('Placa no válida, Ejemplo: ABC001 o ABC01D', { className: 'toast-error' });
+                    return Promise.reject('Placa no válida');
+                }
+
+                if (!validarCapacidadMovil(data)) {
+                    toast.error(`La movil con placa ${data.placa} ha excedido su capacidad.`);
+                } else {
+                    return fetch('https://sicteferias.from-co.net:8120/capacidad/agregarPersonal', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            toast.error('No se cargaron los datos', { className: 'toast-error' });
+                            throw new Error(`Error al agregar los datos: ${response.status}`);
+                        } else {
+                            console.log('Fila enviada correctamente');
+                            toast.success('Datos cargados', { className: 'toast-success' });
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
+                        setError('Error al enviar los datos al backend: ' + error.message);
+                    });
+                }
+            });
+
+            Promise.all(promises)
+                .then(() => {
+                    setDatosAgregados([]);
+                    setDatos([]);
+                    setFilasSeleccionadas(new Set());
+                    setTodasSeleccionadas(false);
+                    BotonLimpiarFiltros();
+                    datosAgregadosBandera = [];
+                    setFiltrosLimpiados(false);
+                    return delay(1000);
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        toast.error('No se cargaron los datos', { className: 'toast-error' });
-                        throw new Error(`Error al agregar los datos: ${response.status}`);
-                    } else {
-                        console.log('Fila enviada correctamente');
-                        toast.success('Datos cargados', { className: 'toast-success' });
-                    }
-                    return response.json();
+                .then(() => {
+                    cargarDatos();
+                    cargarDatosAgregados();
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
-                    setError('Error al enviar los datos al backend: ' + error.message);
+                    setError('Error al aplicar los cambios: ' + error.message);
                 });
-            }
-        });
+        }
+    }, [filtrosLimpiados]);
 
-        Promise.all(promises)
-            .then(() => {
-                setDatosAgregados([]);
-                setDatos([]);
-                setFilasSeleccionadas(new Set());
-                setTodasSeleccionadas(false);
-                BotonLimpiarFiltros();
-                datosAgregadosBandera = [];
-
-                return delay(1000);
-            })
-            .then(() => {
-                cargarDatos();
-                cargarDatosAgregados();
-            })
-            .catch(error => {
-                setError('Error al aplicar los cambios: ' + error.message);
-            });
+    const botonAplicar = () => {
+        limpiarFiltros();
     };
 
     const clickEncabezadosAgregados = (columna) => {
@@ -419,8 +412,16 @@ const Agregar = ({ role }) => {
     const clickAplicarFiltrosAgregados = (e, columna) => {
         const Valor = e.target.value;
         setFiltrosAgregados({ ...filtrosAgregados, [columna]: Valor });
-        setTotalItemsAgregados(filtrarDatosAgregados.length);
     };
+
+    const filtrarDatosAgregados = datosAgregados.filter(item => {
+        for (let key in filtrosAgregados) {
+            if (filtrosAgregados[key] && item[key] && !item[key].toLowerCase().includes(filtrosAgregados[key].toLowerCase())) {
+                return false;
+            }
+        }
+        return true;
+    });
 
     const ordenarDatosAgregados = filtrarDatosAgregados.sort((c, d) => {
         if (ordenarCampoAgregados) {

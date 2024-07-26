@@ -21,7 +21,7 @@ const ValidarMoviles = ({ role }) => {
     const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Todo');
     const toggleCoordinador = () => setDropdownOpenCoordinador(prevState => !prevState);
     const [loading, setLoading] = useState(true);
-    const [totalitemsInicial, setTotalitemsInicial] = useState(false);
+    const duplicados = new Set();
 
     const obtenerValorEsperado = (valor) => {
         const numero = parseFloat(valor);
@@ -51,21 +51,29 @@ const ValidarMoviles = ({ role }) => {
                 const filtrarDatosSinBackUp = filtrarDatos.filter(item => item.tipoDeMovil !== 'BACKUP');
 
                 const grupoDatos = filtrarDatosSinBackUp.reduce((acc, item) => {
-                    if (!acc[item.placa]) {
-                        acc[item.placa] = {
-                            tipoDeMovil: item.tipoDeMovil,
+                    const key = `${item.placa}${item.tipoDeMovil}`;
+
+                    if (!acc[key]) {
+                        acc[key] = {
+                            placa: item.placa,
                             valorEsperado: item.valorEsperado,
-                            turnos: item.personas,
-                            personas: item.turnos,
+                            tipoDeMovil: item.tipoDeMovil,
+                            turnos: item.turnos,
+                            personas: item.personas,
                             items: []
                         };
                     }
 
                     if (item.valorEsperado && !isNaN(item.valorEsperado)) {
-                        acc[item.placa].valorEsperado = item.valorEsperado;
+                        acc[key].valorEsperado = item.valorEsperado;
                     }
 
-                    acc[item.placa].items.push({ nombreCompleto: item.nombreCompleto, cedula: item.cedula, coordinador: item.coordinador });
+                    acc[key].items.push({
+                        nombreCompleto: item.nombreCompleto,
+                        cedula: item.cedula,
+                        coordinador: item.coordinador
+                    });
+
                     return acc;
                 }, {});
 
@@ -73,18 +81,26 @@ const ValidarMoviles = ({ role }) => {
 
                 const coordinadores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.coordinador))];
 
-                if (datosBackUpFiltrados.length === 0 && !totalitemsInicial) {
-                    setTotalItemsBackup(filtrarDatosBackUp.length);
-                    setTotalitemsInicial(true);
-                } else {
-                    setTotalItemsBackup(datosBackUpFiltrados.length);
-                }
                 setSumaValorEsperado(suma);
-                setDatos(grupoDatos);
+                setDatos(grupoDatos);   
                 setDatosBackUp(filtrarDatosBackUp);
+                setTotalItemsBackup(filtrarDatosBackUp.length);
                 setTotalItems(Object.keys(grupoDatos).length);
                 setCoordinadores(coordinadores)
                 setLoading(false);
+
+                const placasVistas = new Set();
+                const duplicados = new Set();
+
+                Object.values(grupoDatos).forEach(item => {
+                    if (placasVistas.has(item.placa)) {
+                        duplicados.add(item.placa);
+                    } else {
+                        placasVistas.add(item.placa);
+                    }
+                });
+
+                console.log('Placas duplicadas:', Array.from(duplicados));
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
@@ -95,7 +111,7 @@ const ValidarMoviles = ({ role }) => {
     useEffect(() => {
         setDatos([]);
         cargarDatos();
-    }, [selectedItemCoordinador]);
+    }, []);
 
     const formatearValorEsperado = (valorEsperado) => {
         const formatter = new Intl.NumberFormat('es-CO', {
@@ -109,12 +125,17 @@ const ValidarMoviles = ({ role }) => {
         const persona = parseFloat(data.personas);
         const turno = parseFloat(data.turnos);
         const cantidadEsperada = persona * turno;
+        
         if (data.items.length < cantidadEsperada) {
             return 'naranja';
         } else if (data.items.length === cantidadEsperada) {
             return 'verde';
-        } else {
+        } else if (data.items.length > cantidadEsperada) {
             return 'rojo';
+        }
+
+        if (duplicados.has(data.placa)) {
+            return 'azul';
         }
     };
 
@@ -125,6 +146,10 @@ const ValidarMoviles = ({ role }) => {
     });
 
     const sumaValorFiltrada = datosFiltrados.reduce((acc, [placa, data]) => acc + obtenerValorEsperado(data.valorEsperado), 0);
+
+    useEffect(() => {
+        setTotalItemsBackup(filtrarDatos.length);
+    }, [filtros, selectedItemCoordinador]);
 
     const clickAplicarFiltros = (e, columna) => {
         const Valor = e.target.value;
@@ -254,7 +279,7 @@ const ValidarMoviles = ({ role }) => {
                                 </div>
                                 <div className="carta-container">
                                     {datosFiltrados
-                                        .sort(([placaA], [placaB]) => placaA.localeCompare(placaB))
+                                        .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
                                         .map(([placa, data], index) => (
                                             <div key={index} className={`Carta`} id={`Carta-${validarCantidadIntegrantes(data)}`}>
                                                 <div className="row">
@@ -279,7 +304,7 @@ const ValidarMoviles = ({ role }) => {
                                                         </div>
                                                     </div>
                                                     <div className="col-sm-2" id='Placa'>
-                                                        <h1>{placa}</h1>
+                                                        <h1>{data.placa}</h1>
                                                     </div>
                                                 </div>
                                             </div>

@@ -79,7 +79,7 @@ const Login = () => {
                 )}
 
                 <div id='Version'>
-                    <p>v1.13</p>
+                    <p>v1.14</p>
                 </div>
             </div>
         </div>

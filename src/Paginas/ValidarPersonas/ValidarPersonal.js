@@ -31,7 +31,6 @@ const ValidarPersonal = ({
     const [filasSeleccionadas, setFilasSeleccionadas] = useState(new Set());
     const [todasSeleccionadas, setTodasSeleccionadas] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [totalitemsInicial, setTotalitemsInicial] = useState(false);
 
     const cargarDatos = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/ContinuaEnPlanta', {
@@ -67,12 +66,7 @@ const ValidarPersonal = ({
                 const datosFiltrados3 = datosFiltrados2.filter(item => coordinadores2.has(item.coordinador));
                 const datosFiltrados4 = datosFiltrados3.filter(item => validarPlaca(item));
                 setDatos(datosFiltrados4);
-                if (filtrarDatos.length === 0 && !totalitemsInicial) {
-                    setTotalItems(datosFiltrados4.length);
-                    setTotalitemsInicial(true);
-                } else {
-                    setTotalItems(filtrarDatos.length);
-                }
+                setTotalItems(datosFiltrados4.length);
                 setLoading(false);
             })
             .catch(error => {
@@ -81,15 +75,6 @@ const ValidarPersonal = ({
             });
     };
 
-    const filtrarDatos = datos.filter(item => {
-        for (let key in filtros) {
-            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    });
-
     useEffect(() => {
         //BotonLimpiarFiltros();
         //setDatos([]);
@@ -97,7 +82,7 @@ const ValidarPersonal = ({
         cargarDatos();
         cargarDatosAgregados();
         
-    }, [filtrarDatos]);
+    }, []);
 
     const BotonLimpiarFiltros = () => {
         setFiltros({});
@@ -113,12 +98,6 @@ const ValidarPersonal = ({
             setOrdenarCampo(columna);
             setOrdenarOrden('asc');
         }
-    };
-
-    const clickAplicarFiltros = (e, columna) => {
-        const Valor = e.target.value;
-        setFiltros({ ...filtros, [columna]: Valor });
-        setTotalItems(filtrarDatos.length);
     };
 
     const validarPlaca = (item) => {
@@ -155,7 +134,25 @@ const ValidarPersonal = ({
             }
         }
         return false;
-    };    
+    };  
+
+    useEffect(() => {
+        setTotalItems(filtrarDatos.length);
+    }, [filtros]);
+
+    const clickAplicarFiltros = (e, columna) => {
+        const Valor = e.target.value;
+        setFiltros({ ...filtros, [columna]: Valor });
+    };
+
+    const filtrarDatos = datos.filter(item => {
+        for (let key in filtros) {
+            if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
+                return false;
+            }
+        }
+        return true;
+    });
 
     const ordenarDatos = filtrarDatos.sort((a, b) => {
         if (ordenarCampo) {
