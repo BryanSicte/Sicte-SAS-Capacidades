@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { ThreeDots } from 'react-loader-spinner';
 
-const Retirados = ({ role }) => {
+const Reportes = ({ role }) => {
     const [datos, setDatos] = useState([]);
     const [filtros, setFiltros] = useState({});
     const [error, setError] = useState('');
@@ -14,15 +14,21 @@ const Retirados = ({ role }) => {
     const [ordenarOrden, setOrdenarOrden] = useState('asc');
     const [totalItems, setTotalItems] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [totalitemsInicial, setTotalitemsInicial] = useState(false);
+    const [mesAnioSeleccionado, setMesAnioSeleccionado] = useState('');
 
     const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/NoContinuaEnPlanta')
+        fetch('https://sicteferias.from-co.net:8120/capacidad/TodoBackup')
             .then(response => response.json())
             .then(data => {
                 setDatos(data);
-                setTotalItems(data.length);
                 setLoading(false);
+
+                if (data.length > 0) {
+                    const fechas = data.map(item => new Date(item.fechaReporte));
+                    const ultimaFecha = new Date(Math.max(...fechas));
+                    const mesAnio = `${ultimaFecha.getMonth() + 1}-${ultimaFecha.getFullYear()}`;
+                    setMesAnioSeleccionado(mesAnio);
+                }
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
@@ -56,16 +62,35 @@ const Retirados = ({ role }) => {
 
     useEffect(() => {
         setTotalItems(filtrarDatos.length);
-    }, [filtros]);
+    }, [filtros, mesAnioSeleccionado]);
 
     const clickAplicarFiltros = (e, columna) => {
         const Valor = e.target.value;
         setFiltros({ ...filtros, [columna]: Valor });
     };
 
+    const getMesesAnios = () => {
+        const uniqueDates = new Set();
+        datos.forEach(item => {
+            if (item.fechaReporte) {
+                const date = new Date(item.fechaReporte);
+                const mesAnio = `${date.getMonth() + 1}-${date.getFullYear()}`;
+                uniqueDates.add(mesAnio);
+            }
+        });
+        return Array.from(uniqueDates);
+    };
+
     const filtrarDatos = datos.filter(item => {
         for (let key in filtros) {
             if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
+                return false;
+            }
+        }
+        if (mesAnioSeleccionado) {
+            const [mes, anio] = mesAnioSeleccionado.split('-');
+            const fecha = new Date(item.fechaReporte);
+            if (fecha.getMonth() + 1 !== parseInt(mes) || fecha.getFullYear() !== parseInt(anio)) {
                 return false;
             }
         }
@@ -103,7 +128,9 @@ const Retirados = ({ role }) => {
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Datos');
         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        saveAs(new Blob([wbout], { type: 'application/octet-stream' }), 'Retirados.xlsx');
+        const [mes, anio] = mesAnioSeleccionado.split('-');
+        let nombreArchivo = `Reporte ${mes}-${anio}.xlsx`;
+        saveAs(new Blob([wbout], { type: 'application/octet-stream' }), nombreArchivo);
     };
     
     const formatearValorEsperado = (valorEsperado) => {
@@ -131,6 +158,15 @@ const Retirados = ({ role }) => {
                 <div id='Principal-Visualizar'>
                     <div id='Botones-Encabezado'>
                         <button id='Boton-Borrar-Filtros' className="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
+                        <div className="Fecha-Reporte-Select">
+                            <select id='Fecha-Reporte-Boton' value={mesAnioSeleccionado} onChange={(e) => setMesAnioSeleccionado(e.target.value)} className="select-box">
+                                {getMesesAnios().map((mesAnio, index) => (
+                                    <option key={index} value={mesAnio}>
+                                        {mesAnio}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <button id='Boton-Exportar-Excel' className="btn btn-secondary" onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
                     </div>
                     <div className="tabla-container">
@@ -181,4 +217,4 @@ const Retirados = ({ role }) => {
     );
 };
 
-export default Retirados;
+export default Reportes;

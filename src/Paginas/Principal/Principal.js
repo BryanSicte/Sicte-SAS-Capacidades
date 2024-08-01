@@ -5,6 +5,8 @@ import Agregar from '../Agregar/Agregar';
 import ValidarPersonal from '../ValidarPersonas/ValidarPersonal';
 import Retirados from '../Retirados/Retirados';
 import ValidarMoviles from '../ValidarMoviles/ValidarMoviles';
+import Reportes from '../Reportes/Reportes';
+import ImportarDatos from '../Importar Datos/ImportarDatos';
 
 const Principal = () => {
     const location = useLocation();
@@ -78,10 +80,14 @@ const Principal = () => {
                 return <ValidarPersonal {...paginaProps} />;
             case 'Agregar':
                 return <Agregar {...paginaProps} />;
+            case 'ImportarDatos':
+                return <ImportarDatos {...paginaProps} />;
             case 'Retirados':
                 return <Retirados {...paginaProps} />;
             case 'ValidarMoviles':
                 return <ValidarMoviles {...paginaProps} />;
+            case 'Reportes':
+                return <Reportes {...paginaProps} />;
             default:
                 return null;
         }
@@ -104,11 +110,17 @@ const Principal = () => {
                         <li onClick={() => cambiarPagina('Agregar')} className={paginaActiva === 'Agregar' ? 'active' : ''}>
                             <i className="fas fa-user-plus"></i>Agregar
                         </li>
+                        <li onClick={() => cambiarPagina('ImportarDatos')} className={paginaActiva === 'ImportarDatos' ? 'active' : ''}>
+                            <i className="fas fa-upload"></i>Importar Datos
+                        </li>
                         <li onClick={() => cambiarPagina('Retirados')} className={paginaActiva === 'Retirados' ? 'active' : ''}>
                             <i className="fas fa-user-times"></i>Retirados
                         </li>
                         <li onClick={() => cambiarPagina('ValidarMoviles')} className={paginaActiva === 'ValidarMoviles' ? 'active' : ''}>
                             <i className="fas fa-car"></i>Validar Moviles
+                        </li>
+                        <li onClick={() => cambiarPagina('Reportes')} className={paginaActiva === 'Reportes' ? 'active' : ''}>
+                            <i className="fas fa-file-alt"></i>Reportes
                         </li>
                     </ul>
                 </div>

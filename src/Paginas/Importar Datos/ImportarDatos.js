@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import { ThreeDots } from 'react-loader-spinner';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
-const Agregar = ({ role }) => {
+const ImportarDatos = ({ role }) => {
     let datosAgregadosBandera = [];
     const [datos, setDatos] = useState([]);
     const [filtros, setFiltros] = useState({});
@@ -13,6 +15,7 @@ const Agregar = ({ role }) => {
     const [datosMovil, setDatosMovil] = useState([]);
     const [tipoMovilAdmon, setTipoMovilAdmon] = useState([]);
     const [tipoMovilEvento, setTipoMovilEvento] = useState([]);
+    const [tipoFacturacion, setTipoFacturacion] = useState([]);
     const [filtrosAgregados, setFiltrosAgregados] = useState({});
     const [ordenarCampo, setOrdenarCampo] = useState('nombre');
     const [ordenarCampoAgregados, setOrdenarCampoAgregados] = useState('nombreCompleto');
@@ -21,21 +24,19 @@ const Agregar = ({ role }) => {
     const [totalItems, setTotalItems] = useState(0);
     const [totalItemsAgregados, setTotalItemsAgregados] = useState(0);
     const [filasSeleccionadas, setFilasSeleccionadas] = useState(new Set());
-    const [todasSeleccionadas, setTodasSeleccionadas] = useState(false);
     const [carpeta, setCarpeta] = useState("");
     const [placa, setPlaca] = useState("");
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-    const [isPlacaValida, setIsPlacaValida] = useState(true);
-    const [dropdownOpenTipoFacturacion, setDropdownOpenTipoFacturacion] = useState(false);
     const [selectedItemTipoFacturacion, setSelectedItemTipoFacturacion] = useState('Seleccionar opción');
-    const [dropdownOpenTipoMovil, setDropdownOpenTipoMovil] = useState(false);
     const [selectedItemTipoMovil, setSelectedItemTipoMovil] = useState('Seleccionar opción');
-    const [dropdownOpenCoordinador, setDropdownOpenCoordinador] = useState(false);
     const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Seleccionar opción');
-    const [tipoMovilOptions, setTipoMovilOptions] = useState([]);
     const [coordinadores, setCoordinadores] = useState([]);
+    const [cedulas, setCedulas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filtrosLimpiados, setFiltrosLimpiados] = useState(false);
+    const archivoEntradaRef = useRef(null);
+    const [archivoInfo, setArchivoInfo] = useState({ name: '', lastModified: '' });
+    const [excelData, setExcelData] = useState([]);
 
     const cargarDatosCoordinador = () => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/Coordinador')
@@ -57,6 +58,13 @@ const Agregar = ({ role }) => {
         fetch('https://sicteferias.from-co.net:8120/capacidad/Movil')
             .then(response => response.json())
             .then(data => {
+
+                const facturacion = data
+                    .sort((a, b) => a.tipoFacturacion.localeCompare(b.tipoFacturacion))
+                    .map(item => item.tipoFacturacion);
+
+                const facturacionUnica = [...new Set(facturacion)];
+
                 const admon = data
                     .filter(item => item.tipoFacturacion === 'ADMON')
                     .sort((a, b) => a.tipoMovil.localeCompare(b.tipoMovil))
@@ -68,6 +76,7 @@ const Agregar = ({ role }) => {
                     .map(item => item.tipoMovil);
 
                 setDatosMovil(data);
+                setTipoFacturacion(facturacionUnica);
                 setTipoMovilAdmon(admon);
                 setTipoMovilEvento(evento);
             })
@@ -84,6 +93,12 @@ const Agregar = ({ role }) => {
         })
             .then(response => response.json())
             .then(data => {
+                const nit = data
+                    .sort((a, b) => a.nit.localeCompare(b.nit))
+                    .map(item => item.nit);
+
+                const nitUnica = [...new Set(nit)];
+                setCedulas(nitUnica);
                 setDatos(data);
                 setTotalItems(data.length);
                 setLoading(false);
@@ -137,7 +152,6 @@ const Agregar = ({ role }) => {
         setSelectedItemTipoFacturacion('Seleccionar opción');
         setSelectedItemTipoMovil('Seleccionar opción');
         setSelectedItemCoordinador('Seleccionar opción');
-        setTipoMovilOptions([]);
         setCarpeta("");
         setPlaca("");
     };
@@ -197,60 +211,14 @@ const Agregar = ({ role }) => {
         return 'fas fa-sort';
     };
 
-    const clickFila = (nit) => {
-        const nuevasFilasSeleccionadas = new Set(filasSeleccionadas);
-        if (nuevasFilasSeleccionadas.has(nit)) {
-            nuevasFilasSeleccionadas.delete(nit);
-        } else {
-            nuevasFilasSeleccionadas.add(nit);
-        }
-        setFilasSeleccionadas(nuevasFilasSeleccionadas);
-
-        setTodasSeleccionadas(nuevasFilasSeleccionadas.size === ordenarDatos.length);
-    };
-
-    const clickSeleccionarTodas = () => {
-        if (todasSeleccionadas) {
-            setFilasSeleccionadas(new Set());
-            setTodasSeleccionadas(false);
-        } else {
-            const todas = new Set();
-            ordenarDatos.forEach(item => todas.add(item.nit));
-            setFilasSeleccionadas(todas);
-            setTodasSeleccionadas(true);
-        }
-    };
-
-    const toggleTipoFacturacion = () => setDropdownOpenTipoFacturacion(prevState => !prevState);
-    const toggleTipoMovil = () => setDropdownOpenTipoMovil(prevState => !prevState);
-    const toggleCoordinador = () => setDropdownOpenCoordinador(prevState => !prevState);
-
-    const handleSelectTipoFacturacion = (item) => {
-        setSelectedItemTipoFacturacion(item);
-        if (item === 'ADMON') {
-            setTipoMovilOptions(tipoMovilAdmon);
-        } else if (item === 'EVENTO') {
-            setTipoMovilOptions(tipoMovilEvento);
-        }
-        setSelectedItemTipoMovil('Seleccionar opción');
-    };
-
-    const handleSelectTipoMovil = (item) => {
-        setSelectedItemTipoMovil(item);
-    };
-
-    const handleSelectCoordinador = (item) => {
-        setSelectedItemCoordinador(item);
-    };
-
     const validarCapacidadMovil = (data) => {
-        if (selectedItemTipoFacturacion === 'EVENTO' && selectedItemTipoMovil !== 'BACKUP') {
+        if (data.tipoFacturacion === 'EVENTO' && data.tipoMovil !== 'BACKUP') {
             const datos = {
                 placa: data.placa,
-                tipoFacturacion: selectedItemTipoFacturacion,
-                tipoDeMovil: selectedItemTipoMovil,
+                tipoFacturacion: data.tipoFacturacion,
+                tipoDeMovil: data.tipoMovil,
                 cedula: data.cedula,
-                coordinador: selectedItemCoordinador
+                coordinador: data.coordinador
             };
 
             const movilesExistente = datosCompletosAgregados.filter(movil => movil.placa === data.placa);
@@ -303,49 +271,73 @@ const Agregar = ({ role }) => {
 
     useEffect(() => {
         if (filtrosLimpiados) {
-            if (!selectedItemTipoFacturacion || selectedItemTipoFacturacion === 'Seleccionar opción') {
-                toast.error('Por favor selecciona un Tipo de Facturación', { className: 'toast-error' });
-                return;
-            }
-            if (!selectedItemTipoMovil || selectedItemTipoMovil === 'Seleccionar opción') {
-                toast.error('Por favor selecciona un Tipo de Móvil', { className: 'toast-error' });
-                return;
-            }
-            if (!selectedItemCoordinador || selectedItemCoordinador === 'Seleccionar opción') {
-                toast.error('Por favor selecciona un Coordinador', { className: 'toast-error' });
-                return;
-            }
-            if (!carpeta) {
-                toast.error('Por favor ingresa una Carpeta', { className: 'toast-error' });
-                return;
-            }
-            if (filasSeleccionadas.size === 0) {
-                toast.error('Por favor selecciona al menos una cédula', { className: 'toast-error' });
-                return;
+            let cedulasSeleccionadas = [];
+
+            if (!excelData || excelData.length === 0) {
+                toast.error(`Datos no importados`);
             }
 
-            const cedulasSeleccionadas = Array.from(filasSeleccionadas).map(cedula => {
-                return ordenarDatos.find(item => item.nit === cedula).nit;
+            excelData.forEach(row => {
+                const cedulaExcel = row['Cedula'];
+                const tipoFacturacionExcel = row['Tipo Facturacion'];
+                const tipoMovilExcel = row['Tipo Movil'];
+                const coordinadorExcel = row['Coordinador'];
+                const carpetaExcel = row['Carpeta'];
+                const placaExcel = row['Placa'];
+
+                cedulasSeleccionadas.push({
+                    cedula: cedulaExcel,
+                    tipoFacturacion: tipoFacturacionExcel,
+                    tipoMovil: tipoMovilExcel,
+                    coordinador: coordinadorExcel,
+                    carpeta: carpetaExcel,
+                    placa: placaExcel
+                });
             });
 
-            const promises = cedulasSeleccionadas.map(cedula => {
+            const promises = cedulasSeleccionadas.map(item => {
                 const data = {
                     id: 1,
-                    carpeta: carpeta,
-                    placa: placa,
-                    tipoFacturacion: selectedItemTipoFacturacion,
-                    tipoMovil: selectedItemTipoMovil,
-                    cedula: cedula,
-                    coordinador: selectedItemCoordinador
+                    carpeta: item.carpeta,
+                    placa: item.placa,
+                    tipoFacturacion: item.tipoFacturacion,
+                    tipoMovil: item.tipoMovil,
+                    cedula: item.cedula,
+                    coordinador: item.coordinador
                 };
 
+                if (cedulas.includes(item.cedula)) {
+                } else {
+                    toast.error(`Cedula '${item.cedula}' no valido: `, { className: 'toast-error' });
+                    return Promise.reject('Cedula no valido');
+                }
+
+                if (tipoFacturacion.includes(item.tipoFacturacion)) {
+                    if (item.tipoFacturacion === "ADMON" && tipoMovilAdmon.includes(item.tipoMovil)) {
+                    } else if (item.tipoFacturacion === "EVENTO" && tipoMovilEvento.includes(item.tipoMovil)) {
+                    } else {
+                        toast.error(`Tipo Movil '${item.tipoMovil}' no valido: `, { className: 'toast-error' });
+                        return Promise.reject('Tipo Movil no valido');
+                    }
+                } else {
+                    toast.error(`Tipo Facturacion '${item.tipoFacturacion}' no valido: `, { className: 'toast-error' });
+                    return Promise.reject('Tipo Facturacion no valido');
+                }
+    
+                if (coordinadores.includes(item.coordinador)) {
+                } else {
+                    toast.error(`Coordinador '${item.tipoMovil}' no valido: `, { className: 'toast-error' });
+                    return Promise.reject('Coordinador no valido');
+                }
+
                 if (!validarPlaca(data)) {
-                    toast.error('Placa no válida, Ejemplo: ABC001 o ABC01D', { className: 'toast-error' });
+                    toast.error('Placa no válida, Ejemplo - ABC001 o ABC01D: ', { className: 'toast-error' });
                     return Promise.reject('Placa no válida');
                 }
 
                 if (!validarCapacidadMovil(data)) {
                     toast.error(`La movil con placa ${data.placa} ha excedido su capacidad.`);
+                    return Promise.reject('Placa Capacidad Maxima');
                 } else {
                     return fetch('https://sicteferias.from-co.net:8120/capacidad/agregarPersonal', {
                         method: 'POST',
@@ -377,7 +369,6 @@ const Agregar = ({ role }) => {
                     setDatosAgregados([]);
                     setDatos([]);
                     setFilasSeleccionadas(new Set());
-                    setTodasSeleccionadas(false);
                     BotonLimpiarFiltros();
                     datosAgregadosBandera = [];
                     setFiltrosLimpiados(false);
@@ -393,7 +384,7 @@ const Agregar = ({ role }) => {
         }
     }, [filtrosLimpiados]);
 
-    const botonAplicar = () => {
+    const ClickCargar = () => {
         limpiarFiltros();
     };
 
@@ -473,7 +464,9 @@ const Agregar = ({ role }) => {
                 }
             }
         } else if (item.tipoFacturacion === 'ADMON' || (item.tipoFacturacion === 'EVENTO' && item.tipoMovil === 'BACKUP')) {
-            if (placa.length === 6) {
+            if (placa === null || placa === "" || placa === undefined ) {
+                return true;
+            } else if (placa.length === 6) {
                 const primerosTres = placa.substring(0, 3);
                 const cuartoYQuinto = placa.substring(3, 5);
                 const sexto = placa.substring(5, 6);
@@ -484,11 +477,40 @@ const Agregar = ({ role }) => {
                 if (regexLetras.test(primerosTres) && regexNumeros.test(cuartoYQuinto) && (regexLetras.test(sexto) || regexNumeros.test(sexto))) {
                     return true;
                 }
-            } else if (placa === "null" || placa === "") {
-                return true;
             }
         }
         return false;
+    };
+
+    const exportarPlantaPendientes = () => {
+        const ws = XLSX.utils.json_to_sheet(ordenarDatos);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Datos');
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        saveAs(new Blob([wbout], { type: 'application/octet-stream' }), 'Planta Pendientes.xlsx');
+    };
+
+    const ClickImportar = () => {
+        archivoEntradaRef.current.click();
+    };
+
+    const CambioArchivoCargado = (event) => {
+        const file = event.target.files[0];
+        setArchivoInfo({
+            name: file.name,
+            lastModified: new Date(file.lastModified).toLocaleDateString()
+        });
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(sheet);
+            setExcelData(jsonData);
+        };
+        reader.readAsArrayBuffer(file);
     };
 
     return (
@@ -506,62 +528,32 @@ const Agregar = ({ role }) => {
             ) : (
                 <div id="Principal-Container">
                     <div id='Principal-Agregar'>
-                        <div id="Principal-Agregar-Botones">
-                            <div>
-                                <label htmlFor="uname">Tipo Facturación:</label>
-                                <Dropdown isOpen={dropdownOpenTipoFacturacion} toggle={toggleTipoFacturacion}>
-                                    <DropdownToggle caret className="btn btn-primary">
-                                        {selectedItemTipoFacturacion}
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                        <DropdownItem onClick={() => handleSelectTipoFacturacion('ADMON')}>ADMON</DropdownItem>
-                                        <DropdownItem onClick={() => handleSelectTipoFacturacion('EVENTO')}>EVENTO</DropdownItem>
-                                    </DropdownMenu>
-                                </Dropdown>
+                        <div id="Principal-Agregar-Botones-Importar">
+                            {/* Original: https://drive.google.com/file/d/FILE_ID/view?usp=sharing */}
+                            {/* Para Descargar: https://drive.google.com/uc?export=download&id=FILE_ID */}
+                            <div id='Botones-Descargar'>
+                                <a href={'https://docs.google.com/uc?export=download&id=1UQYv7YV86f6P7sDIMpn8RunhnbXhxMjT'}>
+                                    <button id='Boton-Descargar' className="btn btn-secondary">Descargar Archivo Plano</button>
+                                </a>
+                                <button id='Boton-Descargar' className="btn btn-secondary" onClick={exportarPlantaPendientes}>Descargar Planta de Pendientes</button>
                             </div>
                             <div>
-                                <label htmlFor="uname">Tipo Movil:</label>
-                                <Dropdown isOpen={dropdownOpenTipoMovil} toggle={toggleTipoMovil}>
-                                    <DropdownToggle caret className="btn btn-primary">
-                                        {selectedItemTipoMovil}
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                        {tipoMovilOptions.map((option, index) => (
-                                            <DropdownItem key={index} onClick={() => handleSelectTipoMovil(option)}>{option}</DropdownItem>
-                                        ))}
-                                    </DropdownMenu>
-                                </Dropdown>
+                                <button id='Boton-Importar' className="btn btn-secondary" onClick={ClickImportar}>Importar</button>
+                                <input
+                                    type="file"
+                                    ref={archivoEntradaRef}
+                                    style={{ display: 'none' }}
+                                    onChange={CambioArchivoCargado}
+                                />
+                            </div>
+                            <div id='Archivo-Cargado'>
+                                <h6>Datos Cargados:</h6>
+                                <p>
+                                    {archivoInfo.name && `${archivoInfo.name}`}
+                                </p>
                             </div>
                             <div>
-                                <label htmlFor="uname">Coordinador:</label>
-                                <Dropdown isOpen={dropdownOpenCoordinador} toggle={toggleCoordinador}>
-                                    <DropdownToggle caret className="btn btn-primary">
-                                        {selectedItemCoordinador}
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                        {coordinadores.map((option, index) => (
-                                            <DropdownItem key={index} onClick={() => handleSelectCoordinador(option)}>{option}</DropdownItem>
-                                        ))}
-                                    </DropdownMenu>
-                                </Dropdown>
-                            </div>
-
-                            <div id="Principal-Agregar-Botones-Red" className="form-group">
-                                <label htmlFor="carpeta" className="form-label">Carpeta:</label>
-                                <input type="text" className="form-control" id="carpeta" placeholder="Ingresa la Carpeta" value={carpeta} onChange={(e) => setCarpeta(e.target.value)} required />
-                                <div className="invalid-feedback">Campo Obligatorio</div>
-                            </div>
-
-                            <div id="Principal-Agregar-Botones-Red" className="form-group">
-                                <label htmlFor="placa" className="form-label">Placa:</label>
-                                <input type="text" className="form-control" id="placa" placeholder="Ingresa la Placa" value={placa} onChange={(e) => setPlaca(e.target.value)} maxLength={6} required />
-                                {!isPlacaValida && <p style={{ color: 'red' }}>Placa no válida</p>}
-                                <div className="invalid-feedback">Campo Obligatorio</div>
-                            </div>
-
-                            <div id='Botones-Accion'>
-                                <button id='Boton-Limpiar' className="btn btn-secondary" onClick={BotonLimpiarFiltros}>Limpiar</button>
-                                <button id='Boton-Aplicar' className="btn btn-secondary" onClick={botonAplicar}>Aplicar</button>
+                                <button id='Boton-Cargar' className="btn btn-primary" onClick={ClickCargar}>Cargar Datos</button>
                             </div>
                         </div>
 
@@ -573,12 +565,6 @@ const Agregar = ({ role }) => {
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>
-                                                <div>
-                                                    <span>Seleccionar</span>
-                                                    <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
-                                                </div>
-                                            </th>
                                             {['nit', 'nombre', 'cargo', 'perfil', 'director'].map(columna => (
                                                 <th key={columna}>
                                                     <div>
@@ -596,10 +582,7 @@ const Agregar = ({ role }) => {
                                     </thead>
                                     <tbody>
                                         {ordenarDatos.map((item) => (
-                                            <tr key={item.nit} className={filasSeleccionadas.has(item.nit) ? 'fila-seleccionada' : ''}>
-                                                <td>
-                                                    <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.nit)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.nit)} />
-                                                </td>
+                                            <tr key={item.nit}>
                                                 <td>{item.nit}</td>
                                                 <td>{item.nombre}</td>
                                                 <td>{item.cargo}</td>
@@ -673,4 +656,4 @@ const Agregar = ({ role }) => {
     );
 };
 
-export default Agregar;
+export default ImportarDatos;

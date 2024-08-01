@@ -134,7 +134,7 @@
 #Principal-Visualizar #Botones-Encabezado #Boton-Borrar-Filtros {
     background-color: rgb(1, 158, 1);
     color: #fff;
-    margin: 0px 10px 5px 0px;
+    margin: 0px 0px 5px 0px;
 }
 
 #Principal-Visualizar #Botones-Encabezado #Boton-Borrar-Filtros:hover {
@@ -159,11 +159,39 @@
 #Principal-Visualizar #Botones-Encabezado #Boton-Exportar-Excel {
     background-color: rgb(1, 158, 1);
     color: #fff;
-    margin: 0px 10px 5px 0px;
+    margin: 0px 0px 5px 0px;
 }
 
 #Principal-Visualizar #Botones-Encabezado #Boton-Exportar-Excel:hover {
     background-color: #e0792a; /* Color de fondo al pasar el cursor */
+}
+
+#Principal-Visualizar #Botones-Encabezado .Fecha-Reporte-Select {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center; /* Centra el contenido del contenedor */
+    height: 100%;
+    border: 1px;
+}
+
+#Principal-Visualizar #Botones-Encabezado #Fecha-Reporte-Boton {
+    width: 15vh;
+    text-align: center;
+    background-color: rgb(1, 158, 1);
+    color: white;
+    border-radius: 5px;
+    height: 90%;
+    margin: 0px 0px 5px 0px;
+}
+
+#Principal-Visualizar #Botones-Encabezado #Fecha-Reporte-Boton option {
+    background-color: rgb(22, 112, 22);
+}
+
+#Principal-Visualizar #Botones-Encabezado #Fecha-Reporte-Boton option:hover {
+    background-color: #e0792a;
 }
 
 /* Contenedor para tablas */
@@ -176,6 +204,7 @@
 }
 
 /* Estilos para las barras de desplazamiento */
+#Principal-Visualizar #Botones-Encabezado #Fecha-Reporte-Boton::-webkit-scrollbar,
 #Principal-ValidarMoviles .carta-container::-webkit-scrollbar, #Principal-Agregar-Botones::-webkit-scrollbar,
 #Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar, #Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar,
 #Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar, #Principal-Visualizar .tabla-container::-webkit-scrollbar {
@@ -183,6 +212,7 @@
     height: 8px;
 }
 
+#Principal-Visualizar #Botones-Encabezado #Fecha-Reporte-Boton::-webkit-scrollbar-thumb,
 #Principal-ValidarMoviles .carta-container::-webkit-scrollbar-thumb, #Principal-Agregar-Botones::-webkit-scrollbar-thumb,
 #Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar-thumb, #Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-thumb,
 #Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-thumb, #Principal-Visualizar .tabla-container::-webkit-scrollbar-thumb {
@@ -190,6 +220,7 @@
     border-radius: 5px;
 }
 
+#Principal-Visualizar #Botones-Encabezado #Fecha-Reporte-Boton::-webkit-scrollbar-thumb:hover,
 #Principal-ValidarMoviles .carta-container::-webkit-scrollbar-thumb:hover, #Principal-Agregar-Botones::-webkit-scrollbar-thumb:hover,
 #Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar-thumb:hover, #Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-thumb:hover,
 #Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-thumb:hover, #Principal-Visualizar .tabla-container::-webkit-scrollbar-thumb:hover {
@@ -724,4 +755,61 @@
 
 #Principal-ValidarMoviles #piePagina {
     padding-left: 10px;
+}
+
+
+#Principal-Agregar-Botones-Importar {
+    position: fixed; /* Posicionamiento fijo */
+    top: 0; /* Desde la parte superior */
+    left: 0; /* Desde la parte izquierda */
+    width: calc(100% - 215px); /* Ancho dinámico basado en el ancho del menú lateral */
+    flex-grow: 1; /* Ocupa el espacio restante */
+    background-color: white; /* Color de fondo */
+    padding: 15px 15px; /* Relleno interno */
+    margin: 5px 5px 5px 210px; /* Margen exterior */
+    height: 14vh; /* Toma casi toda la altura del viewport */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#Principal-Agregar-Botones-Importar #Botones-Descargar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#Principal-Agregar-Botones-Importar #Boton-Descargar {
+    margin: 0px 10px 0px 10px;
+    color: white;
+    background-color: gray;
+}
+
+#Principal-Agregar-Botones-Importar #Boton-Cargar,
+#Principal-Agregar-Botones-Importar #Boton-Importar {
+    margin: 0px 10px 0px 10px;
+    color: white;
+    background-color: green;
+}
+
+#Principal-Agregar-Botones-Importar #Archivo-Cargado {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 10px 0px 10px;
+}
+
+#Principal-Agregar-Botones-Importar #Archivo-Cargado h6 {
+    margin: 0px;
+    size: 12px;
+}
+
+#Principal-Agregar-Botones-Importar #Archivo-Cargado p {
+    margin: 0px;
+    size: 12px;
 }
