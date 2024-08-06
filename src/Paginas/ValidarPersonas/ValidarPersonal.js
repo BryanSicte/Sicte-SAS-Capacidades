@@ -7,8 +7,6 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThreeDots } from 'react-loader-spinner';
 
-let datosAgregadosBandera = [];
-
 const ValidarPersonal = ({
     role,
     error,
@@ -22,6 +20,7 @@ const ValidarPersonal = ({
     coordinadores,
     setCoordinadores
 }) => {
+    let datosAgregadosBandera = [];
     const [datos, setDatos] = useState([]);
     const [datosAgregados, setDatosAgregados] = useState([]);
     const [filtros, setFiltros] = useState({});
@@ -230,7 +229,7 @@ const ValidarPersonal = ({
             const datos = {
                 placa: data.placa,
                 tipoFacturacion: data.tipoFacturacion,
-                tipoDeMovil: data.tipoDeMovil,
+                tipoDeMovil: data.tipoMovil,
                 cedula: data.cedula,
                 coordinador: data.coordinador
             };
