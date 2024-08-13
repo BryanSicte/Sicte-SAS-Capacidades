@@ -5,8 +5,9 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { ThreeDots } from 'react-loader-spinner';
 
-const ValidarMoviles = ({ role }) => {
+const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, mesAnioSeleccionado, setMesAnioSeleccionado }) => {
     const [datos, setDatos] = useState([]);
+    const [datosTodoBackupTratamiento, setDatosTodoBackupTratamiento] = useState([]);
     const [datosBackUp, setDatosBackUp] = useState([]);
     const [error, setError] = useState('');
     const [totalItems, setTotalItems] = useState(0);
@@ -26,6 +27,7 @@ const ValidarMoviles = ({ role }) => {
     const toggleDirector = () => setDropdownOpenDirector(prevState => !prevState);
     const [loading, setLoading] = useState(true);
     const [duplicados, setDuplicados] = useState([]);
+    const ultimoMes = '8-2024'
 
     const obtenerValorEsperado = (valor) => {
         const numero = parseFloat(valor);
@@ -84,8 +86,8 @@ const ValidarMoviles = ({ role }) => {
 
                 const suma = Object.values(grupoDatos).reduce((acc, item) => acc + obtenerValorEsperado(item.valorEsperado), 0);
 
-                const coordinadores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.coordinador))];
                 const directores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.director))];
+                const coordinadores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.coordinador))];
 
                 setSumaValorEsperado(suma);
                 setDatos(grupoDatos);   
@@ -94,7 +96,6 @@ const ValidarMoviles = ({ role }) => {
                 setTotalItems(Object.keys(grupoDatos).length);
                 setCoordinadores(coordinadores);
                 setDirectores(directores);
-                setLoading(false);
 
                 const placasVistas = new Set();
                 const duplicadosData = new Set();
@@ -107,11 +108,100 @@ const ValidarMoviles = ({ role }) => {
                     }
                 });
                 setDuplicados(duplicadosData);
+
+                setLoading(false);
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
-                setLoading(false); 
+                setLoading(false);
             });
+    };
+
+    const tratamientoDatosTodoBackup = () => {
+        if (ultimoMes !== mesAnioSeleccionado) {
+            if (!Array.isArray(datosTodoBackup)) {
+                throw new Error('Los datos recibidos no son un array');
+            }
+
+            const filtrarDatosTodoBackupRole = datosTodoBackup.filter(item => {
+                if (item.director === role) {
+                    return item
+                } else if (role === 'admin') {
+                    return item
+                }
+                return  false;
+            })
+
+            const filtrarDatosTodoBackup = filtrarDatosTodoBackupRole.filter(item => {
+                if (mesAnioSeleccionado) {
+                    const [mes, anio] = mesAnioSeleccionado.split('-');
+                    const fecha = new Date(item.fechaReporte);
+                    return  (fecha.getMonth() + 1 === parseInt(mes) && fecha.getFullYear() === parseInt(anio));
+                }
+
+                return false;
+            })
+
+            const filtrarDatos = filtrarDatosTodoBackup.filter(item => item.tipoFacturacion === 'EVENTO');
+            const filtrarDatosBackUp = filtrarDatos.filter(item => item.tipoDeMovil === 'BACKUP');
+            const filtrarDatosSinBackUp = filtrarDatos.filter(item => item.tipoDeMovil !== 'BACKUP');
+
+            const grupoDatos = filtrarDatosSinBackUp.reduce((acc, item) => {
+                const key = `${item.placa}${item.tipoDeMovil}`;
+
+                if (!acc[key]) {
+                    acc[key] = {
+                        placa: item.placa,
+                        valorEsperado: item.valorEsperado,
+                        tipoDeMovil: item.tipoDeMovil,
+                        turnos: item.turnos,
+                        personas: item.personas,
+                        items: []
+                    };
+                }
+
+                if (item.valorEsperado && !isNaN(item.valorEsperado)) {
+                    acc[key].valorEsperado = item.valorEsperado;
+                }
+
+                acc[key].items.push({
+                    nombreCompleto: item.nombreCompleto,
+                    cedula: item.cedula,
+                    coordinador: item.coordinador,
+                    director: item.director
+                });
+
+                return acc;
+            }, {});
+
+            const suma = Object.values(grupoDatos).reduce((acc, item) => acc + obtenerValorEsperado(item.valorEsperado), 0);
+
+            const coordinadores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.coordinador))];
+            const directores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.director))];
+
+            setSumaValorEsperado(suma);
+            setDatosTodoBackupTratamiento(grupoDatos);   
+            setDatosBackUp(filtrarDatosBackUp);
+            setTotalItemsBackup(filtrarDatosBackUp.length);
+            setTotalItems(Object.keys(grupoDatos).length);
+            setCoordinadores(coordinadores);
+            setDirectores(directores);
+
+            const placasVistas = new Set();
+            const duplicadosData = new Set();
+
+            Object.values(grupoDatos).forEach(item => {
+                if (placasVistas.has(item.placa)) {
+                    duplicadosData.add(item.placa);
+                } else {
+                    placasVistas.add(item.placa);
+                }
+            });
+            setDuplicados(duplicadosData);
+
+        }else{
+            cargarDatos();
+        }
     };
 
     useEffect(() => {
@@ -145,7 +235,9 @@ const ValidarMoviles = ({ role }) => {
         }
     };
 
-    const datosFiltrados = Object.entries(datos).filter(([placa, data]) => {
+    const datosSeleccionados = mesAnioSeleccionado === ultimoMes ? datos : datosTodoBackupTratamiento;
+
+    const datosFiltrados = Object.entries(datosSeleccionados).filter(([placa, data]) => {
         const alertaColor = validarCantidadIntegrantes(data);
         const filtroCoordinador = selectedItemCoordinador === 'Todo' || data.items.some(item => item.coordinador === selectedItemCoordinador);
         const filtroDirector = selectedItemDirector === 'Todo' || data.items.some(item => item.director === selectedItemDirector);
@@ -153,6 +245,30 @@ const ValidarMoviles = ({ role }) => {
     });
 
     const sumaValorFiltrada = datosFiltrados.reduce((acc, [placa, data]) => acc + obtenerValorEsperado(data.valorEsperado), 0);
+    
+    const getMesesAnios = () => {
+        let bandera = 0;
+        const uniqueDates = new Set();
+        datosTodoBackup.forEach(item => {
+            if (bandera === 0) {
+                const date = new Date(item.fechaReporte);
+                const mesAnio = `${date.getMonth() + 2}-${date.getFullYear()}`;
+                uniqueDates.add(mesAnio);
+                bandera = 1;
+            }
+            if (item.fechaReporte) {
+                const date = new Date(item.fechaReporte);
+                const mesAnio = `${date.getMonth() + 1}-${date.getFullYear()}`;
+                uniqueDates.add(mesAnio);
+            }
+        });
+        return Array.from(uniqueDates);
+    };
+
+    useEffect(() => {
+        tratamientoDatosTodoBackup();
+        setTotalItemsBackup(filtrarDatos.length);
+    }, [mesAnioSeleccionado, selectedItemCoordinador, selectedItemDirector]);
 
     useEffect(() => {
         setTotalItemsBackup(filtrarDatos.length);
@@ -285,6 +401,16 @@ const ValidarMoviles = ({ role }) => {
                                             <div className="col-sm-4">
                                                 <h6>Placa</h6>
                                                 <button id='Morado' className='btn btn-primary' onClick={() => setFiltroColor('morado')}>Duplicada</button>
+                                                <h6>Fecha Reporte</h6>
+                                                <div className="Fecha-Reporte-Select">
+                                                    <select id='Fecha-Reporte-Boton' value={mesAnioSeleccionado} onChange={(e) => setMesAnioSeleccionado(e.target.value)} className="select-box">
+                                                        {getMesesAnios().map((mesAnio, index) => (
+                                                            <option key={index} value={mesAnio}>
+                                                                {mesAnio}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
                                             </div>
                                             <div className="col-sm-4" id='Coordinador'>
                                                 <h6>Coordinador</h6>

@@ -17,10 +17,13 @@ const Principal = () => {
     const [tipoMovilValidas, setTipoMovilValidas] = useState({});
     const [tipoFacturacionValidas, setTipoFacturacionValidas] = useState({});
     const [coordinadores, setCoordinadores] = useState([]);
+    const [mesAnioSeleccionado, setMesAnioSeleccionado] = useState('');
+    const [datosTodoBackup, setDatosTodoBackup] = useState([]);
 
     useEffect(() => {
         cargarDatosMovil();
         cargarDatosCoordinador();
+        cargarDatosBackup();
     }, []);
 
     const cargarDatosMovil = () => {
@@ -58,6 +61,24 @@ const Principal = () => {
         setPaginaActiva(pagina);
     };
 
+    const cargarDatosBackup = () => {
+        fetch('https://sicteferias.from-co.net:8120/capacidad/TodoBackup')
+            .then(response => response.json())
+            .then(data => {
+                setDatosTodoBackup(data);
+
+                if (data.length > 0) {
+                    const fechas = data.map(item => new Date(item.fechaReporte));
+                    const ultimaFecha = new Date(Math.max(...fechas));
+                    const mesAnio = `${ultimaFecha.getMonth() + 2}-${ultimaFecha.getFullYear()}`;
+                    setMesAnioSeleccionado(mesAnio);
+                }
+            })
+            .catch(error => {
+                setError('Error al cargar los datos: ' + error.message);
+            });
+    };
+
     const renderizarPagina = () => {
         const paginaProps = {
             role,
@@ -70,7 +91,11 @@ const Principal = () => {
             tipoFacturacionValidas,
             setTipoFacturacionValidas,
             coordinadores,
-            setCoordinadores
+            setCoordinadores,
+            datosTodoBackup,
+            setDatosTodoBackup,
+            mesAnioSeleccionado,
+            setMesAnioSeleccionado
         };
 
         switch (paginaActiva) {
