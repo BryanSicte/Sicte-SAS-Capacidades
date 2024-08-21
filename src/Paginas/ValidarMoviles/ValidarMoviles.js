@@ -27,7 +27,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, mesAnioSele
     const toggleDirector = () => setDropdownOpenDirector(prevState => !prevState);
     const [loading, setLoading] = useState(true);
     const [duplicados, setDuplicados] = useState([]);
-    const ultimoMes = '8-2024'
+    let ultimoMes = '';
 
     const obtenerValorEsperado = (valor) => {
         const numero = parseFloat(valor);
@@ -207,6 +207,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, mesAnioSele
     useEffect(() => {
         setDatos([]);
         cargarDatos();
+        getUltimoMes();
     }, []);
 
     const formatearValorEsperado = (valorEsperado) => {
@@ -245,6 +246,20 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, mesAnioSele
     });
 
     const sumaValorFiltrada = datosFiltrados.reduce((acc, [placa, data]) => acc + obtenerValorEsperado(data.valorEsperado), 0);
+
+    const getUltimoMes = () => {
+        let bandera = 0;
+        const uniqueDate = new Set();
+        datosTodoBackup.forEach(item => {
+            if (bandera === 0) {
+                const date = new Date(item.fechaReporte);
+                const mesAnio = `${date.getMonth() + 2}-${date.getFullYear()}`;
+                uniqueDate.add(mesAnio);
+                bandera = 1;
+            }
+        });
+        ultimoMes = uniqueDate;
+    };
     
     const getMesesAnios = () => {
         let bandera = 0;
