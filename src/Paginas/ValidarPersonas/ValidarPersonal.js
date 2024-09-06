@@ -279,7 +279,7 @@ const ValidarPersonal = ({
             const item = ordenarDatos.find(item => item.cedula === cedula);
             const data = {
                 id: 1,
-                carpeta: "",
+                carpeta: item.carpeta,
                 placa: item.placa,
                 tipoFacturacion: item.tipoFacturacion,
                 tipoMovil: item.tipoDeMovil,
@@ -366,7 +366,7 @@ const ValidarPersonal = ({
                                                 <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
                                             </div>
                                         </th>
-                                        {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas'].map(columna => (
+                                        {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
                                             <th key={columna}>
                                                 <div>
                                                     {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
