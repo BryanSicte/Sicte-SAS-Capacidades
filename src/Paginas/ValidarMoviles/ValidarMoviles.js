@@ -199,7 +199,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         return (filtroColor === 'blanco' || alertaColor === filtroColor) && filtroCoordinador && filtroDirector;
     });
 
-    const sumaValorFiltrada = datosFiltrados.reduce((acc, [placa, data]) => acc + obtenerValorEsperado(data.valorEsperado), 0);
+    const sumaValorFiltrada = datosFiltrados.reduce((acc, [placa, data]) => acc + (obtenerValorEsperado(data.valorEsperado) * obtenerValorEsperado(data.turnos)), 0);
     
     const getMesesAnios = () => {
         let bandera = 0;
