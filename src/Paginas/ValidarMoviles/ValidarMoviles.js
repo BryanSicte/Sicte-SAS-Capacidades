@@ -5,8 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { ThreeDots } from 'react-loader-spinner';
 
-const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, mesAnioSeleccionado, setMesAnioSeleccionado }) => {
-    const [datos, setDatos] = useState([]);
+const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setDatos }) => {
     const [datosTodoBackupTratamiento, setDatosTodoBackupTratamiento] = useState([]);
     const [datosBackUp, setDatosBackUp] = useState([]);
     const [error, setError] = useState('');
@@ -28,6 +27,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, mesAnioSele
     const [loading, setLoading] = useState(true);
     const [duplicados, setDuplicados] = useState([]);
     let ultimoMes = '';
+    const [mesAnioSeleccionado, setMesAnioSeleccionado] = useState('');
 
     const obtenerValorEsperado = (valor) => {
         const numero = parseFloat(valor);
@@ -37,34 +37,27 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, mesAnioSele
         return numero;
     };
 
-    const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ role }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                setDatos(data);   
-                setLoading(false);
-            })
-            .catch(error => {
-                setError('Error al cargar los datos: ' + error.message);
-                setLoading(false);
-            });
-    };
+    const mesAnioSeleccionadoInicial = () => {
+        if (datosTodoBackup.length > 0) {
+            const fechas = datosTodoBackup.map(item => new Date(item.fechaReporte));
+            const ultimaFecha = new Date(Math.max(...fechas));
+            const mesAnio = `${ultimaFecha.getMonth() + 2}-${ultimaFecha.getFullYear()}`;
+            setMesAnioSeleccionado(mesAnio);
+        }
+    }
 
     const tratamientoDatos = () => {
         let datosATratar = ''
+        const fechas = datosTodoBackup.map(item => new Date(item.fechaReporte));
+        const ultimaFecha = new Date(Math.max(...fechas));
+        const mesAnio = `${ultimaFecha.getMonth() + 2}-${ultimaFecha.getFullYear()}`;
 
+        ultimoMes = mesAnio;
+        
         if (ultimoMes !== mesAnioSeleccionado) {
             datosATratar = datosTodoBackup;
         } else {
             datosATratar = datos;
-            console.log(datos)
-            console.log(datosTodoBackup)
         }
 
         if (!Array.isArray(datosATratar)) {
@@ -145,14 +138,32 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, mesAnioSele
                 placasVistas.add(item.placa);
             }
         });
-        setDuplicados(duplicadosData);
-        
+        setDuplicados(duplicadosData);  
+    };
+
+    const cargarDatos = () => {
+        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            setDatos(data);
+            setLoading(false);
+        })
+        .catch(error => {
+            setError('Error al cargar los datos: ' + error.message);
+            setLoading(false);
+        });
     };
 
     useEffect(() => {
-        setDatos([]);
-        cargarDatos();
+        mesAnioSeleccionadoInicial();
         tratamientoDatos();
+        cargarDatos();
     }, []);
 
     const formatearValorEsperado = (valorEsperado) => {
@@ -181,9 +192,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, mesAnioSele
         }
     };
 
-    const datosSeleccionados = datosTodoBackupTratamiento;
-
-    const datosFiltrados = Object.entries(datosSeleccionados).filter(([placa, data]) => {
+    const datosFiltrados = Object.entries(datosTodoBackupTratamiento).filter(([placa, data]) => {
         const alertaColor = validarCantidadIntegrantes(data);
         const filtroCoordinador = selectedItemCoordinador === 'Todo' || data.items.some(item => item.coordinador === selectedItemCoordinador);
         const filtroDirector = selectedItemDirector === 'Todo' || data.items.some(item => item.director === selectedItemDirector);
@@ -289,12 +298,12 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, mesAnioSele
         setSelectedItemDirector(item);
     };
     
-    const resumenMoviles = datosFiltrados.reduce((acc, [placa, data]) => {
+    const resumenMoviles = datosFiltrados.reduce((acc, [placa, data]) => {        
         if (!acc[data.tipoDeMovil]) {
             acc[data.tipoDeMovil] = { cantidad: 0, valor: 0 };
         }
         acc[data.tipoDeMovil].cantidad += 1;
-        acc[data.tipoDeMovil].valor += obtenerValorEsperado(data.valorEsperado);
+        acc[data.tipoDeMovil].valor += obtenerValorEsperado(data.valorEsperado) * obtenerValorEsperado(data.turnos);
         return acc;
     }, {});
 
