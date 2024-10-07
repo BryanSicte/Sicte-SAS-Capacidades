@@ -287,6 +287,8 @@ const ValidarPersonal = ({
                 coordinador: item.coordinador
             };
 
+            console.log(data)
+
             if (!validarCapacidadMovil(data)) {
                 toast.error(`La movil con placa ${data.placa} ha excedido su capacidad.`);
             } else {

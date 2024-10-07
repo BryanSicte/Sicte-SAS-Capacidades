@@ -15,7 +15,6 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
     const [filtros, setFiltros] = useState({});
     const [ordenarCampo, setOrdenarCampo] = useState('nombreCompleto');
     const [ordenarOrden, setOrdenarOrden] = useState('asc');
-    const [totalItemsBackup, setTotalItemsBackup] = useState(0);
     const [coordinadores, setCoordinadores] = useState([]);
     const [dropdownOpenCoordinador, setDropdownOpenCoordinador] = useState(false);
     const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Todo');
@@ -84,8 +83,8 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         })
 
         const filtrarDatos = filtrarDatosTodoBackup.filter(item => item.tipoFacturacion === 'EVENTO');
-        const filtrarDatosBackUp = filtrarDatos.filter(item => item.tipoDeMovil === 'BACKUP');
-        const filtrarDatosSinBackUp = filtrarDatos.filter(item => item.tipoDeMovil !== 'BACKUP');
+        const filtrarDatosBackUp = filtrarDatosTodoBackup.filter(item => item.tipoDeMovil === 'BACK UP');
+        const filtrarDatosSinBackUp = filtrarDatos.filter(item => item.tipoDeMovil !== 'BACK UP');
 
         const grupoDatos = filtrarDatosSinBackUp.reduce((acc, item) => {
             const key = `${item.placa}${item.tipoDeMovil}`;
@@ -123,7 +122,6 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         setSumaValorEsperado(suma);
         setDatosTodoBackupTratamiento(grupoDatos);   
         setDatosBackUp(filtrarDatosBackUp);
-        setTotalItemsBackup(filtrarDatosBackUp.length);
         setTotalItems(Object.keys(grupoDatos).length);
         setCoordinadores(coordinadores);
         setDirectores(directores);
@@ -223,12 +221,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
 
     useEffect(() => {
         tratamientoDatos();
-        setTotalItemsBackup(filtrarDatos.length);
     }, [mesAnioSeleccionado, selectedItemCoordinador, selectedItemDirector]);
-
-    useEffect(() => {
-        setTotalItemsBackup(filtrarDatos.length);
-    }, [filtros, selectedItemCoordinador, selectedItemDirector]);
 
     const clickAplicarFiltros = (e, columna) => {
         const Valor = e.target.value;
@@ -496,7 +489,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
                                     </div>
                                 </div>
                                 <div id='piePagina'>
-                                    <p>Total de items: {totalItemsBackup}</p> 
+                                    <p>Total de items: {datosBackUp.length}</p> 
                                     <div id='Botones-piePagina'>
                                         
                                     </div>
