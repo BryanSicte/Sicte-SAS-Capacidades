@@ -117,6 +117,8 @@ const Principal = () => {
 
         };
 
+        cargarDatos();
+
         switch (paginaActiva) {
             case 'Visualizar':
                 return <Visualizar {...paginaProps} />;
