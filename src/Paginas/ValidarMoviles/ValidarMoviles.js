@@ -92,7 +92,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
             if (!acc[key]) {
                 acc[key] = {
                     placa: item.placa,
-                    valorEsperado: item.valorEsperado,
+                    valorEsperado: 0,
                     tipoDeMovil: item.tipoDeMovil,
                     turnos: item.turnos,
                     personas: item.personas,
@@ -100,7 +100,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
                 };
             }
 
-            if (item.valorEsperado && !isNaN(item.valorEsperado)) {
+            if (item.valorEsperado && item.valorEsperado > 0) {
                 acc[key].valorEsperado = item.valorEsperado;
             }
 
@@ -291,7 +291,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         setSelectedItemDirector(item);
     };
     
-    const resumenMoviles = datosFiltrados.reduce((acc, [placa, data]) => {        
+    const resumenMoviles = datosFiltrados.reduce((acc, [placa, data]) => { 
         if (!acc[data.tipoDeMovil]) {
             acc[data.tipoDeMovil] = { cantidad: 0, valor: 0 };
         }
