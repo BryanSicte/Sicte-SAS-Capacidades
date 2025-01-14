@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import  '../Principal/Principal.css'
+import '../Principal/Principal.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { ThreeDots } from 'react-loader-spinner';
@@ -40,7 +40,12 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         if (datosTodoBackup.length > 0) {
             const fechas = datosTodoBackup.map(item => new Date(item.fechaReporte));
             const ultimaFecha = new Date(Math.max(...fechas));
-            const mesAnio = `${ultimaFecha.getMonth() + 2}-${ultimaFecha.getFullYear()}`;
+
+            const siguienteMes = ultimaFecha.getMonth() + 1;
+            const siguienteAnio = siguienteMes > 11 ? ultimaFecha.getFullYear() + 1 : ultimaFecha.getFullYear();
+            const mesNormalizado = siguienteMes > 11 ? 1 : siguienteMes + 1;
+
+            const mesAnio = `${mesNormalizado.toString().padStart(2, '0')}-${siguienteAnio}`;
             setMesAnioSeleccionado(mesAnio);
         }
     }
@@ -49,10 +54,15 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         let datosATratar = ''
         const fechas = datosTodoBackup.map(item => new Date(item.fechaReporte));
         const ultimaFecha = new Date(Math.max(...fechas));
-        const mesAnio = `${ultimaFecha.getMonth() + 2}-${ultimaFecha.getFullYear()}`;
+
+        const siguienteMes = ultimaFecha.getMonth() + 1;
+        const siguienteAnio = siguienteMes > 11 ? ultimaFecha.getFullYear() + 1 : ultimaFecha.getFullYear();
+        const mesNormalizado = siguienteMes > 11 ? 1 : siguienteMes + 1;
+
+        const mesAnio = `${mesNormalizado.toString().padStart(2, '0')}-${siguienteAnio}`;
 
         ultimoMes = mesAnio;
-        
+
         if (ultimoMes !== mesAnioSeleccionado) {
             datosATratar = datosTodoBackup;
         } else {
@@ -69,14 +79,14 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
             } else if (role === 'admin') {
                 return item
             }
-            return  false;
+            return false;
         })
 
         const filtrarDatosTodoBackup = filtrarDatosTodoBackupRole.filter(item => {
             if (mesAnioSeleccionado) {
                 const [mes, anio] = mesAnioSeleccionado.split('-');
                 const fecha = new Date(item.fechaReporte);
-                return  (fecha.getMonth() + 1 === parseInt(mes) && fecha.getFullYear() === parseInt(anio));
+                return (fecha.getMonth() + 1 === parseInt(mes) && fecha.getFullYear() === parseInt(anio));
             }
 
             return false;
@@ -116,11 +126,11 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
 
         const suma = Object.values(grupoDatos).reduce((acc, item) => acc + obtenerValorEsperado(item.valorEsperado), 0);
 
-        const coordinadores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.coordinador))];
-        const directores = ["Todo",...new Set(filtrarDatosSinBackUp.map(item => item.director))];
+        const coordinadores = ["Todo", ...new Set(filtrarDatosSinBackUp.map(item => item.coordinador))];
+        const directores = ["Todo", ...new Set(filtrarDatosSinBackUp.map(item => item.director))];
 
         setSumaValorEsperado(suma);
-        setDatosTodoBackupTratamiento(grupoDatos);   
+        setDatosTodoBackupTratamiento(grupoDatos);
         setDatosBackUp(filtrarDatosBackUp);
         setTotalItems(Object.keys(grupoDatos).length);
         setCoordinadores(coordinadores);
@@ -136,7 +146,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
                 placasVistas.add(item.placa);
             }
         });
-        setDuplicados(duplicadosData);  
+        setDuplicados(duplicadosData);
     };
 
     const cargarDatos = () => {
@@ -147,15 +157,15 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
             },
             body: JSON.stringify({ role }),
         })
-        .then(response => response.json())
-        .then(data => {
-            setDatos(data);
-            setLoading(false);
-        })
-        .catch(error => {
-            setError('Error al cargar los datos: ' + error.message);
-            setLoading(false);
-        });
+            .then(response => response.json())
+            .then(data => {
+                setDatos(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                setError('Error al cargar los datos: ' + error.message);
+                setLoading(false);
+            });
     };
 
     useEffect(() => {
@@ -180,7 +190,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         if (duplicados.has(data.placa)) {
             return 'morado';
         }
-        
+
         if (data.items.length < cantidadEsperada) {
             return 'naranja';
         } else if (data.items.length === cantidadEsperada) {
@@ -198,14 +208,20 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
     });
 
     const sumaValorFiltrada = datosFiltrados.reduce((acc, [placa, data]) => acc + (obtenerValorEsperado(data.valorEsperado) * obtenerValorEsperado(data.turnos)), 0);
-    
+
     const getMesesAnios = () => {
         let bandera = 0;
         const uniqueDates = new Set();
         datosTodoBackup.forEach(item => {
             if (bandera === 0) {
                 const date = new Date(item.fechaReporte);
-                const mesAnio = `${date.getMonth() + 2}-${date.getFullYear()}`;
+
+                const siguienteMes = date.getMonth() + 1;
+                const siguienteAnio = siguienteMes > 11 ? date.getFullYear() + 1 : date.getFullYear();
+                const mesNormalizado = siguienteMes > 11 ? 1 : siguienteMes + 1;
+
+                const mesAnio = `${mesNormalizado.toString().padStart(2, '0')}-${siguienteAnio}`;
+
                 uniqueDates.add(mesAnio);
                 bandera = 1;
                 ultimoMes = mesAnio;
@@ -290,8 +306,8 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
     const handleSelectDirector = (item) => {
         setSelectedItemDirector(item);
     };
-    
-    const resumenMoviles = datosFiltrados.reduce((acc, [placa, data]) => { 
+
+    const resumenMoviles = datosFiltrados.reduce((acc, [placa, data]) => {
         if (!acc[data.tipoDeMovil]) {
             acc[data.tipoDeMovil] = { cantidad: 0, valor: 0 };
         }
@@ -316,7 +332,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
                     <p>... Cargando Datos ...</p>
                 </div>
             ) : (
-        
+
                 <div id='Principal-Visualizar'>
                     <div id="Principal-ValidarMoviles">
                         <div id='Cartas'>
@@ -481,7 +497,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
                                                             <td>{item.cedula}</td>
                                                             <td>{item.nombreCompleto}</td>
                                                             <td>{item.cargo}</td>
-                                                        </tr>  
+                                                        </tr>
                                                     ))}
                                                 </tbody>
                                             </table>
@@ -489,9 +505,9 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
                                     </div>
                                 </div>
                                 <div id='piePagina'>
-                                    <p>Total de items: {datosBackUp.length}</p> 
+                                    <p>Total de items: {datosBackUp.length}</p>
                                     <div id='Botones-piePagina'>
-                                        
+
                                     </div>
                                 </div>
                             </div>

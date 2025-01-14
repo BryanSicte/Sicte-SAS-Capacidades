@@ -219,7 +219,7 @@ const Visualizar = ({ role }) => {
                                             </div>
                                         </th>
                                     )}
-                                    {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
+                                    {['cedula', 'nombreCompleto', 'cargo', 'placa', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
                                         <th key={columna}>
                                             <div>
                                                 {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)}   ></i>
@@ -246,6 +246,11 @@ const Visualizar = ({ role }) => {
                                                 .filter(key => key !== 'codigoSap')
                                                 .filter(key => key !== 'contratista')
                                                 .filter(key => key !== 'tipoCarro')
+                                                .sort((a, b) => {
+                                                    if (a === "placa") return b === "cargo" ? 1 : -1;
+                                                    if (b === "placa") return a === "cargo" ? -1 : 1;
+                                                    return 0; 
+                                                })
                                                 .map((key, i) => (
                                                     <td key={i}>
                                                         {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}

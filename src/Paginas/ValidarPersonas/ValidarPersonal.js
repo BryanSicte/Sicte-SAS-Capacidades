@@ -39,12 +39,12 @@ const ValidarPersonal = ({
             },
             body: JSON.stringify({ role }),
         })
-            .then(response => response.json())  
+            .then(response => response.json())
             .then(data => {
 
                 const datosFormateados = data.map(item => {
                     const newItem = { ...item };
-    
+
                     Object.keys(newItem).forEach(key => {
                         if (key === 'movil') {
                             newItem[key] = parseFloat(item[key]).toFixed(3);
@@ -54,7 +54,7 @@ const ValidarPersonal = ({
                             newItem[key] = item[key];
                         }
                     });
-    
+
                     return newItem;
                 });
                 const tipoMovilValidas2 = new Set(tipoMovilValidas);
@@ -70,7 +70,7 @@ const ValidarPersonal = ({
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
-                setLoading(false); 
+                setLoading(false);
             });
     };
 
@@ -80,7 +80,7 @@ const ValidarPersonal = ({
         datosAgregadosBandera = [];
         cargarDatos();
         cargarDatosAgregados();
-        
+
     }, []);
 
     const BotonLimpiarFiltros = () => {
@@ -133,7 +133,7 @@ const ValidarPersonal = ({
             }
         }
         return false;
-    };  
+    };
 
     useEffect(() => {
         setTotalItems(filtrarDatos.length);
@@ -299,21 +299,21 @@ const ValidarPersonal = ({
                     },
                     body: JSON.stringify(data),
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        toast.error('No se cargaron los datos', { className: 'toast-error' });
-                        throw new Error(`Error al enviar la fila: ${response.status}`);
-                    } else {
-                        console.log('Fila enviada correctamente');
-                        toast.success('Datos cargados', { className: 'toast-success' });
-                    }
-                    return response.json();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
-                    setError('Error al enviar los datos al backend: ' + error.message);
-                });
+                    .then(response => {
+                        if (!response.ok) {
+                            toast.error('No se cargaron los datos', { className: 'toast-error' });
+                            throw new Error(`Error al enviar la fila: ${response.status}`);
+                        } else {
+                            console.log('Fila enviada correctamente');
+                            toast.success('Datos cargados', { className: 'toast-success' });
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
+                        setError('Error al enviar los datos al backend: ' + error.message);
+                    });
             }
         });
 
@@ -368,7 +368,7 @@ const ValidarPersonal = ({
                                                 <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
                                             </div>
                                         </th>
-                                        {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
+                                        {['cedula', 'nombreCompleto', 'cargo', 'placa', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
                                             <th key={columna}>
                                                 <div>
                                                     {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
@@ -378,7 +378,7 @@ const ValidarPersonal = ({
                                                         clickAplicarFiltros(e, columna);
                                                     }
                                                 }}
-                                            />
+                                                />
                                             </th>
                                         ))}
                                     </tr>
@@ -393,11 +393,16 @@ const ValidarPersonal = ({
                                                 .filter(key => key !== 'codigoSap')
                                                 .filter(key => key !== 'contratista')
                                                 .filter(key => key !== 'tipoCarro')
+                                                .sort((a, b) => {
+                                                    if (a === "placa") return b === "cargo" ? 1 : -1;
+                                                    if (b === "placa") return a === "cargo" ? -1 : 1;
+                                                    return 0; 
+                                                })
                                                 .map((key, i) => (
                                                     <td key={i}>
                                                         {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
                                                     </td>
-                                            ))}
+                                                ))}
                                         </tr>
                                     ))}
                                 </tbody>
@@ -405,7 +410,7 @@ const ValidarPersonal = ({
                         </div>
                         <ToastContainer />
                         <div id='piePagina'>
-                            <p>Total de items: {totalItems}</p> 
+                            <p>Total de items: {totalItems}</p>
                             <div id='Botones-piePagina'>
                                 <button id='Boton-Limpiar' className="btn btn-secondary" onClick={limpiarSeleccionados}>Limpiar</button>
                                 <button id='Boton-Aplicar' className="btn btn-secondary" onClick={enviarSeleccionadosAlBackend}>Aplicar</button>
