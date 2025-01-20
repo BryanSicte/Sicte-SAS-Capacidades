@@ -62,6 +62,7 @@ const Principal = () => {
     };
 
     const cambiarPagina = (pagina) => {
+        cargarDatos();
         setPaginaActiva(pagina);
     };
 
@@ -114,10 +115,7 @@ const Principal = () => {
             setMesAnioSeleccionado,
             datos,
             setDatos
-
         };
-
-        cargarDatos();
 
         switch (paginaActiva) {
             case 'Visualizar':
