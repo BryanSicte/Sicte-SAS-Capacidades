@@ -13,7 +13,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
     const [sumaValorEsperado, setSumaValorEsperado] = useState(0);
     const [filtroColor, setFiltroColor] = useState('blanco');
     const [filtros, setFiltros] = useState({});
-    const [ordenarCampo, setOrdenarCampo] = useState('nombreCompleto');
+    const [ordenarCampo, setOrdenarCampo] = useState('NOMBRE_COMPLETO');
     const [ordenarOrden, setOrdenarOrden] = useState('asc');
     const [coordinadores, setCoordinadores] = useState([]);
     const [dropdownOpenCoordinador, setDropdownOpenCoordinador] = useState(false);
@@ -38,7 +38,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
 
     const mesAnioSeleccionadoInicial = () => {
         if (datosTodoBackup.length > 0) {
-            const fechas = datosTodoBackup.map(item => new Date(item.fechaReporte));
+            const fechas = datosTodoBackup.map(item => new Date(item.FECHA_REPORTE));
             const ultimaFecha = new Date(Math.max(...fechas));
 
             const siguienteMes = ultimaFecha.getMonth() + 1;
@@ -52,7 +52,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
 
     const tratamientoDatos = () => {
         let datosATratar = ''
-        const fechas = datosTodoBackup.map(item => new Date(item.fechaReporte));
+        const fechas = datosTodoBackup.map(item => new Date(item.FECHA_REPORTE));
         const ultimaFecha = new Date(Math.max(...fechas));
 
         const siguienteMes = ultimaFecha.getMonth() + 1;
@@ -74,7 +74,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         }
 
         const filtrarDatosTodoBackupRole = datosATratar.filter(item => {
-            if (item.director === role) {
+            if (item.DIRECTOR === role) {
                 return item
             } else if (role === 'admin') {
                 return item
@@ -85,40 +85,40 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         const filtrarDatosTodoBackup = filtrarDatosTodoBackupRole.filter(item => {
             if (mesAnioSeleccionado) {
                 const [mes, anio] = mesAnioSeleccionado.split('-');
-                const fecha = new Date(item.fechaReporte);
+                const fecha = new Date(item.FECHA_REPORTE);
                 return (fecha.getMonth() + 1 === parseInt(mes) && fecha.getFullYear() === parseInt(anio));
             }
 
             return false;
         })
 
-        const filtrarDatos = filtrarDatosTodoBackup.filter(item => item.tipoFacturacion === 'EVENTO');
-        const filtrarDatosBackUp = filtrarDatosTodoBackup.filter(item => item.tipoDeMovil === 'BACK UP');
-        const filtrarDatosSinBackUp = filtrarDatos.filter(item => item.tipoDeMovil !== 'BACK UP');
+        const filtrarDatos = filtrarDatosTodoBackup.filter(item => item.TIPO_FACTURACION === 'EVENTO');
+        const filtrarDatosBackUp = filtrarDatosTodoBackup.filter(item => item.TIPO_DE_MOVIL === 'BACK UP');
+        const filtrarDatosSinBackUp = filtrarDatos.filter(item => item.TIPO_DE_MOVIL !== 'BACK UP');
 
         const grupoDatos = filtrarDatosSinBackUp.reduce((acc, item) => {
-            const key = `${item.placa}${item.tipoDeMovil}`;
+            const key = `${item.PLACA}${item.TIPO_DE_MOVIL}`;
 
             if (!acc[key]) {
                 acc[key] = {
-                    placa: item.placa,
+                    placa: item.PLACA,
                     valorEsperado: 0,
-                    tipoDeMovil: item.tipoDeMovil,
-                    turnos: item.turnos,
-                    personas: item.personas,
+                    tipoDeMovil: item.TIPO_DE_MOVIL,
+                    turnos: item.TURNOS,
+                    personas: item.PERSONAS,
                     items: []
                 };
             }
 
-            if (item.valorEsperado && item.valorEsperado > 0) {
-                acc[key].valorEsperado = item.valorEsperado;
+            if (item.VALOR_ESPERADO && item.VALOR_ESPERADO > 0) {
+                acc[key].valorEsperado = item.VALOR_ESPERADO;
             }
 
             acc[key].items.push({
-                nombreCompleto: item.nombreCompleto,
-                cedula: item.cedula,
-                coordinador: item.coordinador,
-                director: item.director
+                nombreCompleto: item.NOMBRE_COMPLETO,
+                cedula: item.CEDULA,
+                coordinador: item.COORDINADOR,
+                director: item.DIRECTOR
             });
 
             return acc;
@@ -126,8 +126,8 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
 
         const suma = Object.values(grupoDatos).reduce((acc, item) => acc + obtenerValorEsperado(item.valorEsperado), 0);
 
-        const coordinadores = ["Todo", ...new Set(filtrarDatosSinBackUp.map(item => item.coordinador))];
-        const directores = ["Todo", ...new Set(filtrarDatosSinBackUp.map(item => item.director))];
+        const coordinadores = ["Todo", ...new Set(filtrarDatosSinBackUp.map(item => item.COORDINADOR))];
+        const directores = ["Todo", ...new Set(filtrarDatosSinBackUp.map(item => item.DIRECTOR))];
 
         setSumaValorEsperado(suma);
         setDatosTodoBackupTratamiento(grupoDatos);
@@ -140,17 +140,17 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         const duplicadosData = new Set();
 
         Object.values(grupoDatos).forEach(item => {
-            if (placasVistas.has(item.placa)) {
-                duplicadosData.add(item.placa);
+            if (placasVistas.has(item.PLACA)) {
+                duplicadosData.add(item.PLACA);
             } else {
-                placasVistas.add(item.placa);
+                placasVistas.add(item.PLACA);
             }
         });
         setDuplicados(duplicadosData);
     };
 
     const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/todo`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -214,7 +214,7 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
         const uniqueDates = new Set();
         datosTodoBackup.forEach(item => {
             if (bandera === 0) {
-                const date = new Date(item.fechaReporte);
+                const date = new Date(item.FECHA_REPORTE);
 
                 const siguienteMes = date.getMonth() + 1;
                 const siguienteAnio = siguienteMes > 11 ? date.getFullYear() + 1 : date.getFullYear();
@@ -226,8 +226,8 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
                 bandera = 1;
                 ultimoMes = mesAnio;
             }
-            if (item.fechaReporte) {
-                const date = new Date(item.fechaReporte);
+            if (item.FECHA_REPORTE) {
+                const date = new Date(item.FECHA_REPORTE);
                 const mesAnio = `${date.getMonth() + 1}-${date.getFullYear()}`;
                 uniqueDates.add(mesAnio);
             }
@@ -263,12 +263,12 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
     };
 
     const datosBackUpFiltrados = datosBackUp.filter(item => {
-        const filtroCoordinador = selectedItemCoordinador === 'Todo' || item.coordinador === selectedItemCoordinador;
+        const filtroCoordinador = selectedItemCoordinador === 'Todo' || item.COORDINADOR === selectedItemCoordinador;
         return filtroCoordinador;
     });
 
     const datosBackUpFiltrados2 = datosBackUpFiltrados.filter(item => {
-        const filtroDirector = selectedItemDirector === 'Todo' || item.director === selectedItemDirector;
+        const filtroDirector = selectedItemDirector === 'Todo' || item.DIRECTOR === selectedItemDirector;
         return filtroDirector;
     });
 
@@ -493,10 +493,10 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
                                                 </thead>
                                                 <tbody>
                                                     {ordenarDatos.map((item) => (
-                                                        <tr key={item.cedula}>
-                                                            <td>{item.cedula}</td>
-                                                            <td>{item.nombreCompleto}</td>
-                                                            <td>{item.cargo}</td>
+                                                        <tr key={item.CEDULA}>
+                                                            <td>{item.CEDULA}</td>
+                                                            <td>{item.NOMBRE_COMPLETO}</td>
+                                                            <td>{item.CARGO}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>

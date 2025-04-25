@@ -17,12 +17,14 @@ const Retirados = ({ role }) => {
     const [totalitemsInicial, setTotalitemsInicial] = useState(false);
 
     const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/NoContinuaEnPlanta')
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/noContinuaEnPlanta`)
             .then(response => response.json())
             .then(data => {
                 setDatos(data);
                 setTotalItems(data.length);
                 setLoading(false);
+
+                console.log(data)
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
@@ -135,33 +137,42 @@ const Retirados = ({ role }) => {
                     </div>
                     <div className="tabla-container">
                         <table>
-                            <thead>
-                                <tr>
-                                    {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
-                                        <th key={columna}>
-                                            <div>
-                                                {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
-                                            </div>
-                                            <input type="text" onKeyDown={e => {
-                                                    if (e.key === 'Enter') {
-                                                        clickAplicarFiltros(e, columna);
-                                                    }
-                                                }}
-                                            />
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
+                            {ordenarDatos.length > 0 && (
+                                <thead>
+                                    <tr>
+                                        {Object.keys(ordenarDatos[0])
+                                            .filter(key => !['id'].includes(key))
+                                            .map(columna => (
+                                                <th key={columna}>
+                                                    <div>
+                                                        {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
+                                                        <i
+                                                            className={getIconoFiltro(columna)}
+                                                            onClick={() => clickEncabezados(columna)}
+                                                            style={{ cursor: "pointer" }}
+                                                        ></i>
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter") {
+                                                                clickAplicarFiltros(e, columna);
+                                                            }
+                                                        }}
+                                                    />
+                                                </th>
+                                            ))}
+                                    </tr>
+                                </thead>
+                            )}
                             <tbody>
                                 {ordenarDatos.map((item, index) => (
                                     <tr key={index}>
                                         {Object.keys(item).slice(1)
-                                        .filter(key => key !== 'codigoSap')
-                                        .filter(key => key !== 'contratista')
-                                        .filter(key => key !== 'tipoCarro')
+                                        .filter(key => key !== 'id')
                                         .map((key, i) => (
                                             <td key={i}>
-                                                {key === 'movil' ? (parseFloat(item[key]).toFixed(3)) : key === 'personas' ? (parseFloat(item[key]).toFixed(0)) : key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
+                                                {item[key]}
                                             </td>
                                         ))}
                                     </tr>

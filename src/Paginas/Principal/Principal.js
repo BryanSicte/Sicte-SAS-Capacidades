@@ -8,11 +8,12 @@ import ValidarMoviles from '../ValidarMoviles/ValidarMoviles';
 import Reportes from '../Reportes/Reportes';
 import ImportarDatos from '../Importar Datos/ImportarDatos';
 import { ThreeDots } from 'react-loader-spinner';
+import Cookies from 'js-cookie';
 
 const Principal = () => {
     const [datos, setDatos] = useState([]);
     const location = useLocation();
-    const { role } = location.state || {};
+    const role = Cookies.get('userRole');
     const [paginaActiva, setPaginaActiva] = useState('Visualizar');
     const [error, setError] = useState('');
     const [datosMovil, setDatosMovil] = useState([]);
@@ -31,7 +32,7 @@ const Principal = () => {
     }, []);
 
     const cargarDatosMovil = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Movil')
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/movil`)
         .then(response => response.json())
         .then(data => {
             setDatosMovil(data);
@@ -46,7 +47,7 @@ const Principal = () => {
     };
 
     const cargarDatosCoordinador = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Coordinador')
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/coordinador`)
             .then(response => response.json())
             .then(data => {
                 const coordDirect = new Set();
@@ -67,7 +68,7 @@ const Principal = () => {
     };
 
     const cargarDatosBackup = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/TodoBackup')
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/todoBackup`)
             .then(response => response.json())
             .then(data => {
                 setDatosTodoBackup(data);
@@ -79,7 +80,7 @@ const Principal = () => {
     };
 
     const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/todo`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

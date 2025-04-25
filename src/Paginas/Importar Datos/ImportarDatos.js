@@ -39,7 +39,7 @@ const ImportarDatos = ({ role }) => {
     const [excelData, setExcelData] = useState([]);
 
     const cargarDatosCoordinador = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Coordinador')
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/coordinador`)
             .then(response => response.json())
             .then(data => {
                 const coordDirect = new Set();
@@ -55,7 +55,7 @@ const ImportarDatos = ({ role }) => {
     };
 
     const cargarDatosMovil = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Movil')
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/movil`)
             .then(response => response.json())
             .then(data => {
 
@@ -84,7 +84,7 @@ const ImportarDatos = ({ role }) => {
     };
 
     const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/ContinuaEnPlantaSinCapacidad', {
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/continuaEnPlantaSinCapacidad`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -110,7 +110,7 @@ const ImportarDatos = ({ role }) => {
     };
 
     const cargarDatosAgregados = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/todo`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -339,7 +339,7 @@ const ImportarDatos = ({ role }) => {
                     toast.error(`La movil con placa ${data.placa} ha excedido su capacidad.`);
                     return Promise.reject('Placa Capacidad Maxima');
                 } else {
-                    return fetch('https://sicteferias.from-co.net:8120/capacidad/agregarPersonal', {
+                    return fetch(`${process.env.REACT_APP_API_URL}/capacidades/agregarPersonal`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

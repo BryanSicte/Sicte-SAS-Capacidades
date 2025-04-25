@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import  '../Principal/Principal.css'
+import '../Principal/Principal.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -17,14 +17,14 @@ const Reportes = ({ role }) => {
     const [mesAnioSeleccionado, setMesAnioSeleccionado] = useState('');
 
     const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/TodoBackup')
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/todoBackup`)
             .then(response => response.json())
             .then(data => {
                 setDatos(data);
                 setLoading(false);
 
                 if (data.length > 0) {
-                    const fechas = data.map(item => new Date(item.fechaReporte));
+                    const fechas = data.map(item => new Date(item.FECHA_REPORTE));
                     const ultimaFecha = new Date(Math.max(...fechas));
                     const mesAnio = `${ultimaFecha.getMonth() + 1}-${ultimaFecha.getFullYear()}`;
                     setMesAnioSeleccionado(mesAnio);
@@ -32,7 +32,7 @@ const Reportes = ({ role }) => {
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
-                setLoading(false); 
+                setLoading(false);
             });
     };
 
@@ -72,8 +72,8 @@ const Reportes = ({ role }) => {
     const getMesesAnios = () => {
         const uniqueDates = new Set();
         datos.forEach(item => {
-            if (item.fechaReporte) {
-                const date = new Date(item.fechaReporte);
+            if (item.FECHA_REPORTE) {
+                const date = new Date(item.FECHA_REPORTE);
                 const mesAnio = `${date.getMonth() + 1}-${date.getFullYear()}`;
                 uniqueDates.add(mesAnio);
             }
@@ -89,7 +89,7 @@ const Reportes = ({ role }) => {
         }
         if (mesAnioSeleccionado) {
             const [mes, anio] = mesAnioSeleccionado.split('-');
-            const fecha = new Date(item.fechaReporte);
+            const fecha = new Date(item.FECHA_REPORTE);
             if (fecha.getMonth() + 1 !== parseInt(mes) || fecha.getFullYear() !== parseInt(anio)) {
                 return false;
             }
@@ -132,7 +132,7 @@ const Reportes = ({ role }) => {
         let nombreArchivo = `Reporte ${mes}-${anio}.xlsx`;
         saveAs(new Blob([wbout], { type: 'application/octet-stream' }), nombreArchivo);
     };
-    
+
     const formatearValorEsperado = (valorEsperado) => {
         const valor = valorEsperado !== "null" ? valorEsperado : 0;
         const formatter = new Intl.NumberFormat('es-CO', {
@@ -171,44 +171,56 @@ const Reportes = ({ role }) => {
                     </div>
                     <div className="tabla-container">
                         <table>
-                            <thead>
-                                <tr>
-                                    {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
-                                        <th key={columna}>
-                                            <div>
-                                                {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
-                                            </div>
-                                            <input type="text" onKeyDown={e => {
-                                                    if (e.key === 'Enter') {
-                                                        clickAplicarFiltros(e, columna);
-                                                    }
-                                                }}
-                                            />
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
+                            {ordenarDatos.length > 0 && (
+                                <thead>
+                                    <tr>
+                                        {Object.keys(ordenarDatos[0])
+                                            .filter(key => !['id','CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO', 'TIPO_VEHICULO'].includes(key))
+                                            .map(columna => (
+                                                <th key={columna}>
+                                                    <div>
+                                                        {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
+                                                        <i
+                                                            className={getIconoFiltro(columna)}
+                                                            onClick={() => clickEncabezados(columna)}
+                                                            style={{ cursor: "pointer" }}
+                                                        ></i>
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter") {
+                                                                clickAplicarFiltros(e, columna);
+                                                            }
+                                                        }}
+                                                    />
+                                                </th>
+                                            ))}
+                                    </tr>
+                                </thead>
+                            )}
                             <tbody>
                                 {ordenarDatos.map((item, index) => (
                                     <tr key={index}>
                                         {Object.keys(item).slice(1)
-                                        .filter(key => key !== 'codigoSap')
-                                        .filter(key => key !== 'contratista')
-                                        .filter(key => key !== 'tipoCarro')
-                                        .map((key, i) => (
-                                            <td key={i}>
-                                                {key === 'movil' ? (parseFloat(item[key]).toFixed(3)) : key === 'personas' ? (parseFloat(item[key]).toFixed(0)) : key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
-                                            </td>
-                                        ))}
+                                            .filter(key => key !== 'CODIGO_SAP')
+                                            .filter(key => key !== 'CONTRATISTA')
+                                            .filter(key => key !== 'TIPO_CARRO')
+                                            .filter(key => key !== 'TIPO_VEHICULO')
+                                            .map((key, i) => (
+                                                <td key={i}>
+                                                    {key === 'MOVIL' ? (parseFloat(item[key]).toFixed(3)) : key === 'PERSONAS' ? (parseFloat(item[key]).toFixed(0)) : key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
+                                                </td>
+                                            ))}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
                     <div id='piePagina'>
-                        <p>Total de items: {totalItems}</p> 
+                        <p>Total de items: {totalItems}</p>
                         <div id='Botones-piePagina'>
-                            
+
                         </div>
                     </div>
                 </div>

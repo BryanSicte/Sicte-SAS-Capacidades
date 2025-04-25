@@ -32,7 +32,7 @@ const ValidarPersonal = ({
     const [loading, setLoading] = useState(true);
 
     const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/ContinuaEnPlanta', {
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/continuaEnPlanta`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -209,7 +209,7 @@ const ValidarPersonal = ({
     };
 
     const cargarDatosAgregados = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/todo`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -292,7 +292,7 @@ const ValidarPersonal = ({
             if (!validarCapacidadMovil(data)) {
                 toast.error(`La movil con placa ${data.placa} ha excedido su capacidad.`);
             } else {
-                fetch('https://sicteferias.from-co.net:8120/capacidad/agregarPersonalValidarPersonal', {
+                fetch(`${process.env.REACT_APP_API_URL}/capacidades/agregarPersonalValidarPersonal`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

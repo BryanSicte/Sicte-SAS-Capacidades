@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import  './Login.css'
 import Sicte from '../../Imagenes/Sicte 6.png'
+import Cookies from 'js-cookie';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -12,8 +13,6 @@ const Login = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setError('');
-    
-        console.log(JSON.stringify({ correo: username, contrasena: password }),);
 
         try {
             const response = await fetch('https://sicteferias.from-co.net:8120/user/login/login', {
@@ -27,6 +26,8 @@ const Login = () => {
             if (response.ok) {
                 const data = await response.json(); // Obtén la respuesta como JSON
                 const userRole = data.rol; // Asume que la respuesta tiene una propiedad 'rol'
+                console.log(data.rol)
+                Cookies.set('userRole', data.rol, { expires: 7 });
                 navigate('/Principal', { state: { role: userRole } });
             } else {
                 const errorText = await response.text();

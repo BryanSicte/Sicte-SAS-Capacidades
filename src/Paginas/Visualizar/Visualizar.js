@@ -20,7 +20,7 @@ const Visualizar = ({ role }) => {
     const [loading, setLoading] = useState(true);
 
     const cargarDatos = () => {
-        fetch('https://sicteferias.from-co.net:8120/capacidad/Todo', {
+        fetch(`${process.env.REACT_APP_API_URL}/capacidades/todo`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ const Visualizar = ({ role }) => {
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
-                setLoading(false); 
+                setLoading(false);
             });
     };
 
@@ -70,7 +70,9 @@ const Visualizar = ({ role }) => {
         setFiltros({ ...filtros, [columna]: Valor });
     };
 
-    const filtrarDatos = datos.filter(item => {
+    const datosArray = Array.isArray(datos) ? datos : [];
+
+    const filtrarDatos = datosArray.filter(item => {
         for (let key in filtros) {
             if (filtros[key] && item[key] && !item[key].toLowerCase().includes(filtros[key].toLowerCase())) {
                 return false;
@@ -143,26 +145,26 @@ const Visualizar = ({ role }) => {
     const clickAplicar = () => {
         const filasArray = Array.from(filasSeleccionadas);
         const promesasEliminacion = filasArray.map(cedula => {
-            return fetch('https://sicteferias.from-co.net:8120/capacidad/eliminar-filas', {
+            return fetch(`${process.env.REACT_APP_API_URL}/capacidades/eliminar-filas`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ cedula })
             })
-            .then(response => {
-                if (response.ok) {
-                    toast.success('Datos elminados', { className: 'toast-success' });
-                    console.log('Fila eliminada con éxito');
-                } else {
-                    toast.error('No se eliminar los datos', { className: 'toast-error' });
-                    throw new Error('No se pudo eliminar la fila');
-                }
-            })
-            .catch(error => {
-                console.error('Error al eliminar filas:', error);
-                toast.error(`Error al eliminar fila con cédula ${cedula}: ${error.message}`, { className: 'toast-error' });
-            });
+                .then(response => {
+                    if (response.ok) {
+                        toast.success('Datos elminados', { className: 'toast-success' });
+                        console.log('Fila eliminada con éxito');
+                    } else {
+                        toast.error('No se eliminar los datos', { className: 'toast-error' });
+                        throw new Error('No se pudo eliminar la fila');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al eliminar filas:', error);
+                    toast.error(`Error al eliminar fila con cédula ${cedula}: ${error.message}`, { className: 'toast-error' });
+                });
         });
 
         Promise.all(promesasEliminacion).then(() => {
@@ -225,10 +227,10 @@ const Visualizar = ({ role }) => {
                                                 {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)}   ></i>
                                             </div>
                                             <input type="text" onKeyDown={e => {
-                                                    if (e.key === 'Enter') {
-                                                        clickAplicarFiltros(e, columna);
-                                                    }
-                                                }}
+                                                if (e.key === 'Enter') {
+                                                    clickAplicarFiltros(e, columna);
+                                                }
+                                            }}
                                             />
                                         </th>
                                     ))}
@@ -236,29 +238,28 @@ const Visualizar = ({ role }) => {
                             </thead>
                             <tbody>
                                 {ordenarDatos.map((item, index) => (
-                                        <tr key={item.cedula} className={filasSeleccionadas.has(item.cedula) ? 'fila-seleccionada' : ''}>
-                                            {modoEdicion && (
-                                                <td>
-                                                    <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.cedula)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.cedula)} />
+                                    <tr key={item.cedula} className={filasSeleccionadas.has(item.cedula) ? 'fila-seleccionada' : ''}>
+                                        {modoEdicion && (
+                                            <td>
+                                                <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.cedula)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.cedula)} />
+                                            </td>
+                                        )}
+                                        {Object.keys(item).slice(1)
+                                            .filter(key => key !== 'codigoSap')
+                                            .filter(key => key !== 'contratista')
+                                            .filter(key => key !== 'tipoCarro')
+                                            .sort((a, b) => {
+                                                if (a === "placa") return b === "cargo" ? 1 : -1;
+                                                if (b === "placa") return a === "cargo" ? -1 : 1;
+                                                return 0;
+                                            })
+                                            .map((key, i) => (
+                                                <td key={i}>
+                                                    {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
                                                 </td>
-                                            )}
-                                            {Object.keys(item).slice(1)
-                                                .filter(key => key !== 'codigoSap')
-                                                .filter(key => key !== 'contratista')
-                                                .filter(key => key !== 'tipoCarro')
-                                                .sort((a, b) => {
-                                                    if (a === "placa") return b === "cargo" ? 1 : -1;
-                                                    if (b === "placa") return a === "cargo" ? -1 : 1;
-                                                    return 0; 
-                                                })
-                                                .map((key, i) => (
-                                                    <td key={i}>
-                                                        {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
-                                                    </td>
                                             ))}
-                                        </tr>
-                                    ))
-                                }
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
