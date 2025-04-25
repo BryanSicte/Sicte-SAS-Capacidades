@@ -11,7 +11,7 @@ const Visualizar = ({ role }) => {
     const [datos, setDatos] = useState([]);
     const [filtros, setFiltros] = useState({});
     const [error, setError] = useState('');
-    const [ordenarCampo, setOrdenarCampo] = useState('nombreCompleto');
+    const [ordenarCampo, setOrdenarCampo] = useState('NOMBRE_COMPLETO');
     const [ordenarOrden, setOrdenarOrden] = useState('asc');
     const [totalItems, setTotalItems] = useState(0);
     const [modoEdicion, setModoEdicion] = useState(false);
@@ -32,6 +32,7 @@ const Visualizar = ({ role }) => {
                 setDatos(data);
                 setTotalItems(data.length);
                 setLoading(false);
+                console.log(data)
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
@@ -136,13 +137,14 @@ const Visualizar = ({ role }) => {
             setTodasSeleccionadas(false);
         } else {
             const todas = new Set();
-            ordenarDatos.forEach(item => todas.add(item.cedula));
+            ordenarDatos.forEach(item => todas.add(item.CEDULA));
             setFilasSeleccionadas(todas);
             setTodasSeleccionadas(true);
         }
     };
 
     const clickAplicar = () => {
+        setLoading(true);
         const filasArray = Array.from(filasSeleccionadas);
         const promesasEliminacion = filasArray.map(cedula => {
             return fetch(`${process.env.REACT_APP_API_URL}/capacidades/eliminar-filas`, {
@@ -221,33 +223,48 @@ const Visualizar = ({ role }) => {
                                             </div>
                                         </th>
                                     )}
-                                    {['cedula', 'nombreCompleto', 'cargo', 'placa', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
-                                        <th key={columna}>
-                                            <div>
-                                                {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)}   ></i>
-                                            </div>
-                                            <input type="text" onKeyDown={e => {
-                                                if (e.key === 'Enter') {
-                                                    clickAplicarFiltros(e, columna);
-                                                }
-                                            }}
-                                            />
-                                        </th>
-                                    ))}
+                                    {ordenarDatos.length > 0 &&
+                                        Object.keys(ordenarDatos[0])
+                                            .filter(key => !['id', 'CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO'].includes(key))
+                                            .sort((a, b) => {
+                                                if (a === "placa") return b === "cargo" ? 1 : -1;
+                                                if (b === "placa") return a === "cargo" ? -1 : 1;
+                                                return 0;
+                                            })
+                                            .map(columna => (
+                                                <th key={`encabezado-${columna}`}>
+                                                    <div>
+                                                        {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
+                                                        <i
+                                                            className={getIconoFiltro(columna)}
+                                                            onClick={() => clickEncabezados(columna)}
+                                                            style={{ cursor: 'pointer' }}
+                                                        ></i>
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        onKeyDown={e => {
+                                                            if (e.key === 'Enter') {
+                                                                clickAplicarFiltros(e, columna);
+                                                            }
+                                                        }}
+                                                    />
+                                                </th>
+                                            ))}
                                 </tr>
                             </thead>
                             <tbody>
                                 {ordenarDatos.map((item, index) => (
-                                    <tr key={item.cedula} className={filasSeleccionadas.has(item.cedula) ? 'fila-seleccionada' : ''}>
+                                    <tr key={item.cedula} className={filasSeleccionadas.has(item.CEDULA) ? 'fila-seleccionada' : ''}>
                                         {modoEdicion && (
                                             <td>
-                                                <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.cedula)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.cedula)} />
+                                                <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.CEDULA)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.CEDULA)} />
                                             </td>
                                         )}
                                         {Object.keys(item).slice(1)
-                                            .filter(key => key !== 'codigoSap')
-                                            .filter(key => key !== 'contratista')
-                                            .filter(key => key !== 'tipoCarro')
+                                            .filter(key => key !== 'CODIGO_SAP')
+                                            .filter(key => key !== 'CONTRATISTA')
+                                            .filter(key => key !== 'TIPO_CARRO')
                                             .sort((a, b) => {
                                                 if (a === "placa") return b === "cargo" ? 1 : -1;
                                                 if (b === "placa") return a === "cargo" ? -1 : 1;
@@ -255,7 +272,7 @@ const Visualizar = ({ role }) => {
                                             })
                                             .map((key, i) => (
                                                 <td key={i}>
-                                                    {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
+                                                    {key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
                                                 </td>
                                             ))}
                                     </tr>

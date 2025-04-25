@@ -58,14 +58,14 @@ const Agregar = ({ role }) => {
             .then(response => response.json())
             .then(data => {
                 const admon = data
-                    .filter(item => item.tipoFacturacion === 'ADMON')
-                    .sort((a, b) => a.tipoMovil.localeCompare(b.tipoMovil))
-                    .map(item => item.tipoMovil);
+                    .filter(item => item.tipo_facturacion === 'ADMON')
+                    .sort((a, b) => a.tipo_movil.localeCompare(b.tipo_movil))
+                    .map(item => item.tipo_movil);
                 
                 const evento = data
-                    .filter(item => item.tipoFacturacion === 'EVENTO')
-                    .sort((a, b) => a.tipoMovil.localeCompare(b.tipoMovil))
-                    .map(item => item.tipoMovil);
+                    .filter(item => item.tipo_facturacion === 'EVENTO')
+                    .sort((a, b) => a.tipo_movil.localeCompare(b.tipo_movil))
+                    .map(item => item.tipo_movil);
 
                 setDatosMovil(data);
                 setTipoMovilAdmon(admon);
@@ -104,14 +104,9 @@ const Agregar = ({ role }) => {
         })
             .then(response => response.json())
             .then(data => {
-                const datosFiltrados = data.filter(item => {
-                    const fecha = new Date(item.fechaReporte);
-                    const dia = fecha.getDate();
-                    return dia === 2;
-                });
                 setDatosCompletosAgregados(data);
-                setDatosAgregados(datosFiltrados);
-                setTotalItemsAgregados(datosFiltrados.length);
+                setDatosAgregados(data);
+                setTotalItemsAgregados(data.length);
             })
             .catch(error => setError('Error al cargar los datos: ' + error.message));
     };
@@ -244,20 +239,21 @@ const Agregar = ({ role }) => {
     };
 
     const validarCapacidadMovil = (data) => {
+        console.log(data)
         if (selectedItemTipoFacturacion === 'EVENTO' && selectedItemTipoMovil !== 'BACKUP') {
             const datos = {
-                placa: data.placa,
+                placa: data.PLACA,
                 tipoFacturacion: selectedItemTipoFacturacion,
                 tipoDeMovil: selectedItemTipoMovil,
-                cedula: data.cedula,
+                cedula: data.CEDULA,
                 coordinador: selectedItemCoordinador
             };
 
-            const movilesExistente = datosCompletosAgregados.filter(movil => movil.placa === data.placa);
-            const movilesExistenteBandera = datosAgregadosBandera.filter(movil => movil.placa === data.placa);
+            const movilesExistente = datosCompletosAgregados.filter(movil => movil.PLACA === data.PLACA);
+            const movilesExistenteBandera = datosAgregadosBandera.filter(movil => movil.PLACA === data.PLACA);
 
             if (movilesExistente.length > 0) {
-                const capacidadMaxima = parseFloat(movilesExistente[0].personas) * parseFloat(movilesExistente[0].turnos);
+                const capacidadMaxima = parseFloat(movilesExistente[0].PERSONAS) * parseFloat(movilesExistente[0].TURNOS);
                 const capacidadActual = movilesExistente.length;
                 let capacidadActualBandera = 0;
 
@@ -276,7 +272,7 @@ const Agregar = ({ role }) => {
                 datosAgregadosBandera.push(datos);
                 return true;
             } else if (movilesExistente.length === 0 && movilesExistenteBandera.length > 0) {
-                const tipoDeMovilBandera = datosMovil.filter(movil => movil.tipoMovil === movilesExistenteBandera[0].tipoDeMovil);
+                const tipoDeMovilBandera = datosMovil.filter(movil => movil.tipo_movil === movilesExistenteBandera[0].tipoDeMovil);
                 const capacidadMaxima = parseFloat(tipoDeMovilBandera[0].personas) * parseFloat(tipoDeMovilBandera[0].turnos);
                 const capacidadActual = movilesExistenteBandera.length;
 
@@ -624,33 +620,44 @@ const Agregar = ({ role }) => {
                             </div>
                             <div className="tabla-container">
                                 <table>
-                                    <thead>
-                                        <tr>
-                                            {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
-                                                <th key={columna}>
-                                                    <div>
-                                                        {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltroAgregados(columna)} onClick={() => clickEncabezadosAgregados(columna)} style={{ cursor: 'pointer' }}></i>
-                                                    </div>
-                                                    <input type="text" onKeyDown={e => {
-                                                            if (e.key === 'Enter') {
-                                                                clickAplicarFiltrosAgregados(e, columna);
-                                                            }
-                                                        }}
-                                                    />
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    </thead>
+                                    {ordenarDatosAgregados.length > 0 && (
+                                        <thead>
+                                            <tr>
+                                                {Object.keys(ordenarDatosAgregados[0])
+                                                    .filter(key => !['id','CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO', 'TIPO_VEHICULO'].includes(key))
+                                                    .map(columna => (
+                                                        <th key={columna}>
+                                                            <div>
+                                                                {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
+                                                                <i
+                                                                    className={getIconoFiltroAgregados(columna)}
+                                                                    onClick={() => clickEncabezadosAgregados(columna)}
+                                                                    style={{ cursor: "pointer" }}
+                                                                ></i>
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === "Enter") {
+                                                                        clickAplicarFiltrosAgregados(e, columna);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </th>
+                                                    ))}
+                                            </tr>
+                                        </thead>
+                                    )}
                                     <tbody>
                                         {ordenarDatosAgregados.map((item) => (
                                             <tr key={item.cedula}>
                                                 {Object.keys(item).slice(1)
-                                                    .filter(key => key !== 'codigoSap')
-                                                    .filter(key => key !== 'contratista')
-                                                    .filter(key => key !== 'tipoCarro')
+                                                    .filter(key => key !== 'CODIGO_SAP')
+                                                    .filter(key => key !== 'CONTRATISTA')
+                                                    .filter(key => key !== 'TIPO_CARRO')
                                                     .map((key, i) => (
-                                                        <td key={i}>
-                                                            {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
+                                                        <td key={key}>
+                                                            {key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
                                                         </td>
                                                     ))}
                                             </tr>

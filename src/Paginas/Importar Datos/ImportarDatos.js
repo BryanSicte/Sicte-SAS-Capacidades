@@ -119,14 +119,9 @@ const ImportarDatos = ({ role }) => {
         })
             .then(response => response.json())
             .then(data => {
-                const datosFiltrados = data.filter(item => {
-                    const fecha = new Date(item.fechaReporte);
-                    const dia = fecha.getDate();
-                    return dia === 2;
-                });
                 setDatosCompletosAgregados(data);
-                setDatosAgregados(datosFiltrados);
-                setTotalItemsAgregados(datosFiltrados.length);
+                setDatosAgregados(data);
+                setTotalItemsAgregados(data.length);
             })
             .catch(error => setError('Error al cargar los datos: ' + error.message));
     };
@@ -607,33 +602,44 @@ const ImportarDatos = ({ role }) => {
                             </div>
                             <div className="tabla-container">
                                 <table>
-                                    <thead>
-                                        <tr>
-                                            {['cedula', 'nombreCompleto', 'cargo', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'placa', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
-                                                <th key={columna}>
-                                                    <div>
-                                                        {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltroAgregados(columna)} onClick={() => clickEncabezadosAgregados(columna)} style={{ cursor: 'pointer' }}></i>
-                                                    </div>
-                                                    <input type="text" onKeyDown={e => {
-                                                            if (e.key === 'Enter') {
-                                                                clickAplicarFiltrosAgregados(e, columna);
-                                                            }
-                                                        }}
-                                                    />
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    </thead>
+                                    {ordenarDatosAgregados.length > 0 && (
+                                        <thead>
+                                            <tr>
+                                                {Object.keys(ordenarDatosAgregados[0])
+                                                    .filter(key => !['id','CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO', 'TIPO_VEHICULO'].includes(key))
+                                                    .map(columna => (
+                                                        <th key={columna}>
+                                                            <div>
+                                                                {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
+                                                                <i
+                                                                    className={getIconoFiltroAgregados(columna)}
+                                                                    onClick={() => clickEncabezadosAgregados(columna)}
+                                                                    style={{ cursor: "pointer" }}
+                                                                ></i>
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === "Enter") {
+                                                                        clickAplicarFiltrosAgregados(e, columna);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </th>
+                                                    ))}
+                                            </tr>
+                                        </thead>
+                                    )}
                                     <tbody>
                                         {ordenarDatosAgregados.map((item) => (
                                             <tr key={item.cedula}>
                                                 {Object.keys(item).slice(1)
-                                                    .filter(key => key !== 'codigoSap')
-                                                    .filter(key => key !== 'contratista')
-                                                    .filter(key => key !== 'tipoCarro')
+                                                    .filter(key => key !== 'CODIGO_SAP')
+                                                    .filter(key => key !== 'CONTRATISTA')
+                                                    .filter(key => key !== 'TIPO_CARRO')
                                                     .map((key, i) => (
                                                         <td key={i}>
-                                                            {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
+                                                            {key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
                                                         </td>
                                                     ))}
                                             </tr>
