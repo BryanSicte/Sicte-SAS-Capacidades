@@ -28,7 +28,7 @@ const Login = () => {
                 const userRole = data.rol; // Asume que la respuesta tiene una propiedad 'rol'
                 console.log(data.rol)
                 Cookies.set('userRole', data.rol, { expires: 7 });
-                navigate('/Principal', { state: { role: userRole } });
+                navigate(`/Principal?role=${encodeURIComponent(userRole)}`);
             } else {
                 const errorText = await response.text();
                 if (response.status === 404) {

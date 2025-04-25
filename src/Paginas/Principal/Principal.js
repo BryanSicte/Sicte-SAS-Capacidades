@@ -13,7 +13,8 @@ import Cookies from 'js-cookie';
 const Principal = () => {
     const [datos, setDatos] = useState([]);
     const location = useLocation();
-    const role = Cookies.get('userRole');
+    const query = new URLSearchParams(location.search);
+    const role = query.get('role');
     const [paginaActiva, setPaginaActiva] = useState('Visualizar');
     const [error, setError] = useState('');
     const [datosMovil, setDatosMovil] = useState([]);
