@@ -215,7 +215,7 @@ const Visualizar = ({ role }) => {
                         <table>
                             <thead>
                                 <tr>
-                                    {modoEdicion && (
+                                    {ordenarDatos.length > 0 && modoEdicion && (
                                         <th>
                                             <div>
                                                 <span>Eliminar</span>

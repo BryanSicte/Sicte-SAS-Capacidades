@@ -24,7 +24,7 @@ const ValidarPersonal = ({
     const [datos, setDatos] = useState([]);
     const [datosAgregados, setDatosAgregados] = useState([]);
     const [filtros, setFiltros] = useState({});
-    const [ordenarCampo, setOrdenarCampo] = useState('nombreCompleto');
+    const [ordenarCampo, setOrdenarCampo] = useState('NOMBRE_COMPLETO');
     const [ordenarOrden, setOrdenarOrden] = useState('asc');
     const [totalItems, setTotalItems] = useState(0);
     const [filasSeleccionadas, setFilasSeleccionadas] = useState(new Set());
@@ -46,9 +46,9 @@ const ValidarPersonal = ({
                     const newItem = { ...item };
 
                     Object.keys(newItem).forEach(key => {
-                        if (key === 'movil') {
+                        if (key === 'MOVIL') {
                             newItem[key] = parseFloat(item[key]).toFixed(3);
-                        } else if (key === 'personas') {
+                        } else if (key === 'PERSONAS') {
                             newItem[key] = parseFloat(item[key]).toFixed(0);
                         } else {
                             newItem[key] = item[key];
@@ -58,12 +58,17 @@ const ValidarPersonal = ({
                     return newItem;
                 });
                 const tipoMovilValidas2 = new Set(tipoMovilValidas);
-                const datosFiltrados = datosFormateados.filter(item => tipoMovilValidas2.has(item.tipoDeMovil));
+                const datosFiltrados = datosFormateados.filter(item => tipoMovilValidas2.has(item.TIPO_DE_MOVIL));
                 const tipoFacturacionValidas2 = new Set(tipoFacturacionValidas);
-                const datosFiltrados2 = datosFiltrados.filter(item => tipoFacturacionValidas2.has(item.tipoFacturacion));
+                console.log(tipoFacturacionValidas2)
+                const datosFiltrados2 = datosFiltrados.filter(item => tipoFacturacionValidas2.has(item.TIPO_FACTURACION));
+                console.log(datosFiltrados2)
                 const coordinadores2 = new Set(coordinadores);
-                const datosFiltrados3 = datosFiltrados2.filter(item => coordinadores2.has(item.coordinador));
+                console.log(coordinadores2)
+                const datosFiltrados3 = datosFiltrados2.filter(item => coordinadores2.has(item.COORDINADOR));
+                console.log(datosFiltrados3)
                 const datosFiltrados4 = datosFiltrados3.filter(item => validarPlaca(item));
+                console.log(datosFiltrados4)
                 setDatos(datosFiltrados4);
                 setTotalItems(datosFiltrados4.length);
                 setLoading(false);
@@ -100,8 +105,8 @@ const ValidarPersonal = ({
     };
 
     const validarPlaca = (item) => {
-        const placa = item.placa;
-        if (item.tipoFacturacion === 'EVENTO' && item.tipoDeMovil !== 'BACKUP') {
+        const placa = item.PLACA;
+        if (item.TIPO_FACTURACION === 'EVENTO' && item.TIPO_DE_MOVIL !== 'BACKUP') {
 
             if (placa && placa.length === 6) {
                 const primerosTres = placa.substring(0, 3);
@@ -115,7 +120,7 @@ const ValidarPersonal = ({
                     return true;
                 }
             }
-        } else if (item.tipoFacturacion === 'ADMON' || (item.tipoFacturacion === 'EVENTO' && item.tipoDeMovil === 'BACKUP')) {
+        } else if (item.TIPO_FACTURACION === 'ADMON' || (item.TIPO_FACTURACION === 'EVENTO' && item.TIPO_DE_MOVIL === 'BACKUP')) {
             if (placa.length === 6) {
                 const primerosTres = placa.substring(0, 3);
                 const cuartoYQuinto = placa.substring(3, 5);
@@ -202,7 +207,7 @@ const ValidarPersonal = ({
             setTodasSeleccionadas(false);
         } else {
             const todas = new Set();
-            ordenarDatos.forEach(item => todas.add(item.cedula));
+            ordenarDatos.forEach(item => todas.add(item.CEDULA));
             setFilasSeleccionadas(todas);
             setTodasSeleccionadas(true);
         }
@@ -360,47 +365,59 @@ const ValidarPersonal = ({
                         </div>
                         <div className="tabla-container">
                             <table>
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <div>
-                                                <span>Validado</span>
-                                                <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
-                                            </div>
-                                        </th>
-                                        {['cedula', 'nombreCompleto', 'cargo', 'placa', 'centroCosto', 'nomina', 'regional', 'ciudadTrabajo', 'red', 'cliente', 'area', 'subArea', 'tipoDeMovil', 'tipoFacturacion', 'movil', 'coordinador', 'director', 'valorEsperado', 'fechaReporte', 'mes', 'año', 'turnos', 'personas', 'carpeta'].map(columna => (
-                                            <th key={columna}>
+                                {ordenarDatos.length > 0 && (
+                                    <thead>
+                                        <tr>
+                                            <th>
                                                 <div>
-                                                    {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
+                                                    <span>Validado</span>
+                                                    <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
                                                 </div>
-                                                <input type="text" onKeyDown={e => {
-                                                    if (e.key === 'Enter') {
-                                                        clickAplicarFiltros(e, columna);
-                                                    }
-                                                }}
-                                                />
                                             </th>
-                                        ))}
-                                    </tr>
-                                </thead>
+                                            {Object.keys(ordenarDatos[0])
+                                                .filter(key => !['id', 'CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO', 'TIPO_VEHICULO'].includes(key))
+                                                .map(columna => (
+                                                    <th key={columna}>
+                                                        <div>
+                                                            {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
+                                                            <i
+                                                                className={getIconoFiltro(columna)}
+                                                                onClick={() => clickEncabezados(columna)}
+                                                                style={{ cursor: "pointer" }}
+                                                            ></i>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter") {
+                                                                    clickAplicarFiltros(e, columna);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </th>
+                                                ))}
+                                        </tr>
+                                    </thead>
+                                )}
                                 <tbody>
                                     {ordenarDatos.map((item, index) => (
-                                        <tr key={item.cedula} className={filasSeleccionadas.has(item.cedula) ? 'fila-seleccionada' : ''}>
+                                        <tr key={item.cedula} className={filasSeleccionadas.has(item.CEDULA) ? 'fila-seleccionada' : ''}>
                                             <td>
-                                                <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.cedula)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.cedula)} />
+                                                <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.CEDULA)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.CEDULA)} />
                                             </td>
                                             {Object.keys(item).slice(1)
-                                                .filter(key => key !== 'codigoSap')
-                                                .filter(key => key !== 'contratista')
-                                                .filter(key => key !== 'tipoCarro')
+                                                .filter(key => key !== 'CODIGO_SAP')
+                                                .filter(key => key !== 'CONTRATISTA')
+                                                .filter(key => key !== 'TIPO_CARRO')
+                                                .filter(key => key !== 'TIPO_VEHICULO')
                                                 .sort((a, b) => {
                                                     if (a === "placa") return b === "cargo" ? 1 : -1;
                                                     if (b === "placa") return a === "cargo" ? -1 : 1;
-                                                    return 0; 
+                                                    return 0;
                                                 })
                                                 .map((key, i) => (
                                                     <td key={i}>
-                                                        {key === 'valorEsperado' ? formatearValorEsperado(item[key]) : item[key]}
+                                                        {key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
                                                     </td>
                                                 ))}
                                         </tr>

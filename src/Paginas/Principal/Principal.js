@@ -37,8 +37,8 @@ const Principal = () => {
         .then(response => response.json())
         .then(data => {
             setDatosMovil(data);
-            const tipoMovil = data.map(item => item.tipoMovil);
-            const tipoFacturacion = data.map(item => item.tipoFacturacion);
+            const tipoMovil = data.map(item => item.tipo_movil);
+            const tipoFacturacion = data.map(item => item.tipo_facturacion);
             const tipoMovilUnicos = Array.from(new Set(tipoMovil));
             const tipoFacturacionUnicos = Array.from(new Set(tipoFacturacion));
             setTipoMovilValidas(tipoMovilUnicos);

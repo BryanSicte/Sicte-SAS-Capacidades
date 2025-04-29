@@ -60,20 +60,20 @@ const ImportarDatos = ({ role }) => {
             .then(data => {
 
                 const facturacion = data
-                    .sort((a, b) => a.tipoFacturacion.localeCompare(b.tipoFacturacion))
-                    .map(item => item.tipoFacturacion);
+                    .sort((a, b) => a.tipo_facturacion.localeCompare(b.tipo_facturacion))
+                    .map(item => item.tipo_facturacion);
 
                 const facturacionUnica = [...new Set(facturacion)];
 
                 const admon = data
-                    .filter(item => item.tipoFacturacion === 'ADMON')
-                    .sort((a, b) => a.tipoMovil.localeCompare(b.tipoMovil))
-                    .map(item => item.tipoMovil);
+                    .filter(item => item.tipo_facturacion === 'ADMON')
+                    .sort((a, b) => a.tipo_movil.localeCompare(b.tipo_movil))
+                    .map(item => item.tipo_movil);
                 
                 const evento = data
-                    .filter(item => item.tipoFacturacion === 'EVENTO')
-                    .sort((a, b) => a.tipoMovil.localeCompare(b.tipoMovil))
-                    .map(item => item.tipoMovil);
+                    .filter(item => item.tipo_facturacion === 'EVENTO')
+                    .sort((a, b) => a.tipo_movil.localeCompare(b.tipo_movil))
+                    .map(item => item.tipo_movil);
 
                 setDatosMovil(data);
                 setTipoFacturacion(facturacionUnica);
