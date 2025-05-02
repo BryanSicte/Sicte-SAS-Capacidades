@@ -60,15 +60,10 @@ const ValidarPersonal = ({
                 const tipoMovilValidas2 = new Set(tipoMovilValidas);
                 const datosFiltrados = datosFormateados.filter(item => tipoMovilValidas2.has(item.TIPO_DE_MOVIL));
                 const tipoFacturacionValidas2 = new Set(tipoFacturacionValidas);
-                console.log(tipoFacturacionValidas2)
                 const datosFiltrados2 = datosFiltrados.filter(item => tipoFacturacionValidas2.has(item.TIPO_FACTURACION));
-                console.log(datosFiltrados2)
                 const coordinadores2 = new Set(coordinadores);
-                console.log(coordinadores2)
                 const datosFiltrados3 = datosFiltrados2.filter(item => coordinadores2.has(item.COORDINADOR));
-                console.log(datosFiltrados3)
                 const datosFiltrados4 = datosFiltrados3.filter(item => validarPlaca(item));
-                console.log(datosFiltrados4)
                 setDatos(datosFiltrados4);
                 setTotalItems(datosFiltrados4.length);
                 setLoading(false);
@@ -281,18 +276,16 @@ const ValidarPersonal = ({
     const enviarSeleccionadosAlBackend = () => {
         const filasArray = Array.from(filasSeleccionadas);
         const promises = filasArray.map(cedula => {
-            const item = ordenarDatos.find(item => item.cedula === cedula);
+            const item = ordenarDatos.find(item => item.CEDULA === cedula);
             const data = {
                 id: 1,
-                carpeta: item.carpeta,
-                placa: item.placa,
-                tipoFacturacion: item.tipoFacturacion,
-                tipoMovil: item.tipoDeMovil,
-                cedula: item.cedula,
-                coordinador: item.coordinador
+                carpeta: item.CARPETA,
+                placa: item.PLACA,
+                tipoFacturacion: item.TIPO_FACTURACION,
+                tipoMovil: item.TIPO_DE_MOVIL,
+                cedula: item.CEDULA,
+                coordinador: item.COORDINADOR
             };
-
-            console.log(data)
 
             if (!validarCapacidadMovil(data)) {
                 toast.error(`La movil con placa ${data.placa} ha excedido su capacidad.`);

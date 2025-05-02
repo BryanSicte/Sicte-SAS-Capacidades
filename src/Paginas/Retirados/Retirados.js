@@ -23,8 +23,6 @@ const Retirados = ({ role }) => {
                 setDatos(data);
                 setTotalItems(data.length);
                 setLoading(false);
-
-                console.log(data)
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
