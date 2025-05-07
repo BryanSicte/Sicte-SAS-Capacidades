@@ -257,7 +257,7 @@ const ValidarPersonal = ({
                 datosAgregadosBandera.push(datos);
                 return true;
             } else if (movilesExistente.length === 0 && movilesExistenteBandera.length > 0) {
-                const tipoDeMovilBandera = datosMovil.filter(movil => movil.tipoMovil === movilesExistenteBandera[0].tipoDeMovil);
+                const tipoDeMovilBandera = datosMovil.filter(movil => movil.tipo_movil === movilesExistenteBandera[0].tipoDeMovil);
                 const capacidadMaxima = parseFloat(tipoDeMovilBandera[0].personas) * parseFloat(tipoDeMovilBandera[0].turnos);
                 const capacidadActual = movilesExistenteBandera.length;
 
@@ -274,6 +274,7 @@ const ValidarPersonal = ({
     };
 
     const enviarSeleccionadosAlBackend = () => {
+        setLoading(true);
         const filasArray = Array.from(filasSeleccionadas);
         const promises = filasArray.map(cedula => {
             const item = ordenarDatos.find(item => item.CEDULA === cedula);
@@ -320,7 +321,10 @@ const ValidarPersonal = ({
             setDatos([]);
             setFilasSeleccionadas(new Set());
             setTodasSeleccionadas(false);
-            cargarDatos();
+
+            setTimeout(() => {
+                cargarDatos();
+            }, 3000)
         });
     };
 
