@@ -15,7 +15,7 @@ const Login = () => {
         setError('');
 
         try {
-            const response = await fetch('https://sicteferias.from-co.net:8120/user/login/login', {
+            const response = await fetch('https://sicte-sas-capacidades-backend-no-production.up.railway.app/api/usuarios/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Cambia el tipo de contenido a application/json

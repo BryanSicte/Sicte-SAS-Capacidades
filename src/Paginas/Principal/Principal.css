@@ -1,102 +1,100 @@
-/* Contenedor principal */
-#Principal-Container {
-    display: flex; /* Utiliza el modelo de caja flexible */
-    height: 100vh; /* Toma toda la altura del viewport */
-    width: 100%; /* Toma todo el ancho disponible */
-}
-
-/* Menu Lateral */
-#Principal-Menu-Lateral {
-    background-color: #0B1A46; /* Color de fondo azul oscuro */
-    width: 200px; /* Ancho fijo del menú lateral */
-    height: 98vh; /* Toma casi toda la altura del viewport */
-    padding: 10px; /* Relleno interno */
-    position: fixed; /* Posicionamiento fijo */
-    top: 0; /* Desde la parte superior */
-    left: 0; /* Desde la parte izquierda */
-    margin: 5px; /* Margen exterior */
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
-}
-
-/* Estilos para el título del menú lateral */
-#Principal-Titulo {
-    color: white; /* Color del texto */
-    text-align: center; /* Alineación centrada del texto */
-    padding: 30px 0px 20px 0px; /* Relleno del título */
-}
-
-/* Estilos para el título h3 dentro del menú lateral */
-#Principal-Titulo h3 {
-    margin: 0; /* Elimina el margen */
-    padding-bottom: 10px; /* Relleno inferior */
-    border-bottom: 1px solid white; /* Línea inferior */
-}
-
-
-
-
-
-/* Estilos para la lista del menú lateral */
-#Principal-Lista ul {
-    list-style-type: none; /* Elimina los marcadores de lista */
-    padding: 0; /* Elimina el relleno */
-}
-
-/* Estilos para los elementos de la lista del menú lateral */
-#Principal-Lista ul li {
-    margin-bottom: 5px;
-    padding: 5px 5px 5px 5px; /* Relleno superior e inferior */
-    text-align: left; /* Alineación del texto a la izquierda */
-    color: white; /* Color del texto */
-    cursor: pointer; /* Cambia el cursor al pasar sobre el elemento */
-    font-size: 18px; /* Tamaño de fuente */
-}
-
-#Principal-Lista ul li i{
-    padding-right: 10px;
-}
-
-#Principal-Lista li {
-    text-decoration: none;
+.Principal-Container {
     display: flex;
-    color: #64b2ff;
-    font-size: 15px;
-    font-family: sans-serif;
-    justify-content: start;
-    align-items: center;
-    width: 100%;
+    height: 100vh;
+    width: 100vw;
 
-    &:hover {
-        color: #fff;
-        background-color: #e0792a;
-        transition: 0.3s all ease;
-        border-radius: 5px;
+    .Principal-Menu-Lateral {
+        display: flex;
+        flex-direction: column;
+        background-color: #0B1A46;
+        width: 200px;
+        height: 100%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+        .Principal-Titulo {
+            width: 100%;
+            color: white;
+            text-align: center;
+            padding: 30px 0px 10px 0px;
+
+            h3 {
+                margin: 0;
+                padding-bottom: 10px;
+                border-bottom: 1px solid white;
+            }
+        }
+
+        .Principal-Lista {
+            padding: 10px;
+            
+            ul {
+                list-style-type: none;
+                padding: 0;
+
+                li {
+                    display: flex;
+                    margin-bottom: 5px;
+                    padding: 5px 5px 5px 5px;
+                    text-align: left;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 18px;
+                    text-decoration: none;
+                    font-family: sans-serif;
+                    justify-content: start;
+                    align-items: center;
+                    width: 100%;
+
+                    &:hover {
+                        color: #fff;
+                        background-color: #e0792a;
+                        transition: 0.3s all ease;
+                        border-radius: 5px;
+                    }
+
+                    &.active {
+                        background-color: #e0792a;
+                        border-radius: 5px;
+                    }
+
+                    i {
+                        padding-right: 10px;
+                    }
+                }
+            }
+        }
+    }
+
+    .contenido {
+        width: calc(100% - 200px);
+        height: 100%;
     }
 }
 
-#Principal-Lista ul li.active {
-    background-color: #e0792a; /* Cambia el color de fondo al elemento activo */
-    border-radius: 5px;
-}
-
-
-
-
-
 /* Contenido */
 #Principal-Visualizar {
-    position: fixed; /* Posicionamiento fijo */
-    top: 0; /* Desde la parte superior */
-    left: 0; /* Desde la parte izquierda */
-    width: calc(100% - 215px); /* Ancho dinámico basado en el ancho del menú lateral */
-    flex-grow: 1; /* Ocupa el espacio restante */
-    background-color: white; /* Color de fondo */
-    padding: 15px; /* Relleno interno */
-    margin: 5px 5px 5px 210px; /* Margen exterior */
-    height: 98vh; /* Toma casi toda la altura del viewport */
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    position: fixed;
+    /* Posicionamiento fijo */
+    top: 0;
+    /* Desde la parte superior */
+    left: 0;
+    /* Desde la parte izquierda */
+    width: calc(100% - 215px);
+    /* Ancho dinámico basado en el ancho del menú lateral */
+    flex-grow: 1;
+    /* Ocupa el espacio restante */
+    background-color: white;
+    /* Color de fondo */
+    padding: 15px;
+    /* Relleno interno */
+    margin: 5px 5px 5px 210px;
+    /* Margen exterior */
+    height: 98vh;
+    /* Toma casi toda la altura del viewport */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra */
     display: flex;
     flex-direction: column;
     height: 98vh;
@@ -108,17 +106,28 @@
     justify-content: center;
     align-items: center;
 
-    position: fixed; /* Posicionamiento fijo */
-    top: 0; /* Desde la parte superior */
-    left: 0; /* Desde la parte izquierda */
-    width: calc(100% - 215px); /* Ancho dinámico basado en el ancho del menú lateral */
-    flex-grow: 1; /* Ocupa el espacio restante */
-    background-color: white; /* Color de fondo */
-    padding: 15px; /* Relleno interno */
-    margin: 5px 5px 5px 210px; /* Margen exterior */
-    height: 98vh; /* Toma casi toda la altura del viewport */
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    position: fixed;
+    /* Posicionamiento fijo */
+    top: 0;
+    /* Desde la parte superior */
+    left: 0;
+    /* Desde la parte izquierda */
+    width: calc(100% - 215px);
+    /* Ancho dinámico basado en el ancho del menú lateral */
+    flex-grow: 1;
+    /* Ocupa el espacio restante */
+    background-color: white;
+    /* Color de fondo */
+    padding: 15px;
+    /* Relleno interno */
+    margin: 5px 5px 5px 210px;
+    /* Margen exterior */
+    height: 98vh;
+    /* Toma casi toda la altura del viewport */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra */
     height: 98vh;
 }
 
@@ -145,7 +154,8 @@
 }
 
 #Principal-Visualizar #Botones-Encabezado #Boton-Borrar-Filtros:hover {
-    background-color: #e0792a; /* Color de fondo al pasar el cursor */
+    background-color: #e0792a;
+    /* Color de fondo al pasar el cursor */
 }
 
 #Principal-Visualizar #Botones-Encabezado #Boton-Editar {
@@ -160,7 +170,8 @@
 }
 
 #Principal-Visualizar #Botones-Encabezado #Boton-Editar:hover {
-    background-color: #e0792a; /* Color de fondo al pasar el cursor */
+    background-color: #e0792a;
+    /* Color de fondo al pasar el cursor */
 }
 
 #Principal-Visualizar #Botones-Encabezado #Boton-Exportar-Excel {
@@ -170,7 +181,8 @@
 }
 
 #Principal-Visualizar #Botones-Encabezado #Boton-Exportar-Excel:hover {
-    background-color: #e0792a; /* Color de fondo al pasar el cursor */
+    background-color: #e0792a;
+    /* Color de fondo al pasar el cursor */
 }
 
 #Principal-Visualizar #Botones-Encabezado .Fecha-Reporte-Select {
@@ -178,7 +190,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center; /* Centra el contenido del contenedor */
+    text-align: center;
+    /* Centra el contenido del contenedor */
     height: 100%;
     border: 1px;
 }
@@ -198,7 +211,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center; /* Centra el contenido del contenedor */
+    text-align: center;
+    /* Centra el contenido del contenedor */
     width: 100%;
     height: 38px;
     border: 1px;
@@ -232,54 +246,71 @@
 
 /* Estilos para las barras de desplazamiento */
 #Principal-Visualizar #Botones-Encabezado #Fecha-Reporte-Boton::-webkit-scrollbar,
-#Principal-ValidarMoviles .carta-container::-webkit-scrollbar, #Principal-Agregar-Botones::-webkit-scrollbar,
-#Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar, #Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar,
-#Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar, #Principal-Visualizar .tabla-container::-webkit-scrollbar {
+#Principal-ValidarMoviles .carta-container::-webkit-scrollbar,
+#Principal-Agregar-Botones::-webkit-scrollbar,
+#Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar,
+#Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar,
+#Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar,
+#Principal-Visualizar .tabla-container::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 
 #Principal-Visualizar #Botones-Encabezado #Fecha-Reporte-Boton::-webkit-scrollbar-thumb,
-#Principal-ValidarMoviles .carta-container::-webkit-scrollbar-thumb, #Principal-Agregar-Botones::-webkit-scrollbar-thumb,
-#Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar-thumb, #Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-thumb,
-#Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-thumb, #Principal-Visualizar .tabla-container::-webkit-scrollbar-thumb {
+#Principal-ValidarMoviles .carta-container::-webkit-scrollbar-thumb,
+#Principal-Agregar-Botones::-webkit-scrollbar-thumb,
+#Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar-thumb,
+#Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-thumb,
+#Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-thumb,
+#Principal-Visualizar .tabla-container::-webkit-scrollbar-thumb {
     background-color: #e0792a;
     border-radius: 5px;
 }
 
 #Principal-Visualizar #Botones-Encabezado #Fecha-Reporte-Boton::-webkit-scrollbar-thumb:hover,
-#Principal-ValidarMoviles .carta-container::-webkit-scrollbar-thumb:hover, #Principal-Agregar-Botones::-webkit-scrollbar-thumb:hover,
-#Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar-thumb:hover, #Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-thumb:hover,
-#Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-thumb:hover, #Principal-Visualizar .tabla-container::-webkit-scrollbar-thumb:hover {
+#Principal-ValidarMoviles .carta-container::-webkit-scrollbar-thumb:hover,
+#Principal-Agregar-Botones::-webkit-scrollbar-thumb:hover,
+#Principal-Agregar-Botones .dropdown .dropdown-menu::-webkit-scrollbar-thumb:hover,
+#Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-thumb:hover,
+#Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-thumb:hover,
+#Principal-Visualizar .tabla-container::-webkit-scrollbar-thumb:hover {
     background-color: #ff6f00;
 }
 
 #Principal-ValidarMoviles .carta-container::-webkit-scrollbar-track,
-#Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-track, #Principal-Agregar-Botones::-webkit-scrollbar-track,
-#Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-track, #Principal-Visualizar .tabla-container::-webkit-scrollbar-track {
+#Principal-Agregar-Agregados .tabla-container::-webkit-scrollbar-track,
+#Principal-Agregar-Botones::-webkit-scrollbar-track,
+#Principal-Agregar-Pendientes .tabla-container::-webkit-scrollbar-track,
+#Principal-Visualizar .tabla-container::-webkit-scrollbar-track {
     background-color: #ddd;
 }
 
 /* Estilos para tablas */
 #Principal-Agregar-Agregados table,
-#Principal-Agregar-Pendientes table, #Principal-Visualizar table {
-    width: 100%; /* Ancho completo */
-    border-collapse: collapse; /* Colapsa los bordes de la tabla */
+#Principal-Agregar-Pendientes table,
+#Principal-Visualizar table {
+    width: 100%;
+    /* Ancho completo */
+    border-collapse: collapse;
+    /* Colapsa los bordes de la tabla */
 }
 
 #Principal-Agregar-Agregados thead,
-#Principal-Agregar-Pendientes thead, #Principal-Visualizar thead {
+#Principal-Agregar-Pendientes thead,
+#Principal-Visualizar thead {
     position: sticky;
     top: 0;
 }
 
 #Principal-Agregar-Agregados thead th:hover,
-#Principal-Agregar-Pendientes thead th:hover, #Principal-Visualizar thead th:hover {
+#Principal-Agregar-Pendientes thead th:hover,
+#Principal-Visualizar thead th:hover {
     background-color: #e0792a;
 }
 
 #Principal-Agregar-Agregados,
-#Principal-Agregar-Pendientes, #Principal-Visualizar #Entrada-Texto th{
+#Principal-Agregar-Pendientes,
+#Principal-Visualizar #Entrada-Texto th {
     background-color: #1c2d5f;
 }
 
@@ -288,57 +319,77 @@
 }
 
 #Principal-Agregar-Agregados thead input,
-#Principal-Agregar-Pendientes thead input, #Principal-Visualizar thead input {
+#Principal-Agregar-Pendientes thead input,
+#Principal-Visualizar thead input {
     padding: 4px;
     margin-top: 4px;
 }
 
 /* Estilos para celdas de tabla */
 #Principal-Agregar-Agregados td,
-#Principal-Agregar-Pendientes td, #Principal-Visualizar td {
-    border: 1px solid #ddd; /* Borde de celda */
-    padding: 8px; /* Relleno interno */
-    text-align: center; /* Alineación del texto a la izquierda */
+#Principal-Agregar-Pendientes td,
+#Principal-Visualizar td {
+    border: 1px solid #ddd;
+    /* Borde de celda */
+    padding: 8px;
+    /* Relleno interno */
+    text-align: center;
+    /* Alineación del texto a la izquierda */
     font-size: 11px;
 }
 
 #Principal-Agregar-Agregados th,
-#Principal-Agregar-Pendientes th, #Principal-Visualizar th {
-    border-left: 1px solid #ddd; /* Borde de celda */
-    border-right: 1px solid #ddd; /* Borde de celda */
-    padding: 8px; /* Relleno interno */
-    text-align: center; /* Alineación del texto a la izquierda */
-    background-color: #223775; /* Color de fondo */
-    color: white; /* Color del texto */
+#Principal-Agregar-Pendientes th,
+#Principal-Visualizar th {
+    border-left: 1px solid #ddd;
+    /* Borde de celda */
+    border-right: 1px solid #ddd;
+    /* Borde de celda */
+    padding: 8px;
+    /* Relleno interno */
+    text-align: center;
+    /* Alineación del texto a la izquierda */
+    background-color: #223775;
+    /* Color de fondo */
+    color: white;
+    /* Color del texto */
     font-size: 13px;
     position: relative;
 }
 
 /* Estilos para filas de tabla alternadas */
 #Principal-Agregar-Agregados tr:nth-child(even),
-#Principal-Agregar-Pendientes tr:nth-child(even), #Principal-Visualizar tr:nth-child(even) {
-    background-color: #f2f2f2; /* Color de fondo */
+#Principal-Agregar-Pendientes tr:nth-child(even),
+#Principal-Visualizar tr:nth-child(even) {
+    background-color: #f2f2f2;
+    /* Color de fondo */
 }
 
 /* Estilos para filas de tabla al pasar el cursor */
 #Principal-Agregar-Agregados tr:hover,
-#Principal-Agregar-Pendientes tr:hover, #Principal-Visualizar tr:hover {
-    background-color: #a6dfa8; /* Color de fondo al pasar el cursor */
+#Principal-Agregar-Pendientes tr:hover,
+#Principal-Visualizar tr:hover {
+    background-color: #a6dfa8;
+    /* Color de fondo al pasar el cursor */
 }
 
-#Principal-Agregar #Checkbox-Filas, #Principal-Visualizar #Checkbox-Filas {
+#Principal-Agregar #Checkbox-Filas,
+#Principal-Visualizar #Checkbox-Filas {
     width: 20px;
     height: 20px;
 }
 
-#Principal-Agregar #Checkbox-Encabezado, #Principal-Visualizar #Checkbox-Encabezado {
+#Principal-Agregar #Checkbox-Encabezado,
+#Principal-Visualizar #Checkbox-Encabezado {
     width: 20px;
     height: 20px;
 }
 
-#Principal-Agregar .fila-seleccionada, #Principal-Visualizar .fila-seleccionada {
+#Principal-Agregar .fila-seleccionada,
+#Principal-Visualizar .fila-seleccionada {
     background-color: rgb(80, 141, 80) !important;
-    color: white; /* Para asegurar que el texto sea visible */
+    color: white;
+    /* Para asegurar que el texto sea visible */
 }
 
 #Principal-Visualizar thead {
@@ -379,16 +430,19 @@
 
 #Principal-ValidarPersonal .fila-equis {
     background-color: rgb(211, 51, 51) !important;
-    color: white; /* Para asegurar que el texto sea visible */
+    color: white;
+    /* Para asegurar que el texto sea visible */
 }
 
 #Principal-ValidarPersonal .fila-chulo {
     background-color: rgb(80, 141, 80) !important;
-    color: white; /* Para asegurar que el texto sea visible */
+    color: white;
+    /* Para asegurar que el texto sea visible */
 }
 
 #Principal-Agregar-Agregados #piePagina,
-#Principal-Agregar-Pendientes #piePagina, #Principal-Visualizar #piePagina{
+#Principal-Agregar-Pendientes #piePagina,
+#Principal-Visualizar #piePagina {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -396,7 +450,7 @@
     margin-top: 7px;
 }
 
-#Principal-Visualizar #Botones-piePagina{
+#Principal-Visualizar #Botones-piePagina {
     display: flex;
     align-items: center;
     flex: 0 0 auto;
@@ -404,7 +458,7 @@
 }
 
 #Principal-Agregar-Botones #Boton-Aplicar,
-#Principal-Visualizar #Botones-piePagina #Boton-Aplicar{
+#Principal-Visualizar #Botones-piePagina #Boton-Aplicar {
     margin: 0px 10px 0px 0px;
     background-color: green;
     color: white;
@@ -433,17 +487,28 @@
 
 
 #Principal-Agregar-Botones {
-    position: fixed; /* Posicionamiento fijo */
-    top: 0; /* Desde la parte superior */
-    left: 0; /* Desde la parte izquierda */
-    width: calc(100% - 215px); /* Ancho dinámico basado en el ancho del menú lateral */
-    flex-grow: 1; /* Ocupa el espacio restante */
-    background-color: white; /* Color de fondo */
-    padding: 15px 15px; /* Relleno interno */
-    margin: 5px 5px 5px 210px; /* Margen exterior */
-    height: 14vh; /* Toma casi toda la altura del viewport */
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    position: fixed;
+    /* Posicionamiento fijo */
+    top: 0;
+    /* Desde la parte superior */
+    left: 0;
+    /* Desde la parte izquierda */
+    width: calc(100% - 215px);
+    /* Ancho dinámico basado en el ancho del menú lateral */
+    flex-grow: 1;
+    /* Ocupa el espacio restante */
+    background-color: white;
+    /* Color de fondo */
+    padding: 15px 15px;
+    /* Relleno interno */
+    margin: 5px 5px 5px 210px;
+    /* Margen exterior */
+    height: 14vh;
+    /* Toma casi toda la altura del viewport */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra */
     z-index: 1;
     display: flex;
     justify-content: space-between;
@@ -460,12 +525,14 @@
 }
 
 #Principal-Agregar-Botones .dropdown .dropdown-menu {
-    max-height: 500px; /* Ajusta la altura máxima según tus necesidades */
+    max-height: 500px;
+    /* Ajusta la altura máxima según tus necesidades */
     overflow-y: auto;
     --bs-dropdown-font-size: 13px
 }
 
-#Principal-Agregar-Botones .form-control, #Principal-Agregar-Botones label {
+#Principal-Agregar-Botones .form-control,
+#Principal-Agregar-Botones label {
     font-size: 16px
 }
 
@@ -509,17 +576,28 @@
 }
 
 #Principal-Agregar-Pendientes {
-    position: fixed; /* Posicionamiento fijo */
-    top: 0; /* Desde la parte superior */
-    left: 0; /* Desde la parte izquierda */
-    width: calc(60% - 150px); /* Ancho dinámico basado en el ancho del menú lateral */
-    flex-grow: 1; /* Ocupa el espacio restante */
-    background-color: white; /* Color de fondo */
-    padding: 15px 15px; /* Relleno interno */
-    margin: calc(14vh + 10px) 5px 5px 210px; /* Margen exterior */
-    height: calc(98vh - 14vh - 5px); /* Toma casi toda la altura del viewport */
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    position: fixed;
+    /* Posicionamiento fijo */
+    top: 0;
+    /* Desde la parte superior */
+    left: 0;
+    /* Desde la parte izquierda */
+    width: calc(60% - 150px);
+    /* Ancho dinámico basado en el ancho del menú lateral */
+    flex-grow: 1;
+    /* Ocupa el espacio restante */
+    background-color: white;
+    /* Color de fondo */
+    padding: 15px 15px;
+    /* Relleno interno */
+    margin: calc(14vh + 10px) 5px 5px 210px;
+    /* Margen exterior */
+    height: calc(98vh - 14vh - 5px);
+    /* Toma casi toda la altura del viewport */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra */
     z-index: 0;
 }
 
@@ -527,13 +605,20 @@
 #Principal-Agregar-Pendientes #Titulo {
     display: flex;
     justify-content: center;
-    font-size: 24px;          /* Tamaño de fuente */
-    font-weight: bold;        /* Negrita */
-    color: #333;              /* Color del texto */
-    text-align: center;       /* Asegura que el texto esté centrado */
-    background-color: #f0f0f0;/* Color de fondo */
-    border-radius: 8px;       /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra */
+    font-size: 24px;
+    /* Tamaño de fuente */
+    font-weight: bold;
+    /* Negrita */
+    color: #333;
+    /* Color del texto */
+    text-align: center;
+    /* Asegura que el texto esté centrado */
+    background-color: #f0f0f0;
+    /* Color de fondo */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra */
     height: 4vh;
     margin-bottom: 5px;
 }
@@ -557,17 +642,28 @@
 
 
 #Principal-Agregar-Agregados {
-    position: fixed; /* Posicionamiento fijo */
-    top: 0; /* Desde la parte superior */
-    left: 0; /* Desde la parte izquierda */
-    width: calc(40% - 72px); /* Ancho dinámico basado en el ancho del menú lateral */
-    flex-grow: 1; /* Ocupa el espacio restante */
-    background-color: white; /* Color de fondo */
-    padding: 15px 15px; /* Relleno interno */
-    margin: calc(14vh + 10px) 5px 5px calc(60% + 66px); /* Margen exterior */
-    height: calc(98vh - 14vh - 5px); /* Toma casi toda la altura del viewport */
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    position: fixed;
+    /* Posicionamiento fijo */
+    top: 0;
+    /* Desde la parte superior */
+    left: 0;
+    /* Desde la parte izquierda */
+    width: calc(40% - 72px);
+    /* Ancho dinámico basado en el ancho del menú lateral */
+    flex-grow: 1;
+    /* Ocupa el espacio restante */
+    background-color: white;
+    /* Color de fondo */
+    padding: 15px 15px;
+    /* Relleno interno */
+    margin: calc(14vh + 10px) 5px 5px calc(60% + 66px);
+    /* Margen exterior */
+    height: calc(98vh - 14vh - 5px);
+    /* Toma casi toda la altura del viewport */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra */
 }
 
 
@@ -616,12 +712,15 @@
     width: 100%;
 }
 
-#Principal-ValidarMoviles .Carta h1, #Principal-ValidarMoviles .Carta h2, #Principal-ValidarMoviles .Carta h5 {
+#Principal-ValidarMoviles .Carta h1,
+#Principal-ValidarMoviles .Carta h2,
+#Principal-ValidarMoviles .Carta h5 {
     color: #fff;
     margin-bottom: 10px;
 }
 
-#Principal-ValidarMoviles .Carta p, #Principal-ValidarMoviles .Carta ul li {
+#Principal-ValidarMoviles .Carta p,
+#Principal-ValidarMoviles .Carta ul li {
     color: #fff;
     font-size: 15px;
 }
@@ -705,7 +804,7 @@
     height: 17vh;
 }
 
-#Principal-ValidarMoviles .Grupo-Personal-Movil .row{
+#Principal-ValidarMoviles .Grupo-Personal-Movil .row {
     width: 100%;
 }
 
@@ -758,10 +857,14 @@
 }
 
 #Principal-ValidarMoviles #Tabla-Backup {
-    width: 100%; /* Ancho dinámico basado en =el ancho del menú lateral */
-    flex-grow: 1; /* Ocupa el espacio restante */
-    background-color: white; /* Color de fondo */
-    border-radius: 10px; /* Bordes redondeados */
+    width: 100%;
+    /* Ancho dinámico basado en =el ancho del menú lateral */
+    flex-grow: 1;
+    /* Ocupa el espacio restante */
+    background-color: white;
+    /* Color de fondo */
+    border-radius: 10px;
+    /* Bordes redondeados */
     padding: 0px 10px;
 }
 
@@ -773,10 +876,14 @@
 }
 
 #Principal-ValidarMoviles #Tabla-Moviles {
-    width: 100%; /* Ancho dinámico basado en =el ancho del menú lateral */
-    flex-grow: 1; /* Ocupa el espacio restante */
-    background-color: white; /* Color de fondo */
-    border-radius: 10px; /* Bordes redondeados */
+    width: 100%;
+    /* Ancho dinámico basado en =el ancho del menú lateral */
+    flex-grow: 1;
+    /* Ocupa el espacio restante */
+    background-color: white;
+    /* Color de fondo */
+    border-radius: 10px;
+    /* Bordes redondeados */
     padding: 0px 10px;
 }
 
@@ -786,17 +893,28 @@
 
 
 #Principal-Agregar-Botones-Importar {
-    position: fixed; /* Posicionamiento fijo */
-    top: 0; /* Desde la parte superior */
-    left: 0; /* Desde la parte izquierda */
-    width: calc(100% - 215px); /* Ancho dinámico basado en el ancho del menú lateral */
-    flex-grow: 1; /* Ocupa el espacio restante */
-    background-color: white; /* Color de fondo */
-    padding: 15px 15px; /* Relleno interno */
-    margin: 5px 5px 5px 210px; /* Margen exterior */
-    height: 14vh; /* Toma casi toda la altura del viewport */
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+    position: fixed;
+    /* Posicionamiento fijo */
+    top: 0;
+    /* Desde la parte superior */
+    left: 0;
+    /* Desde la parte izquierda */
+    width: calc(100% - 215px);
+    /* Ancho dinámico basado en el ancho del menú lateral */
+    flex-grow: 1;
+    /* Ocupa el espacio restante */
+    background-color: white;
+    /* Color de fondo */
+    padding: 15px 15px;
+    /* Relleno interno */
+    margin: 5px 5px 5px 210px;
+    /* Margen exterior */
+    height: 14vh;
+    /* Toma casi toda la altura del viewport */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra */
     z-index: 1;
     display: flex;
     justify-content: center;

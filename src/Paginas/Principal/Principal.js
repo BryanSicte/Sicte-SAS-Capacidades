@@ -8,7 +8,7 @@ import ValidarMoviles from '../ValidarMoviles/ValidarMoviles';
 import Reportes from '../Reportes/Reportes';
 import ImportarDatos from '../Importar Datos/ImportarDatos';
 import { ThreeDots } from 'react-loader-spinner';
-import Cookies from 'js-cookie';
+import './Principal.css'
 
 const Principal = () => {
     const [datos, setDatos] = useState([]);
@@ -34,17 +34,17 @@ const Principal = () => {
 
     const cargarDatosMovil = () => {
         fetch(`${process.env.REACT_APP_API_URL}/capacidades/movil`)
-        .then(response => response.json())
-        .then(data => {
-            setDatosMovil(data);
-            const tipoMovil = data.map(item => item.tipo_movil);
-            const tipoFacturacion = data.map(item => item.tipo_facturacion);
-            const tipoMovilUnicos = Array.from(new Set(tipoMovil));
-            const tipoFacturacionUnicos = Array.from(new Set(tipoFacturacion));
-            setTipoMovilValidas(tipoMovilUnicos);
-            setTipoFacturacionValidas(tipoFacturacionUnicos);
-        })
-        .catch(error => setError('Error al cargar los datos: ' + error.message));
+            .then(response => response.json())
+            .then(data => {
+                setDatosMovil(data);
+                const tipoMovil = data.map(item => item.tipo_movil);
+                const tipoFacturacion = data.map(item => item.tipo_facturacion);
+                const tipoMovilUnicos = Array.from(new Set(tipoMovil));
+                const tipoFacturacionUnicos = Array.from(new Set(tipoFacturacion));
+                setTipoMovilValidas(tipoMovilUnicos);
+                setTipoFacturacionValidas(tipoFacturacionUnicos);
+            })
+            .catch(error => setError('Error al cargar los datos: ' + error.message));
     };
 
     const cargarDatosCoordinador = () => {
@@ -57,7 +57,7 @@ const Principal = () => {
                     coordDirect.add(item.director);
                 });
                 const unirCoordDirect = Array.from(coordDirect).sort((a, b) => a.localeCompare(b));
-                
+
                 setCoordinadores(unirCoordDirect);
             })
             .catch(error => setError('Error al cargar los datos: ' + error.message));
@@ -90,7 +90,7 @@ const Principal = () => {
         })
             .then(response => response.json())
             .then(data => {
-                setDatos(data);   
+                setDatos(data);
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
@@ -142,7 +142,7 @@ const Principal = () => {
     return (
         <div>
             {loading ? (
-                <div id="CargandoPagina2">
+                <div className="CargandoPagina2">
                     <ThreeDots
                         type="ThreeDots"
                         color="#0B1A46"
@@ -152,12 +152,12 @@ const Principal = () => {
                     <p>... Cargando Datos ...</p>
                 </div>
             ) : (
-                <div id="Principal-Container">
-                    <div id="Principal-Menu-Lateral">
-                        <div id='Principal-Titulo'>
+                <div className="Principal-Container">
+                    <div className="Principal-Menu-Lateral">
+                        <div className='Principal-Titulo'>
                             <h3>Capacidades</h3>
                         </div>
-                        <div id='Principal-Lista'>
+                        <div className='Principal-Lista'>
                             <ul>
                                 <li onClick={() => cambiarPagina('Visualizar')} className={paginaActiva === 'Visualizar' ? 'active' : ''}>
                                     <i className="fas fa-eye"></i>Visualizar
@@ -183,7 +183,9 @@ const Principal = () => {
                             </ul>
                         </div>
                     </div>
-                    {renderizarPagina()}
+                    <div className='contenido'>
+                        {renderizarPagina()}
+                    </div>
                 </div>
             )}
         </div>

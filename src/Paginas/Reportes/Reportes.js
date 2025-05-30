@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { ThreeDots } from 'react-loader-spinner';
+import './Reportes.css'
 
 const Reportes = ({ role }) => {
     const [datos, setDatos] = useState([]);
@@ -143,9 +144,9 @@ const Reportes = ({ role }) => {
     };
 
     return (
-        <div>
+        <div className='Reportes'>
             {loading ? (
-                <div id="CargandoPagina">
+                <div className="CargandoPagina">
                     <ThreeDots
                         type="ThreeDots"
                         color="#0B1A46"
@@ -155,11 +156,11 @@ const Reportes = ({ role }) => {
                     <p>... Cargando Datos ...</p>
                 </div>
             ) : (
-                <div id='Principal-Visualizar'>
-                    <div id='Botones-Encabezado'>
-                        <button id='Boton-Borrar-Filtros' className="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
+                <div className='Principal-Visualizar'>
+                    <div className='Botones-Encabezado'>
+                        <button className='Boton-Borrar-Filtros btn btn-success' onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
                         <div className="Fecha-Reporte-Select">
-                            <select id='Fecha-Reporte-Boton' value={mesAnioSeleccionado} onChange={(e) => setMesAnioSeleccionado(e.target.value)} className="select-box">
+                            <select className='Fecha-Reporte-Boton select-box' value={mesAnioSeleccionado} onChange={(e) => setMesAnioSeleccionado(e.target.value)}>
                                 {getMesesAnios().map((mesAnio, index) => (
                                     <option key={index} value={mesAnio}>
                                         {mesAnio}
@@ -167,7 +168,7 @@ const Reportes = ({ role }) => {
                                 ))}
                             </select>
                         </div>
-                        <button id='Boton-Exportar-Excel' className="btn btn-secondary" onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
+                        <button className='Boton-Exportar-Excel btn btn-success' onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
                     </div>
                     <div className="tabla-container">
                         <table>
@@ -217,11 +218,8 @@ const Reportes = ({ role }) => {
                             </tbody>
                         </table>
                     </div>
-                    <div id='piePagina'>
+                    <div className='piePagina'>
                         <p>Total de items: {totalItems}</p>
-                        <div id='Botones-piePagina'>
-
-                        </div>
                     </div>
                 </div>
             )}

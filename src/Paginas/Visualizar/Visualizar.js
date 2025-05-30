@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThreeDots } from 'react-loader-spinner';
+import './Visualizar.css'
 
 const Visualizar = ({ role }) => {
     const [datos, setDatos] = useState([]);
@@ -190,9 +191,9 @@ const Visualizar = ({ role }) => {
     };
 
     return (
-        <div>
+        <div className='Visualizar'>
             {loading ? (
-                <div id="CargandoPagina">
+                <div className="CargandoPagina">
                     <ThreeDots
                         type="ThreeDots"
                         color="#0B1A46"
@@ -202,12 +203,12 @@ const Visualizar = ({ role }) => {
                     <p>... Cargando Datos ...</p>
                 </div>
             ) : (
-                <div id='Principal-Visualizar'>
-                    <div id='Botones-Encabezado'>
-                        <button id='Boton-Borrar-Filtros' className="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
+                <div className='Principal-Visualizar'>
+                    <div className='Botones-Encabezado'>
+                        <button className='Boton-Borrar-Filtros btn btn-secondary' onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
                         <div>
-                            <button id='Boton-Editar' className={`btn btn-secondary ${modoEdicion ? 'btn-naranja' : ''}`} onClick={clickModoEdicion}><i className="fas fa-trash-alt"></i> Borrar Filas</button>
-                            <button id='Boton-Exportar-Excel' className="btn btn-secondary" onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
+                            <button className={`Boton-Editar btn btn-secondary ${modoEdicion ? 'btn-naranja' : ''}`} onClick={clickModoEdicion}><i className="fas fa-trash-alt"></i> Borrar Filas</button>
+                            <button className='Boton-Exportar-Excel btn btn-secondary' onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
                         </div>
                     </div>
                     <div className="tabla-container">
@@ -218,7 +219,7 @@ const Visualizar = ({ role }) => {
                                         <th>
                                             <div>
                                                 <span>Eliminar</span>
-                                                <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
+                                                <input className='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
                                             </div>
                                         </th>
                                     )}
@@ -257,7 +258,7 @@ const Visualizar = ({ role }) => {
                                     <tr key={item.cedula} className={filasSeleccionadas.has(item.CEDULA) ? 'fila-seleccionada' : ''}>
                                         {modoEdicion && (
                                             <td>
-                                                <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.CEDULA)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.CEDULA)} />
+                                                <input className='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.CEDULA)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.CEDULA)} />
                                             </td>
                                         )}
                                         {Object.keys(item).slice(1)
@@ -280,13 +281,13 @@ const Visualizar = ({ role }) => {
                         </table>
                     </div>
                     <ToastContainer />
-                    <div id='piePagina'>
+                    <div className='piePagina'>
                         <p>Total de items: {totalItems}</p>
-                        <div id='Botones-piePagina'>
+                        <div className='Botones-piePagina'>
                             {modoEdicion && (
                                 <div>
-                                    <button id='Boton-Limpiar' className="btn btn-secondary" onClick={limpiarSeleccionados}>Limpiar</button>
-                                    <button id='Boton-Aplicar' className="btn btn-secondary" onClick={clickAplicar}>Aplicar</button>
+                                    <button className='Boton-Limpiar btn btn-secondary' onClick={limpiarSeleccionados}>Limpiar</button>
+                                    <button className='Boton-Aplicar btn btn-secondary' onClick={clickAplicar}>Aplicar</button>
                                 </div>
                             )}
                         </div>

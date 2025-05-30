@@ -4,6 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { ThreeDots } from 'react-loader-spinner';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import './ImportarDatos.css'
 
 const ImportarDatos = ({ role }) => {
     let datosAgregadosBandera = [];
@@ -48,7 +49,7 @@ const ImportarDatos = ({ role }) => {
                     coordDirect.add(item.director);
                 });
                 const unirCoordDirect = Array.from(coordDirect).sort((a, b) => a.localeCompare(b));
-                
+
                 setCoordinadores(unirCoordDirect);
             })
             .catch(error => setError('Error al cargar los datos: ' + error.message));
@@ -69,7 +70,7 @@ const ImportarDatos = ({ role }) => {
                     .filter(item => item.tipo_facturacion === 'ADMON')
                     .sort((a, b) => a.tipo_movil.localeCompare(b.tipo_movil))
                     .map(item => item.tipo_movil);
-                
+
                 const evento = data
                     .filter(item => item.tipo_facturacion === 'EVENTO')
                     .sort((a, b) => a.tipo_movil.localeCompare(b.tipo_movil))
@@ -105,7 +106,7 @@ const ImportarDatos = ({ role }) => {
             })
             .catch(error => {
                 setError('Error al cargar los datos: ' + error.message);
-                setLoading(false); 
+                setLoading(false);
             });
     };
 
@@ -318,7 +319,7 @@ const ImportarDatos = ({ role }) => {
                     toast.error(`Tipo Facturacion '${item.tipoFacturacion}' no valido: `, { className: 'toast-error' });
                     return Promise.reject('Tipo Facturacion no valido');
                 }
-    
+
                 if (coordinadores.includes(item.coordinador)) {
                 } else {
                     toast.error(`Coordinador '${item.tipoMovil}' no valido: `, { className: 'toast-error' });
@@ -341,21 +342,21 @@ const ImportarDatos = ({ role }) => {
                         },
                         body: JSON.stringify(data),
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            toast.error('No se cargaron los datos', { className: 'toast-error' });
-                            throw new Error(`Error al agregar los datos: ${response.status}`);
-                        } else {
-                            console.log('Fila enviada correctamente');
-                            toast.success('Datos cargados', { className: 'toast-success' });
-                        }
-                        return response.json();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
-                        setError('Error al enviar los datos al backend: ' + error.message);
-                    });
+                        .then(response => {
+                            if (!response.ok) {
+                                toast.error('No se cargaron los datos', { className: 'toast-error' });
+                                throw new Error(`Error al agregar los datos: ${response.status}`);
+                            } else {
+                                console.log('Fila enviada correctamente');
+                                toast.success('Datos cargados', { className: 'toast-success' });
+                            }
+                            return response.json();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
+                            setError('Error al enviar los datos al backend: ' + error.message);
+                        });
                 }
             });
 
@@ -459,7 +460,7 @@ const ImportarDatos = ({ role }) => {
                 }
             }
         } else if (item.tipoFacturacion === 'ADMON' || (item.tipoFacturacion === 'EVENTO' && item.tipoMovil === 'BACKUP')) {
-            if (placa === null || placa === "" || placa === undefined ) {
+            if (placa === null || placa === "" || placa === undefined) {
                 return true;
             } else if (placa.length === 6) {
                 const primerosTres = placa.substring(0, 3);
@@ -509,9 +510,9 @@ const ImportarDatos = ({ role }) => {
     };
 
     return (
-        <div>
+        <div className='ImportarDatos'>
             {loading ? (
-                <div id="CargandoPagina">
+                <div className="CargandoPagina">
                     <ThreeDots
                         type="ThreeDots"
                         color="#0B1A46"
@@ -521,143 +522,138 @@ const ImportarDatos = ({ role }) => {
                     <p>... Cargando Datos ...</p>
                 </div>
             ) : (
-                <div id="Principal-Container">
-                    <div id='Principal-Agregar'>
-                        <div id="Principal-Agregar-Botones-Importar">
-                            {/* Original: https://drive.google.com/file/d/FILE_ID/view?usp=sharing */}
-                            {/* Para Descargar: https://drive.google.com/uc?export=download&id=FILE_ID */}
-                            <div id='Botones-Descargar'>
-                                <a href={'https://docs.google.com/uc?export=download&id=1UQYv7YV86f6P7sDIMpn8RunhnbXhxMjT'}>
-                                    <button id='Boton-Descargar' className="btn btn-secondary">Descargar Archivo Plano</button>
-                                </a>
-                                <button id='Boton-Descargar' className="btn btn-secondary" onClick={exportarPlantaPendientes}>Descargar Planta de Pendientes</button>
-                            </div>
-                            <div>
-                                <button id='Boton-Importar' className="btn btn-secondary" onClick={ClickImportar}>Importar</button>
-                                <input
-                                    type="file"
-                                    ref={archivoEntradaRef}
-                                    style={{ display: 'none' }}
-                                    onChange={CambioArchivoCargado}
-                                />
-                            </div>
-                            <div id='Archivo-Cargado'>
-                                <h6>Datos Cargados:</h6>
-                                <p>
-                                    {archivoInfo.name && `${archivoInfo.name}`}
-                                </p>
-                            </div>
-                            <div>
-                                <button id='Boton-Cargar' className="btn btn-primary" onClick={ClickCargar}>Cargar Datos</button>
+                <div className='Principal-Agregar'>
+                    <div className="Principal-Agregar-Botones-Importar">
+                        {/* Original: https://drive.google.com/file/d/FILE_ID/view?usp=sharing */}
+                        {/* Para Descargar: https://drive.google.com/uc?export=download&id=FILE_ID */}
+                        <div className='Botones-Descargar'>
+                            <a href={'https://docs.google.com/uc?export=download&id=1UQYv7YV86f6P7sDIMpn8RunhnbXhxMjT'}>
+                                <button className='Boton-Descargar btn btn-secondary'>Descargar Archivo Plano</button>
+                            </a>
+                            <button className='Boton-Descargar btn btn-secondary' onClick={exportarPlantaPendientes}>Descargar Planta de Pendientes</button>
+                        </div>
+                        <div>
+                            <button className='Boton-Importar btn btn-secondary' onClick={ClickImportar}>Importar</button>
+                            <input
+                                type="file"
+                                ref={archivoEntradaRef}
+                                style={{ display: 'none' }}
+                                onChange={CambioArchivoCargado}
+                            />
+                        </div>
+                        <div className='Archivo-Cargado'>
+                            <h6>Datos Cargados:</h6>
+                            <p>
+                                {archivoInfo.name && `${archivoInfo.name}`}
+                            </p>
+                        </div>
+                        <div>
+                            <button className='Boton-Cargar btn btn-primary' onClick={ClickCargar}>Cargar Datos</button>
+                        </div>
+                    </div>
+
+                    <div className="Principal-Agregar-Pendientes">
+                        <div className='Titulo'>
+                            <span>Pendientes</span>
+                        </div>
+                        <div className="tabla-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        {['nit', 'nombre', 'cargo', 'perfil', 'director'].map(columna => (
+                                            <th key={columna}>
+                                                <div>
+                                                    {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
+                                                </div>
+                                                <input type="text" onKeyDown={e => {
+                                                    if (e.key === 'Enter') {
+                                                        clickAplicarFiltros(e, columna);
+                                                    }
+                                                }}
+                                                />
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {ordenarDatos.map((item) => (
+                                        <tr key={item.nit}>
+                                            <td>{item.nit}</td>
+                                            <td>{item.nombre}</td>
+                                            <td>{item.cargo}</td>
+                                            <td>{item.perfil}</td>
+                                            <td>{item.director}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className='piePagina'>
+                            <p>Total de items: {totalItems}</p>
+                            <div className='Botones-piePagina'>
+
                             </div>
                         </div>
+                    </div>
 
-                        <div id="Principal-Agregar-Pendientes">
-                            <div id='Titulo'>
-                                <span>Pendientes</span>
-                            </div>
-                            <div className="tabla-container">
-                                <table>
+                    <div className="Principal-Agregar-Agregados">
+                        <div className='Titulo'>
+                            <span>Agregados</span>
+                        </div>
+                        <div className="tabla-container">
+                            <table>
+                                {ordenarDatosAgregados.length > 0 && (
                                     <thead>
                                         <tr>
-                                            {['nit', 'nombre', 'cargo', 'perfil', 'director'].map(columna => (
-                                                <th key={columna}>
-                                                    <div>
-                                                        {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
-                                                    </div>
-                                                    <input type="text" onKeyDown={e => {
-                                                            if (e.key === 'Enter') {
-                                                                clickAplicarFiltros(e, columna);
-                                                            }
-                                                        }}
-                                                    />
-                                                </th>
-                                            ))}
+                                            {Object.keys(ordenarDatosAgregados[0])
+                                                .filter(key => !['id', 'CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO', 'TIPO_VEHICULO'].includes(key))
+                                                .map(columna => (
+                                                    <th key={columna}>
+                                                        <div>
+                                                            {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
+                                                            <i
+                                                                className={getIconoFiltroAgregados(columna)}
+                                                                onClick={() => clickEncabezadosAgregados(columna)}
+                                                                style={{ cursor: "pointer" }}
+                                                            ></i>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter") {
+                                                                    clickAplicarFiltrosAgregados(e, columna);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </th>
+                                                ))}
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {ordenarDatos.map((item) => (
-                                            <tr key={item.nit}>
-                                                <td>{item.nit}</td>
-                                                <td>{item.nombre}</td>
-                                                <td>{item.cargo}</td>
-                                                <td>{item.perfil}</td>
-                                                <td>{item.director}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div id='piePagina'>
-                                <p>Total de items: {totalItems}</p>
-                                <div id='Botones-piePagina'>
-
-                                </div>
-                            </div>
+                                )}
+                                <tbody>
+                                    {ordenarDatosAgregados.map((item) => (
+                                        <tr key={item.cedula}>
+                                            {Object.keys(item).slice(1)
+                                                .filter(key => key !== 'CODIGO_SAP')
+                                                .filter(key => key !== 'CONTRATISTA')
+                                                .filter(key => key !== 'TIPO_CARRO')
+                                                .map((key, i) => (
+                                                    <td key={i}>
+                                                        {key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
+                                                    </td>
+                                                ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
-
-                        <div id="Principal-Agregar-Agregados">
-                            <div id='Titulo'>
-                                <span>Agregados</span>
-                            </div>
-                            <div className="tabla-container">
-                                <table>
-                                    {ordenarDatosAgregados.length > 0 && (
-                                        <thead>
-                                            <tr>
-                                                {Object.keys(ordenarDatosAgregados[0])
-                                                    .filter(key => !['id','CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO', 'TIPO_VEHICULO'].includes(key))
-                                                    .map(columna => (
-                                                        <th key={columna}>
-                                                            <div>
-                                                                {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
-                                                                <i
-                                                                    className={getIconoFiltroAgregados(columna)}
-                                                                    onClick={() => clickEncabezadosAgregados(columna)}
-                                                                    style={{ cursor: "pointer" }}
-                                                                ></i>
-                                                            </div>
-                                                            <input
-                                                                type="text"
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === "Enter") {
-                                                                        clickAplicarFiltrosAgregados(e, columna);
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </th>
-                                                    ))}
-                                            </tr>
-                                        </thead>
-                                    )}
-                                    <tbody>
-                                        {ordenarDatosAgregados.map((item) => (
-                                            <tr key={item.cedula}>
-                                                {Object.keys(item).slice(1)
-                                                    .filter(key => key !== 'CODIGO_SAP')
-                                                    .filter(key => key !== 'CONTRATISTA')
-                                                    .filter(key => key !== 'TIPO_CARRO')
-                                                    .map((key, i) => (
-                                                        <td key={i}>
-                                                            {key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
-                                                        </td>
-                                                    ))}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div id='piePagina'>
-                                <p>Total de items: {totalItemsAgregados}</p>
-                                <div id='Botones-piePagina'>
-
-                                </div>
-                            </div>
+                        <div className='piePagina'>
+                            <p>Total de items: {totalItemsAgregados}</p>
                         </div>
-                        <ToastContainer />
                     </div>
+                    <ToastContainer />
                 </div>
-            )} 
+            )}
         </div>
     );
 };

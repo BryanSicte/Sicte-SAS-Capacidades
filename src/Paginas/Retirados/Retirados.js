@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { ThreeDots } from 'react-loader-spinner';
+import './Retirados.css'
 
 const Retirados = ({ role }) => {
     const [datos, setDatos] = useState([]);
@@ -116,9 +117,9 @@ const Retirados = ({ role }) => {
     };
 
     return (
-        <div>
+        <div className='Retirados'>
             {loading ? (
-                <div id="CargandoPagina">
+                <div className="CargandoPagina">
                     <ThreeDots
                         type="ThreeDots"
                         color="#0B1A46"
@@ -128,10 +129,10 @@ const Retirados = ({ role }) => {
                     <p>... Cargando Datos ...</p>
                 </div>
             ) : (
-                <div id='Principal-Visualizar'>
-                    <div id='Botones-Encabezado'>
-                        <button id='Boton-Borrar-Filtros' className="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
-                        <button id='Boton-Exportar-Excel' className="btn btn-secondary" onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
+                <div className='Principal-Visualizar'>
+                    <div className='Botones-Encabezado'>
+                        <button className='Boton-Borrar-Filtros btn btn-secondary' onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
+                        <button className='Boton-Exportar-Excel btn btn-secondary' onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
                     </div>
                     <div className="tabla-container">
                         <table>
@@ -178,11 +179,8 @@ const Retirados = ({ role }) => {
                             </tbody>
                         </table>
                     </div>
-                    <div id='piePagina'>
+                    <div className='piePagina'>
                         <p>Total de items: {totalItems}</p> 
-                        <div id='Botones-piePagina'>
-                            
-                        </div>
                     </div>
                 </div>
             )}

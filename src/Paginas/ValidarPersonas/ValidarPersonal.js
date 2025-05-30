@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThreeDots } from 'react-loader-spinner';
+import './ValidarPersonal.css'
 
 const ValidarPersonal = ({
     role,
@@ -342,9 +343,9 @@ const ValidarPersonal = ({
     };
 
     return (
-        <div>
+        <div className='ValidarPersonal'>
             {loading ? (
-                <div id="CargandoPagina">
+                <div className="CargandoPagina">
                     <ThreeDots
                         type="ThreeDots"
                         color="#0B1A46"
@@ -354,81 +355,79 @@ const ValidarPersonal = ({
                     <p>... Cargando Datos ...</p>
                 </div>
             ) : (
-                <div id='Principal-ValidarPersonal'>
-                    <div id='Principal-Visualizar'>
-                        <div id='Botones-Encabezado'>
-                            <button id='Boton-Borrar-Filtros' className="btn btn-secondary" onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
-                            <button id='Boton-Exportar-Excel' className="btn btn-secondary" onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
-                        </div>
-                        <div className="tabla-container">
-                            <table>
-                                {ordenarDatos.length > 0 && (
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                <div>
-                                                    <span>Validado</span>
-                                                    <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
-                                                </div>
-                                            </th>
-                                            {Object.keys(ordenarDatos[0])
-                                                .filter(key => !['id', 'CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO', 'TIPO_VEHICULO'].includes(key))
-                                                .map(columna => (
-                                                    <th key={columna}>
-                                                        <div>
-                                                            {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
-                                                            <i
-                                                                className={getIconoFiltro(columna)}
-                                                                onClick={() => clickEncabezados(columna)}
-                                                                style={{ cursor: "pointer" }}
-                                                            ></i>
-                                                        </div>
-                                                        <input
-                                                            type="text"
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === "Enter") {
-                                                                    clickAplicarFiltros(e, columna);
-                                                                }
-                                                            }}
-                                                        />
-                                                    </th>
-                                                ))}
-                                        </tr>
-                                    </thead>
-                                )}
-                                <tbody>
-                                    {ordenarDatos.map((item, index) => (
-                                        <tr key={item.cedula} className={filasSeleccionadas.has(item.CEDULA) ? 'fila-seleccionada' : ''}>
-                                            <td>
-                                                <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.CEDULA)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.CEDULA)} />
-                                            </td>
-                                            {Object.keys(item).slice(1)
-                                                .filter(key => key !== 'CODIGO_SAP')
-                                                .filter(key => key !== 'CONTRATISTA')
-                                                .filter(key => key !== 'TIPO_CARRO')
-                                                .filter(key => key !== 'TIPO_VEHICULO')
-                                                .sort((a, b) => {
-                                                    if (a === "placa") return b === "cargo" ? 1 : -1;
-                                                    if (b === "placa") return a === "cargo" ? -1 : 1;
-                                                    return 0;
-                                                })
-                                                .map((key, i) => (
-                                                    <td key={i}>
-                                                        {key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
-                                                    </td>
-                                                ))}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        <ToastContainer />
-                        <div id='piePagina'>
-                            <p>Total de items: {totalItems}</p>
-                            <div id='Botones-piePagina'>
-                                <button id='Boton-Limpiar' className="btn btn-secondary" onClick={limpiarSeleccionados}>Limpiar</button>
-                                <button id='Boton-Aplicar' className="btn btn-secondary" onClick={enviarSeleccionadosAlBackend}>Aplicar</button>
-                            </div>
+                <div className='Principal-Visualizar'>
+                    <div className='Botones-Encabezado'>
+                        <button className='Boton-Borrar-Filtros btn btn-secondary' onClick={BotonLimpiarFiltros}><i className="fas fa-filter"></i> Borrar Filtros</button>
+                        <button className='Boton-Exportar-Excel btn btn-secondary' onClick={exportarExcel}><i className="fas fa-file-excel"></i> Exportar</button>
+                    </div>
+                    <div className="tabla-container">
+                        <table>
+                            {ordenarDatos.length > 0 && (
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div>
+                                                <span>Validado</span>
+                                            </div>
+                                            <input className='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
+                                        </th>
+                                        {Object.keys(ordenarDatos[0])
+                                            .filter(key => !['id', 'CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO', 'TIPO_VEHICULO'].includes(key))
+                                            .map(columna => (
+                                                <th key={columna}>
+                                                    <div>
+                                                        {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
+                                                        <i
+                                                            className={getIconoFiltro(columna)}
+                                                            onClick={() => clickEncabezados(columna)}
+                                                            style={{ cursor: "pointer" }}
+                                                        ></i>
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter") {
+                                                                clickAplicarFiltros(e, columna);
+                                                            }
+                                                        }}
+                                                    />
+                                                </th>
+                                            ))}
+                                    </tr>
+                                </thead>
+                            )}
+                            <tbody>
+                                {ordenarDatos.map((item, index) => (
+                                    <tr key={item.cedula} className={filasSeleccionadas.has(item.CEDULA) ? 'fila-seleccionada' : ''}>
+                                        <td>
+                                            <input className='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.CEDULA)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.CEDULA)} />
+                                        </td>
+                                        {Object.keys(item).slice(1)
+                                            .filter(key => key !== 'CODIGO_SAP')
+                                            .filter(key => key !== 'CONTRATISTA')
+                                            .filter(key => key !== 'TIPO_CARRO')
+                                            .filter(key => key !== 'TIPO_VEHICULO')
+                                            .sort((a, b) => {
+                                                if (a === "placa") return b === "cargo" ? 1 : -1;
+                                                if (b === "placa") return a === "cargo" ? -1 : 1;
+                                                return 0;
+                                            })
+                                            .map((key, i) => (
+                                                <td key={i}>
+                                                    {key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
+                                                </td>
+                                            ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <ToastContainer />
+                    <div className='piePagina'>
+                        <p>Total de items: {totalItems}</p>
+                        <div className='Botones-piePagina'>
+                            <button className='Boton-Limpiar btn btn-secondary' onClick={limpiarSeleccionados}>Limpiar</button>
+                            <button className='Boton-Aplicar btn btn-secondary' onClick={enviarSeleccionadosAlBackend}>Aplicar</button>
                         </div>
                     </div>
                 </div>
