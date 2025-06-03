@@ -329,9 +329,6 @@ const ImportarDatos = ({ role }) => {
                     dato.tipo_movil === item.tipoMovil
                 );
 
-                console.log(item.tipoMovil)
-                console.log(existeRelacion)
-
                 if (existeRelacion) {
                     if (item.tipoFacturacion === "ADMON") {
                         item.segmento = "NA"
@@ -358,7 +355,7 @@ const ImportarDatos = ({ role }) => {
                     );
 
                     if (!existeRelacionSegmento) {
-                        toast.error(`Tipo Facturación '${item.tipoFacturacion}' no válida para el tipo de movil '${item.tipoMovil}'`, {
+                        toast.error(`Tipo Facturación '${item.tipoFacturacion}' o Segmento '${item.segmento}' no válida para el tipo de movil '${item.tipoMovil}'`, {
                             className: 'toast-error'
                         });
                         return Promise.reject('Tipo Facturación no válida');
