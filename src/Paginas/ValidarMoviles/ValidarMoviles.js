@@ -4,6 +4,7 @@ import '../Principal/Principal.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { ThreeDots } from 'react-loader-spinner';
+import './ValidarMoviles.css'
 
 const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setDatos }) => {
     const [datosTodoBackupTratamiento, setDatosTodoBackupTratamiento] = useState([]);
@@ -320,9 +321,9 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
     const totalValor = Object.values(resumenMoviles).reduce((acc, data) => acc + data.valor, 0);
 
     return (
-        <div>
+        <div className='validarMoviles'>
             {loading ? (
-                <div id="CargandoPagina">
+                <div className="CargandoPagina">
                     <ThreeDots
                         type="ThreeDots"
                         color="#0B1A46"
@@ -332,184 +333,178 @@ const ValidarMoviles = ({ role, datosTodoBackup, setDatosTodoBackup, datos, setD
                     <p>... Cargando Datos ...</p>
                 </div>
             ) : (
-
-                <div id='Principal-Visualizar'>
-                    <div id="Principal-ValidarMoviles">
-                        <div id='Cartas'>
-                            <div id='Listado-Moviles'>
-                                <div>
-                                    <h2>Listado de Moviles</h2>
-                                </div>
-                                <div id="Filtros">
-                                    <div className="Grupo-Personal-Movil">
-                                        <span className="Titulo">Filtros</span>
-                                        <div className="row">
-                                            <div className="col-sm-4">
-                                                <h6>Personal en la Movil</h6>
-                                                <div className="row">
-                                                    <div className="col-sm-6">
-                                                        <button id='Blanco' className='btn btn-light' onClick={() => setFiltroColor('blanco')}>Todo</button>
-                                                    </div>
-                                                    <div className="col-sm-6">
-                                                        <button id='Naranja' className='btn btn-warning' onClick={() => setFiltroColor('naranja')}>Falta</button>
-                                                    </div>
+                <div className="Principal-ValidarMoviles">
+                    <div className='Cartas'>
+                        <div className='Listado-Moviles'>
+                            <div className='Titulo'>
+                                <h2>Listado de Moviles</h2>
+                            </div>
+                            <div className="Filtros">
+                                <div className="Grupo-Personal-Movil">
+                                    <span className="TituloFiltros">Filtros</span>
+                                    <div className="row">
+                                        <div className="col-sm-4">
+                                            <h6>Personal en la Movil</h6>
+                                            <div className="row">
+                                                <div className="col-sm-6">
+                                                    <button className='Blanco btn btn-light' onClick={() => setFiltroColor('blanco')}>Todo</button>
                                                 </div>
-                                                <div className="row">
-                                                    <div className="col-sm-6">
-                                                        <button id='Verde' className='btn btn-success' onClick={() => setFiltroColor('verde')}>Correcta</button>
-                                                    </div>
-                                                    <div className="col-sm-6">
-                                                        <button id='Rojo' className='btn btn-danger' onClick={() => setFiltroColor('rojo')}>Excedida</button>
-                                                    </div>
+                                                <div className="col-sm-6">
+                                                    <button className='Naranja btn btn-warning' onClick={() => setFiltroColor('naranja')}>Falta</button>
                                                 </div>
                                             </div>
-                                            <div className="col-sm-4">
-                                                <h6>Placa</h6>
-                                                <button id='Morado' className='btn btn-primary' onClick={() => setFiltroColor('morado')}>Duplicada</button>
-                                                <h6>Fecha Reporte</h6>
-                                                <div className="Fecha-Reporte-Select">
-                                                    <select id='Fecha-Reporte-Boton' value={mesAnioSeleccionado} onChange={(e) => setMesAnioSeleccionado(e.target.value)} className="select-box">
-                                                        {getMesesAnios().map((mesAnio, index) => (
-                                                            <option key={index} value={mesAnio}>
-                                                                {mesAnio}
-                                                            </option>
-                                                        ))}
-                                                    </select>
+                                            <div className="row">
+                                                <div className="col-sm-6">
+                                                    <button className='Verde btn btn-success' onClick={() => setFiltroColor('verde')}>Correcta</button>
                                                 </div>
-                                            </div>
-                                            <div className="col-sm-4" id='Coordinador'>
-                                                <h6>Coordinador</h6>
-                                                <Dropdown isOpen={dropdownOpenCoordinador} toggle={toggleCoordinador}>
-                                                    <DropdownToggle caret className="btn btn-primary">
-                                                        {selectedItemCoordinador}
-                                                    </DropdownToggle>
-                                                    <DropdownMenu>
-                                                        {coordinadores.map((option, index) => (
-                                                            <DropdownItem key={index} onClick={() => handleSelectCoordinador(option)}>{option}</DropdownItem>
-                                                        ))}
-                                                    </DropdownMenu>
-                                                </Dropdown>
-                                                <h6>Director</h6>
-                                                <Dropdown isOpen={dropdownOpenDirector} toggle={toggleDirector}>
-                                                    <DropdownToggle caret className="btn btn-primary">
-                                                        {selectedItemDirector}
-                                                    </DropdownToggle>
-                                                    <DropdownMenu>
-                                                        {directores.map((option, index) => (
-                                                            <DropdownItem key={index} onClick={() => handleSelectDirector(option)}>{option}</DropdownItem>
-                                                        ))}
-                                                    </DropdownMenu>
-                                                </Dropdown>
+                                                <div className="col-sm-6">
+                                                    <button className='Rojo btn btn-danger' onClick={() => setFiltroColor('rojo')}>Excedida</button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="carta-container">
-                                    {datosFiltrados
-                                        .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-                                        .map(([placa, data], index) => (
-                                            <div key={index} className={`Carta`} id={`Carta-${validarCantidadIntegrantes(data)}`}>
-                                                <div className="row">
-                                                    <div className="col-sm-5" id='Integrantes'>
-                                                        <h5>Integrantes</h5>
-                                                        <ul>
-                                                            {data.items && data.items.map((item, index) => (
-                                                                <li key={index}>{item.cedula} - {item.nombreCompleto}</li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                    <div className="col-sm-5" id='Movil'>
-                                                        <div>
-                                                            <h5>Tipo de Movil</h5>
-                                                            <ul>
-                                                                <p>{data.tipoDeMovil}</p>
-                                                            </ul>
-                                                            <h5>Valor Esperado</h5>
-                                                            <ul>
-                                                                <p>{formatearValorEsperado(data.valorEsperado)}</p>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-sm-2" id='Placa'>
-                                                        <h1>{data.placa}</h1>
-                                                    </div>
-                                                </div>
+                                        <div className="col-sm-4">
+                                            <h6>Placa</h6>
+                                            <button className='Morado btn btn-primary' onClick={() => setFiltroColor('morado')}>Duplicada</button>
+                                            <h6>Fecha Reporte</h6>
+                                            <div className="Fecha-Reporte-Select">
+                                                <select className='Fecha-Reporte-Boton select-box' value={mesAnioSeleccionado} onChange={(e) => setMesAnioSeleccionado(e.target.value)}>
+                                                    {getMesesAnios().map((mesAnio, index) => (
+                                                        <option key={index} value={mesAnio}>
+                                                            {mesAnio}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             </div>
-                                        ))
-                                    }
+                                        </div>
+                                        <div className="col-sm-4 Coordinador">
+                                            <h6>Coordinador</h6>
+                                            <Dropdown isOpen={dropdownOpenCoordinador} toggle={toggleCoordinador}>
+                                                <DropdownToggle caret className="btn btn-primary">
+                                                    {selectedItemCoordinador}
+                                                </DropdownToggle>
+                                                <DropdownMenu>
+                                                    {coordinadores.map((option, index) => (
+                                                        <DropdownItem key={index} onClick={() => handleSelectCoordinador(option)}>{option}</DropdownItem>
+                                                    ))}
+                                                </DropdownMenu>
+                                            </Dropdown>
+                                            <h6>Director</h6>
+                                            <Dropdown isOpen={dropdownOpenDirector} toggle={toggleDirector}>
+                                                <DropdownToggle caret className="btn btn-primary">
+                                                    {selectedItemDirector}
+                                                </DropdownToggle>
+                                                <DropdownMenu>
+                                                    {directores.map((option, index) => (
+                                                        <DropdownItem key={index} onClick={() => handleSelectDirector(option)}>{option}</DropdownItem>
+                                                    ))}
+                                                </DropdownMenu>
+                                            </Dropdown>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div id='Datos'>
-                                <div>
-                                    <h4>Valor de la Operacion</h4>
-                                    <p>{formatearValorEsperado(sumaValorFiltrada)}</p>
-                                </div>
-                                <div>
-                                    <h4>Moviles</h4>
-                                    <div id='Tabla-Moviles'>
-                                        <div className="tabla-container">
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Tipo de Movil</th>
-                                                        <th>Cantidad</th>
-                                                        <th>Valor</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {Object.entries(resumenMoviles).map(([tipo, data]) => (
-                                                        <tr key={tipo}>
-                                                            <td>{tipo}</td>
-                                                            <td>{data.cantidad}</td>
-                                                            <td>{formatearValorEsperado(data.valor)}</td>
-                                                        </tr>
-                                                    ))}
-                                                    <tr>
-                                                        <td><strong>Total</strong></td>
-                                                        <td><strong>{totalCantidad}</strong></td>
-                                                        <td><strong>{formatearValorEsperado(totalValor)}</strong></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id='BACK-UP'>
-                                    <h4>Personal de Backup</h4>
-                                    <div id="Tabla-Backup">
-                                        <div className="tabla-container">
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        {['cedula', 'nombreCompleto', 'cargo'].map(columna => (
-                                                            <th key={columna}>
-                                                                <div>
-                                                                    {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
-                                                                </div>
-                                                                <input type="text" onChange={e => clickAplicarFiltros(e, columna)} />
-                                                            </th>
+                            <div className="carta-container">
+                                {datosFiltrados
+                                    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+                                    .map(([placa, data], index) => (
+                                        <div key={index} className={`Carta Carta-${validarCantidadIntegrantes(data)}`}>
+                                            <div className="row">
+                                                <div className="col-sm-5 Integrantes">
+                                                    <h5>Integrantes</h5>
+                                                    <ul>
+                                                        {data.items && data.items.map((item, index) => (
+                                                            <li key={index}>{item.cedula} - {item.nombreCompleto}</li>
                                                         ))}
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {ordenarDatos.map((item) => (
-                                                        <tr key={item.CEDULA}>
-                                                            <td>{item.CEDULA}</td>
-                                                            <td>{item.NOMBRE_COMPLETO}</td>
-                                                            <td>{item.CARGO}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                                    </ul>
+                                                </div>
+                                                <div className="col-sm-5 Movil">
+                                                    <div>
+                                                        <h5>Tipo de Movil</h5>
+                                                        <ul>
+                                                            <p>{data.tipoDeMovil}</p>
+                                                        </ul>
+                                                        <h5>Valor Esperado</h5>
+                                                        <ul>
+                                                            <p>{formatearValorEsperado(data.valorEsperado)}</p>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-2 Placa">
+                                                    <h1>{data.placa}</h1>
+                                                </div>
+                                            </div>
                                         </div>
+                                    ))
+                                }
+                            </div>
+                        </div>
+                        <div className='Datos'>
+                            <div className='ValorOperacion'>
+                                <h4>Valor de la Operacion</h4>
+                                <p>{formatearValorEsperado(sumaValorFiltrada)}</p>
+                            </div>
+                            <div>
+                                <h4>Moviles</h4>
+                                <div className='Tabla-Moviles'>
+                                    <div className="tabla-container">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Tipo de Movil</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Valor</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {Object.entries(resumenMoviles).map(([tipo, data]) => (
+                                                    <tr key={tipo}>
+                                                        <td>{tipo}</td>
+                                                        <td>{data.cantidad}</td>
+                                                        <td>{formatearValorEsperado(data.valor)}</td>
+                                                    </tr>
+                                                ))}
+                                                <tr>
+                                                    <td><strong>Total</strong></td>
+                                                    <td><strong>{totalCantidad}</strong></td>
+                                                    <td><strong>{formatearValorEsperado(totalValor)}</strong></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                                <div id='piePagina'>
-                                    <p>Total de items: {datosBackUp.length}</p>
-                                    <div id='Botones-piePagina'>
-
+                            </div>
+                            <div className='BACK-UP'>
+                                <h4>Personal de Backup</h4>
+                                <div className="Tabla-Backup">
+                                    <div className="tabla-container">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    {['cedula', 'nombreCompleto', 'cargo'].map(columna => (
+                                                        <th key={columna}>
+                                                            <div>
+                                                                {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
+                                                            </div>
+                                                            <input type="text" onChange={e => clickAplicarFiltros(e, columna)} />
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {ordenarDatos.map((item) => (
+                                                    <tr key={item.CEDULA}>
+                                                        <td>{item.CEDULA}</td>
+                                                        <td>{item.NOMBRE_COMPLETO}</td>
+                                                        <td>{item.CARGO}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
+                            </div>
+                            <div className='piePagina'>
+                                <p>Total de items: {datosBackUp.length}</p>
                             </div>
                         </div>
                     </div>

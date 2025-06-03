@@ -1,0 +1,347 @@
+.validarMoviles {
+    width: 100%;
+    height: 100%;
+
+    .CargandoPagina {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        background-color: white;
+        height: 100%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .Principal-ValidarMoviles {
+        display: flex;
+        flex-direction: column;
+        justify-content: baseline;
+        align-items: center;
+        width: 100%;
+        background-color: white;
+        height: 100%;
+        padding: 15px;
+        overflow-y: auto;
+
+        .Cartas {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+
+            .Listado-Moviles {
+                width: 100%;
+
+                .Titulo {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                }
+
+                .Filtros {
+                    margin-top: 15px;
+
+                    h3 {
+                        padding: 5px 0px 0px 0px;
+                    }
+
+                    .row {
+                        padding: 5px 0px 5px 0px;
+                    }
+
+                    button {
+                        width: 130px;
+                    }
+
+                    .Grupo-Personal-Movil {
+                        border: 2px solid black;
+                        border-radius: 5px;
+                        padding: 5px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        flex-wrap: wrap;
+                        width: 100%;
+                        background-color: #fff;
+                        position: relative;
+                        height: auto;
+                        max-height: 200px;
+
+                        h6 {
+                            font-size: 13px;
+                            font-weight: bold;
+                            color: black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            margin: 2px 0px 2px 0;
+                        }
+
+                        .row {
+                            width: 100%;
+
+                            .col-sm-4 {
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: space-between;
+                                align-items: center;
+
+                                .row {
+                                    width: 100%;
+                                    margin: 0px 0px;
+                                }
+
+                                .Fecha-Reporte-Select {
+
+                                    width: 150px;
+                                    height: 38px;
+
+                                    select {
+                                        background-color: green;
+                                        border: none;
+                                        border-radius: 5px;
+                                        width: 100%;
+                                        height: 100%;
+                                        text-align: center;
+                                        color: white;
+                                    }
+                                }
+                            }
+
+                            .Blanco,
+                            .Naranja,
+                            .Verde,
+                            .Azul,
+                            .Rojo {
+                                margin: 0px 5px 0px 5px;
+                            }
+
+                            .Morado {
+                                background-color: rgb(95, 23, 102);
+                                width: 150px;
+                            }
+
+                            .Coordinador button {
+                                width: 190px;
+                            }
+                        }
+
+                        .TituloFiltros {
+                            font-size: 13px;
+                            font-weight: bold;
+                            color: black;
+                            padding: 0 5px;
+                            position: absolute;
+                            top: -10px;
+                            left: 10px;
+                            background-color: white;
+                        }
+                    }
+                }
+
+                .carta-container {
+                    overflow: auto;
+                    height: auto;
+                    max-height: 400px;
+                    width: 100%;
+                    border-radius: 5px;
+                    margin-top: 15px;
+
+                    .Carta {
+                        border: 1px solid #223775;
+                        border-radius: 8px;
+                        margin-bottom: 8px;
+                        width: 100%;
+
+                        .row {
+                            width: 100%;
+
+                            h1,
+                            h2,
+                            h5 {
+                                color: #fff;
+                                margin-bottom: 10px;
+                            }
+
+                            p,
+                            ul li {
+                                color: #fff;
+                                font-size: 15px;
+                            }
+
+                            .Integrantes {
+                                text-align: left;
+                                padding: 20px 10px 20px 20px;
+                                width: 40%;
+                            }
+
+                            .Movil {
+                                text-align: left;
+                                padding: 20px 10px 20px 10px;
+                                width: 40%;
+                            }
+
+                            .Placa {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                padding: 20px 20px 20px 10px;
+                                width: 20%;
+
+                                h1 {
+                                    font-size: 34px;
+                                }
+                            }
+                        }
+
+                        &.Carta-naranja {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            background-color: orange;
+                        }
+
+                        &.Carta-verde {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            background-color: green;
+                        }
+
+                        &.Carta-rojo {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            background-color: red;
+                        }
+
+                        &.Carta-morado {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            background-color: rgb(95, 23, 102);
+                        }
+                    }
+                }
+            }
+
+            .Datos {
+                width: 100%;
+
+                .ValorOperacion {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    margin-top: 20px;
+                }
+
+                .Tabla-Moviles {
+                    width: 100%;
+                    flex-grow: 1;
+                    background-color: white;
+                    border-radius: 10px;
+                    padding: 0px 10px;
+
+                    .tabla-container {
+                        overflow: auto;
+                        height: auto;
+                        max-height: 400px;
+                        width: 100%;
+
+                        table {
+                            width: 100%;
+                            text-align: center;
+
+                            thead {
+                                background-color: #223775;
+                                color: white;
+
+                                th {
+                                    border: 1px solid black;
+                                }
+                            }
+
+                            tbody {
+                                background-color: white;
+                                color: black;
+
+                                tr {
+                                    background-color: white;
+
+                                    &:hover {
+                                        background-color: #ddd;
+                                    }
+                                }
+
+                                td {
+                                    border: 1px solid black;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .BACK-UP {
+                    h4 {
+                        margin: 15px 0px 8px 0px;
+                    }
+
+                    .Tabla-Backup {
+                        width: 100%;
+                        flex-grow: 1;
+                        background-color: white;
+                        border-radius: 10px;
+                        padding: 0px 10px;
+
+                        .tabla-container {
+                            overflow: auto;
+                            height: auto;
+                            max-height: 400px;
+                            width: 100%;
+
+                            table {
+                                width: 100%;
+                                text-align: center;
+
+                                thead {
+                                    background-color: #223775;
+                                    color: white;
+
+                                    th {
+                                        border: 1px solid black;
+                                        padding: 5px;
+
+                                        input {
+                                            width: 90%;
+                                        }
+                                    }
+                                }
+
+                                tbody {
+                                    background-color: white;
+                                    color: black;
+
+                                    tr {
+                                        background-color: white;
+
+                                        &:hover {
+                                            background-color: #ddd;
+                                        }
+                                    }
+
+                                    td {
+                                        border: 1px solid black;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -283,6 +283,7 @@ const ValidarPersonal = ({
                 id: 1,
                 carpeta: item.CARPETA,
                 placa: item.PLACA,
+                segmento: item.AREA,
                 tipoFacturacion: item.TIPO_FACTURACION,
                 tipoMovil: item.TIPO_DE_MOVIL,
                 cedula: item.CEDULA,
@@ -304,7 +305,6 @@ const ValidarPersonal = ({
                             toast.error('No se cargaron los datos', { className: 'toast-error' });
                             throw new Error(`Error al enviar la fila: ${response.status}`);
                         } else {
-                            console.log('Fila enviada correctamente');
                             toast.success('Datos cargados', { className: 'toast-success' });
                         }
                         return response.json();

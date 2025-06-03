@@ -14,9 +14,8 @@ const ImportarDatos = ({ role }) => {
     const [datosAgregados, setDatosAgregados] = useState([]);
     const [datosCompletosAgregados, setDatosCompletosAgregados] = useState([]);
     const [datosMovil, setDatosMovil] = useState([]);
-    const [tipoMovilAdmon, setTipoMovilAdmon] = useState([]);
-    const [tipoMovilEvento, setTipoMovilEvento] = useState([]);
     const [tipoFacturacion, setTipoFacturacion] = useState([]);
+    const [segmentoOptions, setSegmentoOptions] = useState([]);
     const [filtrosAgregados, setFiltrosAgregados] = useState({});
     const [ordenarCampo, setOrdenarCampo] = useState('nombre');
     const [ordenarCampoAgregados, setOrdenarCampoAgregados] = useState('nombreCompleto');
@@ -66,20 +65,22 @@ const ImportarDatos = ({ role }) => {
 
                 const facturacionUnica = [...new Set(facturacion)];
 
-                const admon = data
-                    .filter(item => item.tipo_facturacion === 'ADMON')
-                    .sort((a, b) => a.tipo_movil.localeCompare(b.tipo_movil))
-                    .map(item => item.tipo_movil);
-
-                const evento = data
-                    .filter(item => item.tipo_facturacion === 'EVENTO')
-                    .sort((a, b) => a.tipo_movil.localeCompare(b.tipo_movil))
-                    .map(item => item.tipo_movil);
-
                 setDatosMovil(data);
                 setTipoFacturacion(facturacionUnica);
-                setTipoMovilAdmon(admon);
-                setTipoMovilEvento(evento);
+
+                const opcionesAdicionales = ['PARQUE AUTOMOTOR', 'LOGISTICA', 'RECURSOS HUMANOS', 'IT', 'PRODUCCION'];
+
+                const opcionesFiltradasSegmento = data
+                    .filter(dato => dato.segmento !== 'NA')
+                    .map(dato => dato.segmento);
+
+                const todasLasOpciones = [...opcionesAdicionales, ...opcionesFiltradasSegmento];
+
+                const opcionesUnicasOrdenadasSegmento = [...new Set(todasLasOpciones)].sort((a, b) =>
+                    a.localeCompare(b)
+                );
+
+                setSegmentoOptions(opcionesUnicasOrdenadasSegmento);
             })
             .catch(error => setError('Error al cargar los datos: ' + error.message));
     };
@@ -267,6 +268,7 @@ const ImportarDatos = ({ role }) => {
 
     useEffect(() => {
         if (filtrosLimpiados) {
+            setFiltrosLimpiados(false);
             let cedulasSeleccionadas = [];
 
             if (!excelData || excelData.length === 0) {
@@ -275,6 +277,7 @@ const ImportarDatos = ({ role }) => {
 
             excelData.forEach(row => {
                 const cedulaExcel = row['Cedula'];
+                const segmentoExcel = row['Segmento'];
                 const tipoFacturacionExcel = row['Tipo Facturacion'];
                 const tipoMovilExcel = row['Tipo Movil'];
                 const coordinadorExcel = row['Coordinador'];
@@ -283,6 +286,7 @@ const ImportarDatos = ({ role }) => {
 
                 cedulasSeleccionadas.push({
                     cedula: cedulaExcel,
+                    segmento: segmentoExcel,
                     tipoFacturacion: tipoFacturacionExcel,
                     tipoMovil: tipoMovilExcel,
                     coordinador: coordinadorExcel,
@@ -296,6 +300,7 @@ const ImportarDatos = ({ role }) => {
                     id: 1,
                     carpeta: item.carpeta,
                     placa: item.placa,
+                    segmento: item.segmento,
                     tipoFacturacion: item.tipoFacturacion,
                     tipoMovil: item.tipoMovil,
                     cedula: item.cedula,
@@ -308,13 +313,57 @@ const ImportarDatos = ({ role }) => {
                     return Promise.reject('Cedula no valido');
                 }
 
+                if (segmentoOptions.includes(item.segmento)) {
+                } else {
+                    toast.error(`Segmento '${item.segmento}' no valido: `, { className: 'toast-error' });
+                    return Promise.reject('Cedula no valido');
+                }
+
                 if (tipoFacturacion.includes(item.tipoFacturacion)) {
-                    if (item.tipoFacturacion === "ADMON" && tipoMovilAdmon.includes(item.tipoMovil)) {
-                    } else if (item.tipoFacturacion === "EVENTO" && tipoMovilEvento.includes(item.tipoMovil)) {
-                    } else {
-                        toast.error(`Tipo Movil '${item.tipoMovil}' no valido: `, { className: 'toast-error' });
-                        return Promise.reject('Tipo Movil no valido');
+                } else {
+                    toast.error(`Tipo Facturacion '${item.tipoFacturacion}' no valido: `, { className: 'toast-error' });
+                    return Promise.reject('Tipo Facturacion no valido');
+                }
+
+                const existeRelacion = datosMovil.some(dato =>
+                    dato.tipo_movil === item.tipoMovil
+                );
+
+                console.log(item.tipoMovil)
+                console.log(existeRelacion)
+
+                if (existeRelacion) {
+                    if (item.tipoFacturacion === "ADMON") {
+                        item.segmento = "NA"
                     }
+
+                    let opcionesFiltradas;
+
+                    if (item.tipoFacturacion && !item.segmento) {
+                        opcionesFiltradas = datosMovil
+                            .filter(dato => dato.tipo_facturacion === item.tipoFacturacion)
+                            .map(dato => dato.tipo_movil);
+                    } else if (!item.tipoFacturacion && item.segmento) {
+                        opcionesFiltradas = datosMovil
+                            .filter(dato => dato.segmento === item.segmento)
+                            .map(dato => dato.tipo_movil);
+                    } else if (item.tipoFacturacion && item.segmento) {
+                        opcionesFiltradas = datosMovil
+                            .filter(dato => dato.segmento === item.segmento && dato.tipo_facturacion === item.tipoFacturacion)
+                            .map(dato => dato.tipo_movil);
+                    }
+
+                    const existeRelacionSegmento = opcionesFiltradas.some(dato =>
+                        dato.tipo_movil === item.tipoMovil
+                    );
+
+                    if (!existeRelacionSegmento) {
+                        toast.error(`Tipo Facturación '${item.tipoFacturacion}' no válida para el tipo de movil '${item.tipoMovil}'`, {
+                            className: 'toast-error'
+                        });
+                        return Promise.reject('Tipo Facturación no válida');
+                    }
+
                 } else {
                     toast.error(`Tipo Facturacion '${item.tipoFacturacion}' no valido: `, { className: 'toast-error' });
                     return Promise.reject('Tipo Facturacion no valido');
@@ -544,7 +593,7 @@ const ImportarDatos = ({ role }) => {
                         <div className='Archivo-Cargado'>
                             <h6>Datos Cargados:</h6>
                             <p>
-                                {archivoInfo.name && `${archivoInfo.name}`}
+                                {archivoInfo?.name ? archivoInfo.name : "No hay archivo cargado"}
                             </p>
                         </div>
                         <div>

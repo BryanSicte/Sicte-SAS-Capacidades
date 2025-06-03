@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import { ThreeDots } from 'react-loader-spinner';
+import './Agregar.css'
 
 const Agregar = ({ role }) => {
     let datosAgregadosBandera = [];
     const [datos, setDatos] = useState([]);
     const [filtros, setFiltros] = useState({});
-    const [error, setError] = useState('');
     const [datosAgregados, setDatosAgregados] = useState([]);
     const [datosCompletosAgregados, setDatosCompletosAgregados] = useState([]);
     const [datosMovil, setDatosMovil] = useState([]);
-    const [tipoMovilAdmon, setTipoMovilAdmon] = useState([]);
-    const [tipoMovilEvento, setTipoMovilEvento] = useState([]);
     const [filtrosAgregados, setFiltrosAgregados] = useState({});
     const [ordenarCampo, setOrdenarCampo] = useState('nombre');
     const [ordenarCampoAgregados, setOrdenarCampoAgregados] = useState('nombreCompleto');
@@ -26,12 +23,12 @@ const Agregar = ({ role }) => {
     const [placa, setPlaca] = useState("");
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const [isPlacaValida, setIsPlacaValida] = useState(true);
-    const [dropdownOpenTipoFacturacion, setDropdownOpenTipoFacturacion] = useState(false);
+    const [selectedItemSegmento, setSelectedItemSegmento] = useState('Seleccionar opción');
     const [selectedItemTipoFacturacion, setSelectedItemTipoFacturacion] = useState('Seleccionar opción');
-    const [dropdownOpenTipoMovil, setDropdownOpenTipoMovil] = useState(false);
     const [selectedItemTipoMovil, setSelectedItemTipoMovil] = useState('Seleccionar opción');
-    const [dropdownOpenCoordinador, setDropdownOpenCoordinador] = useState(false);
     const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Seleccionar opción');
+    const [segmentoOptions, setSegmentoOptions] = useState([]);
+    const [tipoFacturacionOptions, setTipoFacturacionOptions] = useState([]);
     const [tipoMovilOptions, setTipoMovilOptions] = useState([]);
     const [coordinadores, setCoordinadores] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -47,31 +44,42 @@ const Agregar = ({ role }) => {
                     coordDirect.add(item.director);
                 });
                 const unirCoordDirect = Array.from(coordDirect).sort((a, b) => a.localeCompare(b));
-                
+
                 setCoordinadores(unirCoordDirect);
             })
-            .catch(error => setError('Error al cargar los datos: ' + error.message));
+            .catch(error => console.log('Error al cargar los datos: ' + error.message));
     };
 
     const cargarDatosMovil = () => {
         fetch(`${process.env.REACT_APP_API_URL}/capacidades/movil`)
             .then(response => response.json())
             .then(data => {
-                const admon = data
-                    .filter(item => item.tipo_facturacion === 'ADMON')
-                    .sort((a, b) => a.tipo_movil.localeCompare(b.tipo_movil))
-                    .map(item => item.tipo_movil);
-                
-                const evento = data
-                    .filter(item => item.tipo_facturacion === 'EVENTO')
-                    .sort((a, b) => a.tipo_movil.localeCompare(b.tipo_movil))
-                    .map(item => item.tipo_movil);
-
                 setDatosMovil(data);
-                setTipoMovilAdmon(admon);
-                setTipoMovilEvento(evento);
+
+                const opcionesFiltradasFacturacion = data
+                    .map(dato => dato.tipo_facturacion);
+
+                const opcionesUnicasOrdenadasFacturacion = [...new Set(opcionesFiltradasFacturacion)].sort((a, b) =>
+                    a.localeCompare(b)
+                );
+
+                setTipoFacturacionOptions(opcionesUnicasOrdenadasFacturacion)
+
+                const opcionesAdicionales = ['PARQUE AUTOMOTOR', 'LOGISTICA', 'RECURSOS HUMANOS', 'IT', 'PRODUCCION'];
+
+                const opcionesFiltradasSegmento = data
+                    .filter(dato => dato.segmento !== 'NA')
+                    .map(dato => dato.segmento);
+
+                const todasLasOpciones = [...opcionesAdicionales, ...opcionesFiltradasSegmento];
+
+                const opcionesUnicasOrdenadasSegmento = [...new Set(todasLasOpciones)].sort((a, b) =>
+                    a.localeCompare(b)
+                );
+
+                setSegmentoOptions(opcionesUnicasOrdenadasSegmento);
             })
-            .catch(error => setError('Error al cargar los datos: ' + error.message));
+            .catch(error => console.log('Error al cargar los datos: ' + error.message));
     };
 
     const cargarDatos = () => {
@@ -89,8 +97,8 @@ const Agregar = ({ role }) => {
                 setLoading(false);
             })
             .catch(error => {
-                setError('Error al cargar los datos: ' + error.message);
-                setLoading(false); 
+                console.log('Error al cargar los datos: ' + error.message);
+                setLoading(false);
             });
     };
 
@@ -108,7 +116,7 @@ const Agregar = ({ role }) => {
                 setDatosAgregados(data);
                 setTotalItemsAgregados(data.length);
             })
-            .catch(error => setError('Error al cargar los datos: ' + error.message));
+            .catch(error => console.log('Error al cargar los datos: ' + error.message));
     };
 
     useEffect(() => {
@@ -133,6 +141,8 @@ const Agregar = ({ role }) => {
         setSelectedItemTipoMovil('Seleccionar opción');
         setSelectedItemCoordinador('Seleccionar opción');
         setTipoMovilOptions([]);
+        setTipoFacturacionOptions([]);
+        setSegmentoOptions([]);
         setCarpeta("");
         setPlaca("");
     };
@@ -216,17 +226,35 @@ const Agregar = ({ role }) => {
         }
     };
 
-    const toggleTipoFacturacion = () => setDropdownOpenTipoFacturacion(prevState => !prevState);
-    const toggleTipoMovil = () => setDropdownOpenTipoMovil(prevState => !prevState);
-    const toggleCoordinador = () => setDropdownOpenCoordinador(prevState => !prevState);
+    const handleSelectTipoFacturacionYSegmento = (fact, segm) => {
+        setSelectedItemTipoFacturacion(fact);
+        setSelectedItemSegmento(segm);
 
-    const handleSelectTipoFacturacion = (item) => {
-        setSelectedItemTipoFacturacion(item);
-        if (item === 'ADMON') {
-            setTipoMovilOptions(tipoMovilAdmon);
-        } else if (item === 'EVENTO') {
-            setTipoMovilOptions(tipoMovilEvento);
+        if (fact === "ADMON") {
+            segm = "NA"
         }
+
+        let opcionesFiltradas;
+
+        if (fact && !segm) {
+            opcionesFiltradas = datosMovil
+                .filter(dato => dato.tipo_facturacion === fact)
+                .map(dato => dato.tipo_movil);
+        } else if (!fact && segm) {
+            opcionesFiltradas = datosMovil
+                .filter(dato => dato.segmento === segm)
+                .map(dato => dato.tipo_movil);
+        } else if (fact && segm) {
+            opcionesFiltradas = datosMovil
+                .filter(dato => dato.segmento === segm && dato.tipo_facturacion === fact)
+                .map(dato => dato.tipo_movil);
+        }
+
+        const opcionesUnicasOrdenadas = [...new Set(opcionesFiltradas)].sort((a, b) =>
+            a.localeCompare(b)
+        );
+
+        setTipoMovilOptions(opcionesUnicasOrdenadas);
         setSelectedItemTipoMovil('Seleccionar opción');
     };
 
@@ -239,7 +267,7 @@ const Agregar = ({ role }) => {
     };
 
     const validarCapacidadMovil = (data) => {
-        console.log(data)
+
         if (selectedItemTipoFacturacion === 'EVENTO' && selectedItemTipoMovil !== 'BACKUP') {
             const datos = {
                 placa: data.PLACA,
@@ -291,14 +319,16 @@ const Agregar = ({ role }) => {
     const limpiarFiltros = () => {
         setFiltrosAgregados({});
         setFiltros({});
-        document.querySelectorAll('.tabla-container input[type="text"]').forEach(input => {
-            input.value = '';
-        });
         setFiltrosLimpiados(true);
     };
 
     useEffect(() => {
         if (filtrosLimpiados) {
+            setFiltrosLimpiados(false);
+            if (!selectedItemSegmento || selectedItemSegmento === 'Seleccionar opción') {
+                toast.error('Por favor selecciona un Segmento', { className: 'toast-error' });
+                return;
+            }
             if (!selectedItemTipoFacturacion || selectedItemTipoFacturacion === 'Seleccionar opción') {
                 toast.error('Por favor selecciona un Tipo de Facturación', { className: 'toast-error' });
                 return;
@@ -315,6 +345,10 @@ const Agregar = ({ role }) => {
                 toast.error('Por favor ingresa una Carpeta', { className: 'toast-error' });
                 return;
             }
+            if (!placa && selectedItemTipoFacturacion === "EVENTO") {
+                toast.error('Por favor ingresa una placa', { className: 'toast-error' });
+                return;
+            }
             if (filasSeleccionadas.size === 0) {
                 toast.error('Por favor selecciona al menos una cédula', { className: 'toast-error' });
                 return;
@@ -329,6 +363,7 @@ const Agregar = ({ role }) => {
                     id: 1,
                     carpeta: carpeta,
                     placa: placa,
+                    segmento: selectedItemSegmento,
                     tipoFacturacion: selectedItemTipoFacturacion,
                     tipoMovil: selectedItemTipoMovil,
                     cedula: cedula,
@@ -350,21 +385,20 @@ const Agregar = ({ role }) => {
                         },
                         body: JSON.stringify(data),
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            toast.error('No se cargaron los datos', { className: 'toast-error' });
-                            throw new Error(`Error al agregar los datos: ${response.status}`);
-                        } else {
-                            console.log('Fila enviada correctamente');
-                            toast.success('Datos cargados', { className: 'toast-success' });
-                        }
-                        return response.json();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
-                        setError('Error al enviar los datos al backend: ' + error.message);
-                    });
+                        .then(response => {
+                            if (!response.ok) {
+                                toast.error('No se cargaron los datos', { className: 'toast-error' });
+                                throw new Error(`Error al agregar los datos: ${response.status}`);
+                            } else {
+                                toast.success(`Datos cargados para la cedula: ${cedula}`, { className: 'toast-success' });
+                            }
+                            return response.json();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            toast.error(`Error al enviar la fila: ${error.message}`, { className: 'toast-error' });
+                            console.log('Error al enviar los datos al backend: ' + error.message);
+                        });
                 }
             });
 
@@ -384,7 +418,7 @@ const Agregar = ({ role }) => {
                     cargarDatosAgregados();
                 })
                 .catch(error => {
-                    setError('Error al aplicar los cambios: ' + error.message);
+                    console.log('Error al aplicar los cambios: ' + error.message);
                 });
         }
     }, [filtrosLimpiados]);
@@ -488,9 +522,9 @@ const Agregar = ({ role }) => {
     };
 
     return (
-        <div>
+        <div className='Agregar'>
             {loading ? (
-                <div id="CargandoPagina">
+                <div className="CargandoPagina">
                     <ThreeDots
                         type="ThreeDots"
                         color="#0B1A46"
@@ -500,182 +534,207 @@ const Agregar = ({ role }) => {
                     <p>... Cargando Datos ...</p>
                 </div>
             ) : (
-                <div id="Principal-Container">
-                    <div id='Principal-Agregar'>
-                        <div id="Principal-Agregar-Botones">
-                            <div>
-                                <label htmlFor="uname">Tipo Facturación:</label>
-                                <Dropdown isOpen={dropdownOpenTipoFacturacion} toggle={toggleTipoFacturacion}>
-                                    <DropdownToggle caret className="btn btn-primary">
-                                        {selectedItemTipoFacturacion}
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                        <DropdownItem onClick={() => handleSelectTipoFacturacion('ADMON')}>ADMON</DropdownItem>
-                                        <DropdownItem onClick={() => handleSelectTipoFacturacion('EVENTO')}>EVENTO</DropdownItem>
-                                    </DropdownMenu>
-                                </Dropdown>
-                            </div>
-                            <div>
-                                <label htmlFor="uname">Tipo Movil:</label>
-                                <Dropdown isOpen={dropdownOpenTipoMovil} toggle={toggleTipoMovil}>
-                                    <DropdownToggle caret className="btn btn-primary">
-                                        {selectedItemTipoMovil}
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                        {tipoMovilOptions.map((option, index) => (
-                                            <DropdownItem key={index} onClick={() => handleSelectTipoMovil(option)}>{option}</DropdownItem>
-                                        ))}
-                                    </DropdownMenu>
-                                </Dropdown>
-                            </div>
-                            <div>
-                                <label htmlFor="uname">Coordinador:</label>
-                                <Dropdown isOpen={dropdownOpenCoordinador} toggle={toggleCoordinador}>
-                                    <DropdownToggle caret className="btn btn-primary">
-                                        {selectedItemCoordinador}
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                        {coordinadores.map((option, index) => (
-                                            <DropdownItem key={index} onClick={() => handleSelectCoordinador(option)}>{option}</DropdownItem>
-                                        ))}
-                                    </DropdownMenu>
-                                </Dropdown>
-                            </div>
-
-                            <div id="Principal-Agregar-Botones-Red" className="form-group">
-                                <label htmlFor="carpeta" className="form-label">Carpeta:</label>
-                                <input type="text" className="form-control" id="carpeta" placeholder="Ingresa la Carpeta" value={carpeta} onChange={(e) => setCarpeta(e.target.value)} required />
-                                <div className="invalid-feedback">Campo Obligatorio</div>
-                            </div>
-
-                            <div id="Principal-Agregar-Botones-Red" className="form-group">
-                                <label htmlFor="placa" className="form-label">Placa:</label>
-                                <input type="text" className="form-control" id="placa" placeholder="Ingresa la Placa" value={placa} onChange={(e) => setPlaca(e.target.value)} maxLength={6} required />
-                                {!isPlacaValida && <p style={{ color: 'red' }}>Placa no válida</p>}
-                                <div className="invalid-feedback">Campo Obligatorio</div>
-                            </div>
-
-                            <div id='Botones-Accion'>
-                                <button id='Boton-Limpiar' className="btn btn-secondary" onClick={BotonLimpiarFiltros}>Limpiar</button>
-                                <button id='Boton-Aplicar' className="btn btn-secondary" onClick={botonAplicar}>Aplicar</button>
-                            </div>
+                <div className='Principal-Agregar'>
+                    <div className="Principal-Agregar-Botones">
+                        <div className='segmento'>
+                            <label htmlFor="uname">Segmento:</label>
+                            <select
+                                id="tipoFacturacion"
+                                className="form-select"
+                                value={selectedItemSegmento}
+                                onChange={(e) => handleSelectTipoFacturacionYSegmento(selectedItemTipoFacturacion, e.target.value)}
+                            >
+                                <option value="">Seleccione una opción</option>
+                                {segmentoOptions.map((option, index) => (
+                                    <option key={index} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className='tipoFacturacion'>
+                            <label htmlFor="uname">Tipo Facturación:</label>
+                            <select
+                                id="tipoFacturacion"
+                                className="form-select"
+                                value={selectedItemTipoFacturacion}
+                                onChange={(e) => handleSelectTipoFacturacionYSegmento(e.target.value, selectedItemSegmento)}
+                            >
+                                <option value="">Seleccione una opción</option>
+                                {tipoFacturacionOptions.map((option, index) => (
+                                    <option key={index} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className='tipoMovil'>
+                            <label htmlFor="uname">Tipo Movil:</label>
+                            <select
+                                id="tipoMovil"
+                                className="form-select"
+                                value={selectedItemTipoMovil}
+                                onChange={(e) => handleSelectTipoMovil(e.target.value)}
+                                disabled={!selectedItemTipoFacturacion}
+                            >
+                                <option value="">Seleccione una opción</option>
+                                {tipoMovilOptions.map((option, index) => (
+                                    <option key={index} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className='coordinador'>
+                            <label htmlFor="uname">Coordinador:</label>
+                            <select
+                                id="tipoMovil"
+                                className="form-select"
+                                value={selectedItemCoordinador}
+                                onChange={(e) => handleSelectCoordinador(e.target.value)}
+                            >
+                                <option value="">Seleccione una opción</option>
+                                {coordinadores.map((option, index) => (
+                                    <option key={index} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
-                        <div id="Principal-Agregar-Pendientes">
-                            <div id='Titulo'>
-                                <span>Pendientes</span>
+                        <div className="Principal-Agregar-Botones-Red form-group carpeta">
+                            <label htmlFor="carpeta" className="form-label">Carpeta:</label>
+                            <input type="text" className="form-control" placeholder="Ingresa la Carpeta" value={carpeta} onChange={(e) => setCarpeta(e.target.value)} required />
+                            <div className="invalid-feedback">Campo Obligatorio</div>
+                        </div>
+
+                        <div className="Principal-Agregar-Botones-Red form-group placa">
+                            <label htmlFor="placa" className="form-label">Placa:</label>
+                            <input type="text" className="form-control" placeholder="Ingresa la Placa" value={placa} onChange={(e) => setPlaca(e.target.value)} maxLength={6} required />
+                            {!isPlacaValida && <p style={{ color: 'red' }}>Placa no válida</p>}
+                            <div className="invalid-feedback">Campo Obligatorio</div>
+                        </div>
+
+                        <div className='Botones-Accion'>
+                            <button className='Boton-Limpiar btn btn-secondary' onClick={BotonLimpiarFiltros}>Limpiar</button>
+                            <button className='Boton-Aplicar btn btn-secondary' onClick={botonAplicar}>Aplicar</button>
+                        </div>
+                    </div>
+
+                    <div className="Principal-Agregar-Pendientes">
+                        <div className='Titulo'>
+                            <span>Pendientes</span>
+                        </div>
+                        <div className="tabla-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div>
+                                                <span>Seleccionar</span>
+                                                <input className='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
+                                            </div>
+                                        </th>
+                                        {['nit', 'nombre', 'cargo', 'perfil', 'director'].map(columna => (
+                                            <th key={columna}>
+                                                <div>
+                                                    {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
+                                                </div>
+                                                <input type="text" onKeyDown={e => {
+                                                    if (e.key === 'Enter') {
+                                                        clickAplicarFiltros(e, columna);
+                                                    }
+                                                }}
+                                                />
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {ordenarDatos.map((item) => (
+                                        <tr key={item.nit} className={filasSeleccionadas.has(item.nit) ? 'fila-seleccionada' : ''}>
+                                            <td>
+                                                <input className='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.nit)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.nit)} />
+                                            </td>
+                                            <td>{item.nit}</td>
+                                            <td>{item.nombre}</td>
+                                            <td>{item.cargo}</td>
+                                            <td>{item.perfil}</td>
+                                            <td>{item.director}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className='piePagina'>
+                            <p>Total de items: {totalItems}</p>
+                            <div className='Botones-piePagina'>
+
                             </div>
-                            <div className="tabla-container">
-                                <table>
+                        </div>
+                    </div>
+
+                    <div className="Principal-Agregar-Agregados">
+                        <div className='Titulo'>
+                            <span>Agregados</span>
+                        </div>
+                        <div className="tabla-container">
+                            <table>
+                                {ordenarDatosAgregados.length > 0 && (
                                     <thead>
                                         <tr>
-                                            <th>
-                                                <div>
-                                                    <span>Seleccionar</span>
-                                                    <input id='Checkbox-Encabezado' type="checkbox" checked={todasSeleccionadas} onChange={clickSeleccionarTodas} style={{ cursor: 'pointer' }} />
-                                                </div>
-                                            </th>
-                                            {['nit', 'nombre', 'cargo', 'perfil', 'director'].map(columna => (
-                                                <th key={columna}>
-                                                    <div>
-                                                        {columna.charAt(0).toUpperCase() + columna.slice(1)} <i className={getIconoFiltro(columna)} onClick={() => clickEncabezados(columna)} style={{ cursor: 'pointer' }}></i>
-                                                    </div>
-                                                    <input type="text" onKeyDown={e => {
-                                                            if (e.key === 'Enter') {
-                                                                clickAplicarFiltros(e, columna);
-                                                            }
-                                                        }}
-                                                    />
-                                                </th>
-                                            ))}
+                                            {Object.keys(ordenarDatosAgregados[0])
+                                                .filter(key => !['id', 'CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO', 'TIPO_VEHICULO'].includes(key))
+                                                .map(columna => (
+                                                    <th key={columna}>
+                                                        <div>
+                                                            {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
+                                                            <i
+                                                                className={getIconoFiltroAgregados(columna)}
+                                                                onClick={() => clickEncabezadosAgregados(columna)}
+                                                                style={{ cursor: "pointer" }}
+                                                            ></i>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter") {
+                                                                    clickAplicarFiltrosAgregados(e, columna);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </th>
+                                                ))}
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {ordenarDatos.map((item) => (
-                                            <tr key={item.nit} className={filasSeleccionadas.has(item.nit) ? 'fila-seleccionada' : ''}>
-                                                <td>
-                                                    <input id='Checkbox-Filas' type="checkbox" checked={filasSeleccionadas.has(item.nit)} style={{ cursor: 'pointer' }} onChange={() => clickFila(item.nit)} />
-                                                </td>
-                                                <td>{item.nit}</td>
-                                                <td>{item.nombre}</td>
-                                                <td>{item.cargo}</td>
-                                                <td>{item.perfil}</td>
-                                                <td>{item.director}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div id='piePagina'>
-                                <p>Total de items: {totalItems}</p>
-                                <div id='Botones-piePagina'>
+                                )}
+                                <tbody>
+                                    {ordenarDatosAgregados.map((item) => (
+                                        <tr key={item.cedula}>
+                                            {Object.keys(item).slice(1)
+                                                .filter(key => key !== 'CODIGO_SAP')
+                                                .filter(key => key !== 'CONTRATISTA')
+                                                .filter(key => key !== 'TIPO_CARRO')
+                                                .map((key, i) => (
+                                                    <td key={key}>
+                                                        {key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
+                                                    </td>
+                                                ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className='piePagina'>
+                            <p>Total de items: {totalItemsAgregados}</p>
+                            <div className='Botones-piePagina'>
 
-                                </div>
                             </div>
                         </div>
-
-                        <div id="Principal-Agregar-Agregados">
-                            <div id='Titulo'>
-                                <span>Agregados</span>
-                            </div>
-                            <div className="tabla-container">
-                                <table>
-                                    {ordenarDatosAgregados.length > 0 && (
-                                        <thead>
-                                            <tr>
-                                                {Object.keys(ordenarDatosAgregados[0])
-                                                    .filter(key => !['id','CODIGO_SAP', 'CONTRATISTA', 'TIPO_CARRO', 'TIPO_VEHICULO'].includes(key))
-                                                    .map(columna => (
-                                                        <th key={columna}>
-                                                            <div>
-                                                                {columna.charAt(0).toUpperCase() + columna.slice(1).toLowerCase()}{" "}
-                                                                <i
-                                                                    className={getIconoFiltroAgregados(columna)}
-                                                                    onClick={() => clickEncabezadosAgregados(columna)}
-                                                                    style={{ cursor: "pointer" }}
-                                                                ></i>
-                                                            </div>
-                                                            <input
-                                                                type="text"
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === "Enter") {
-                                                                        clickAplicarFiltrosAgregados(e, columna);
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </th>
-                                                    ))}
-                                            </tr>
-                                        </thead>
-                                    )}
-                                    <tbody>
-                                        {ordenarDatosAgregados.map((item) => (
-                                            <tr key={item.cedula}>
-                                                {Object.keys(item).slice(1)
-                                                    .filter(key => key !== 'CODIGO_SAP')
-                                                    .filter(key => key !== 'CONTRATISTA')
-                                                    .filter(key => key !== 'TIPO_CARRO')
-                                                    .map((key, i) => (
-                                                        <td key={key}>
-                                                            {key === 'VALOR_ESPERADO' ? formatearValorEsperado(item[key]) : item[key]}
-                                                        </td>
-                                                    ))}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div id='piePagina'>
-                                <p>Total de items: {totalItemsAgregados}</p>
-                                <div id='Botones-piePagina'>
-
-                                </div>
-                            </div>
-                        </div>
-                        <ToastContainer />
                     </div>
+                    <ToastContainer />
                 </div>
-            )} 
+            )}
         </div>
     );
 };
