@@ -307,7 +307,7 @@ const ImportarDatos = ({ role }) => {
                     coordinador: item.coordinador
                 };
 
-                if (cedulas.includes(item.cedula)) {
+                if (cedulas.map(String).includes(String(item.cedula))) {
                 } else {
                     toast.error(`Cedula '${item.cedula}' no valido: `, { className: 'toast-error' });
                     return Promise.reject('Cedula no valido');
@@ -349,9 +349,9 @@ const ImportarDatos = ({ role }) => {
                             .filter(dato => dato.segmento === item.segmento && dato.tipo_facturacion === item.tipoFacturacion)
                             .map(dato => dato.tipo_movil);
                     }
-
+                    
                     const existeRelacionSegmento = opcionesFiltradas.some(dato =>
-                        dato.tipo_movil === item.tipoMovil
+                        dato === item.tipoMovil
                     );
 
                     if (!existeRelacionSegmento) {
