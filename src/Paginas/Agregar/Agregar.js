@@ -137,12 +137,10 @@ const Agregar = ({ role }) => {
         document.querySelectorAll('.tabla-container input[type="text"]').forEach(input => {
             input.value = '';
         });
+        setSelectedItemSegmento('Seleccionar opción');
         setSelectedItemTipoFacturacion('Seleccionar opción');
         setSelectedItemTipoMovil('Seleccionar opción');
         setSelectedItemCoordinador('Seleccionar opción');
-        setTipoMovilOptions([]);
-        setTipoFacturacionOptions([]);
-        setSegmentoOptions([]);
         setCarpeta("");
         setPlaca("");
     };
