@@ -16,6 +16,7 @@ const ImportarDatos = ({ role }) => {
     const [datosMovil, setDatosMovil] = useState([]);
     const [tipoFacturacion, setTipoFacturacion] = useState([]);
     const [segmentoOptions, setSegmentoOptions] = useState([]);
+    const [areaOptions, setAreaOptions] = useState([]);
     const [filtrosAgregados, setFiltrosAgregados] = useState({});
     const [ordenarCampo, setOrdenarCampo] = useState('nombre');
     const [ordenarCampoAgregados, setOrdenarCampoAgregados] = useState('nombreCompleto');
@@ -67,6 +68,14 @@ const ImportarDatos = ({ role }) => {
 
                 setDatosMovil(data);
                 setTipoFacturacion(facturacionUnica);
+
+                const area = data
+                    .sort((a, b) => a.area.localeCompare(b.area))
+                    .map(item => item.area);
+
+                const areaUnica = [...new Set(area)];
+
+                setAreaOptions(areaUnica)
 
                 const opcionesAdicionales = ['PARQUE AUTOMOTOR', 'LOGISTICA', 'RECURSOS HUMANOS', 'IT', 'PRODUCCION'];
 
@@ -278,6 +287,7 @@ const ImportarDatos = ({ role }) => {
             excelData.forEach(row => {
                 const cedulaExcel = row['Cedula'];
                 const segmentoExcel = row['Segmento'];
+                const areaExcel = row['Area'];
                 const tipoFacturacionExcel = row['Tipo Facturacion'];
                 const tipoMovilExcel = row['Tipo Movil'];
                 const coordinadorExcel = row['Coordinador'];
@@ -285,13 +295,14 @@ const ImportarDatos = ({ role }) => {
                 const placaExcel = row['Placa'];
 
                 cedulasSeleccionadas.push({
-                    cedula: cedulaExcel,
+                    carpeta: carpetaExcel,
+                    placa: placaExcel,
                     segmento: segmentoExcel,
+                    area: areaExcel,
                     tipoFacturacion: tipoFacturacionExcel,
                     tipoMovil: tipoMovilExcel,
+                    cedula: cedulaExcel,
                     coordinador: coordinadorExcel,
-                    carpeta: carpetaExcel,
-                    placa: placaExcel
                 });
             });
 
@@ -301,6 +312,7 @@ const ImportarDatos = ({ role }) => {
                     carpeta: item.carpeta,
                     placa: item.placa,
                     segmento: item.segmento,
+                    area: item.area,
                     tipoFacturacion: item.tipoFacturacion,
                     tipoMovil: item.tipoMovil,
                     cedula: item.cedula,
@@ -313,10 +325,16 @@ const ImportarDatos = ({ role }) => {
                     return Promise.reject('Cedula no valido');
                 }
 
+                if (areaOptions.includes(item.area)) {
+                } else {
+                    toast.error(`Area '${item.area}' no valida: `, { className: 'toast-error' });
+                    return Promise.reject('area no valida');
+                }
+
                 if (segmentoOptions.includes(item.segmento)) {
                 } else {
                     toast.error(`Segmento '${item.segmento}' no valido: `, { className: 'toast-error' });
-                    return Promise.reject('Cedula no valido');
+                    return Promise.reject('Segmento no valido');
                 }
 
                 if (tipoFacturacion.includes(item.tipoFacturacion)) {
@@ -336,26 +354,16 @@ const ImportarDatos = ({ role }) => {
 
                     let opcionesFiltradas;
 
-                    if (item.tipoFacturacion && !item.segmento) {
-                        opcionesFiltradas = datosMovil
-                            .filter(dato => dato.tipo_facturacion === item.tipoFacturacion)
-                            .map(dato => dato.tipo_movil);
-                    } else if (!item.tipoFacturacion && item.segmento) {
-                        opcionesFiltradas = datosMovil
-                            .filter(dato => dato.segmento === item.segmento)
-                            .map(dato => dato.tipo_movil);
-                    } else if (item.tipoFacturacion && item.segmento) {
-                        opcionesFiltradas = datosMovil
-                            .filter(dato => dato.segmento === item.segmento && dato.tipo_facturacion === item.tipoFacturacion)
-                            .map(dato => dato.tipo_movil);
-                    }
-                    
+                    opcionesFiltradas = datosMovil
+                        .filter(dato => (!item.tipoFacturacion || dato.tipo_facturacion === item.tipoFacturacion) && (!item.segmento || dato.segmento === item.segmento) && (!item.area || dato.area === item.area))
+                        .map(dato => dato.tipo_movil);
+
                     const existeRelacionSegmento = opcionesFiltradas.some(dato =>
                         dato === item.tipoMovil
                     );
 
                     if (!existeRelacionSegmento) {
-                        toast.error(`Tipo Facturación '${item.tipoFacturacion}' o Segmento '${item.segmento}' no válida para el tipo de movil '${item.tipoMovil}'`, {
+                        toast.error(`Tipo Facturación '${item.tipoFacturacion}' o Segmento '${item.segmento}' o Area '${item.area}' no válida para el tipo de movil '${item.tipoMovil}'`, {
                             className: 'toast-error'
                         });
                         return Promise.reject('Tipo Facturación no válida');

@@ -24,10 +24,12 @@ const Agregar = ({ role }) => {
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const [isPlacaValida, setIsPlacaValida] = useState(true);
     const [selectedItemSegmento, setSelectedItemSegmento] = useState('Seleccionar opción');
+    const [selectedItemArea, setSelectedItemArea] = useState('Seleccionar opción');
     const [selectedItemTipoFacturacion, setSelectedItemTipoFacturacion] = useState('Seleccionar opción');
     const [selectedItemTipoMovil, setSelectedItemTipoMovil] = useState('Seleccionar opción');
     const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Seleccionar opción');
     const [segmentoOptions, setSegmentoOptions] = useState([]);
+    const [areaOptions, setAreaOptions] = useState([]);
     const [tipoFacturacionOptions, setTipoFacturacionOptions] = useState([]);
     const [tipoMovilOptions, setTipoMovilOptions] = useState([]);
     const [coordinadores, setCoordinadores] = useState([]);
@@ -64,6 +66,15 @@ const Agregar = ({ role }) => {
                 );
 
                 setTipoFacturacionOptions(opcionesUnicasOrdenadasFacturacion)
+
+                const opcionesFiltradasArea = data
+                    .map(dato => dato.area);
+
+                const opcionesUnicasOrdenadasArea = [...new Set(opcionesFiltradasArea)].sort((a, b) =>
+                    a.localeCompare(b)
+                );
+
+                setAreaOptions(opcionesUnicasOrdenadasArea)
 
                 const opcionesAdicionales = ['PARQUE AUTOMOTOR', 'LOGISTICA', 'RECURSOS HUMANOS', 'IT', 'PRODUCCION'];
 
@@ -138,6 +149,7 @@ const Agregar = ({ role }) => {
             input.value = '';
         });
         setSelectedItemSegmento('Seleccionar opción');
+        setSelectedItemArea('Seleccionar opción');
         setSelectedItemTipoFacturacion('Seleccionar opción');
         setSelectedItemTipoMovil('Seleccionar opción');
         setSelectedItemCoordinador('Seleccionar opción');
@@ -224,29 +236,22 @@ const Agregar = ({ role }) => {
         }
     };
 
-    const handleSelectTipoFacturacionYSegmento = (fact, segm) => {
+    const handleSelectTipoFacturacionSegmentoArea = (fact, segm, area) => {
         setSelectedItemTipoFacturacion(fact);
         setSelectedItemSegmento(segm);
+        setSelectedItemArea(area);
 
         if (fact === "ADMON") {
             segm = "NA"
+            area = "ADMON"
         }
 
         let opcionesFiltradas;
 
-        if (fact && !segm) {
-            opcionesFiltradas = datosMovil
-                .filter(dato => dato.tipo_facturacion === fact)
-                .map(dato => dato.tipo_movil);
-        } else if (!fact && segm) {
-            opcionesFiltradas = datosMovil
-                .filter(dato => dato.segmento === segm)
-                .map(dato => dato.tipo_movil);
-        } else if (fact && segm) {
-            opcionesFiltradas = datosMovil
-                .filter(dato => dato.segmento === segm && dato.tipo_facturacion === fact)
-                .map(dato => dato.tipo_movil);
-        }
+        opcionesFiltradas = datosMovil
+            .filter(dato => (!fact || dato.tipo_facturacion === fact) && (!segm || dato.segmento === segm) && (!area || dato.area === area))
+            .map(dato => dato.tipo_movil);
+
 
         const opcionesUnicasOrdenadas = [...new Set(opcionesFiltradas)].sort((a, b) =>
             a.localeCompare(b)
@@ -327,6 +332,10 @@ const Agregar = ({ role }) => {
                 toast.error('Por favor selecciona un Segmento', { className: 'toast-error' });
                 return;
             }
+            if (!selectedItemArea || selectedItemArea === 'Seleccionar opción') {
+                toast.error('Por favor selecciona un Area', { className: 'toast-error' });
+                return;
+            }
             if (!selectedItemTipoFacturacion || selectedItemTipoFacturacion === 'Seleccionar opción') {
                 toast.error('Por favor selecciona un Tipo de Facturación', { className: 'toast-error' });
                 return;
@@ -362,6 +371,7 @@ const Agregar = ({ role }) => {
                     carpeta: carpeta,
                     placa: placa,
                     segmento: selectedItemSegmento,
+                    area: selectedItemArea,
                     tipoFacturacion: selectedItemTipoFacturacion,
                     tipoMovil: selectedItemTipoMovil,
                     cedula: cedula,
@@ -534,88 +544,111 @@ const Agregar = ({ role }) => {
             ) : (
                 <div className='Principal-Agregar'>
                     <div className="Principal-Agregar-Botones">
-                        <div className='segmento'>
-                            <label htmlFor="uname">Segmento:</label>
-                            <select
-                                id="tipoFacturacion"
-                                className="form-select"
-                                value={selectedItemSegmento}
-                                onChange={(e) => handleSelectTipoFacturacionYSegmento(selectedItemTipoFacturacion, e.target.value)}
-                            >
-                                <option value="">Seleccione una opción</option>
-                                {segmentoOptions.map((option, index) => (
-                                    <option key={index} value={option}>
-                                        {option}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className='primeraFila'>
+                            <div className='segmento'>
+                                <label htmlFor="uname">Segmento:</label>
+                                <select
+                                    id="tipoFacturacion"
+                                    className="form-select"
+                                    value={selectedItemSegmento}
+                                    onChange={(e) => handleSelectTipoFacturacionSegmentoArea(selectedItemTipoFacturacion, e.target.value, selectedItemArea)}
+                                >
+                                    <option value="">Seleccione una opción</option>
+                                    {segmentoOptions.map((option, index) => (
+                                        <option key={index} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className='area'>
+                                <label htmlFor="uname">Area:</label>
+                                <select
+                                    id="tipoFacturacion"
+                                    className="form-select"
+                                    value={selectedItemArea}
+                                    onChange={(e) => handleSelectTipoFacturacionSegmentoArea(selectedItemTipoFacturacion, selectedItemSegmento, e.target.value)}
+                                >
+                                    <option value="">Seleccione una opción</option>
+                                    {areaOptions.map((option, index) => (
+                                        <option key={index} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className='tipoFacturacion'>
+                                <label htmlFor="uname">Tipo Facturación:</label>
+                                <select
+                                    id="tipoFacturacion"
+                                    className="form-select"
+                                    value={selectedItemTipoFacturacion}
+                                    onChange={(e) => handleSelectTipoFacturacionSegmentoArea(e.target.value, selectedItemSegmento, selectedItemArea)}
+                                >
+                                    <option value="">Seleccione una opción</option>
+                                    {tipoFacturacionOptions.map((option, index) => (
+                                        <option key={index} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className='tipoMovil'>
+                                <label htmlFor="uname">Tipo Movil:</label>
+                                <select
+                                    id="tipoMovil"
+                                    className="form-select"
+                                    value={selectedItemTipoMovil}
+                                    onChange={(e) => handleSelectTipoMovil(e.target.value)}
+                                    disabled={!selectedItemTipoFacturacion || !selectedItemSegmento || !selectedItemArea}
+                                >
+                                    <option value="">Seleccione una opción</option>
+                                    {tipoMovilOptions.map((option, index) => (
+                                        <option key={index} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
-                        <div className='tipoFacturacion'>
-                            <label htmlFor="uname">Tipo Facturación:</label>
-                            <select
-                                id="tipoFacturacion"
-                                className="form-select"
-                                value={selectedItemTipoFacturacion}
-                                onChange={(e) => handleSelectTipoFacturacionYSegmento(e.target.value, selectedItemSegmento)}
-                            >
-                                <option value="">Seleccione una opción</option>
-                                {tipoFacturacionOptions.map((option, index) => (
-                                    <option key={index} value={option}>
-                                        {option}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className='tipoMovil'>
-                            <label htmlFor="uname">Tipo Movil:</label>
-                            <select
-                                id="tipoMovil"
-                                className="form-select"
-                                value={selectedItemTipoMovil}
-                                onChange={(e) => handleSelectTipoMovil(e.target.value)}
-                                disabled={!selectedItemTipoFacturacion}
-                            >
-                                <option value="">Seleccione una opción</option>
-                                {tipoMovilOptions.map((option, index) => (
-                                    <option key={index} value={option}>
-                                        {option}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className='coordinador'>
-                            <label htmlFor="uname">Coordinador:</label>
-                            <select
-                                id="tipoMovil"
-                                className="form-select"
-                                value={selectedItemCoordinador}
-                                onChange={(e) => handleSelectCoordinador(e.target.value)}
-                            >
-                                <option value="">Seleccione una opción</option>
-                                {coordinadores.map((option, index) => (
-                                    <option key={index} value={option}>
-                                        {option}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        <div className='segundaFila'>
+                            <div className='coordinador'>
+                                <label htmlFor="uname">Coordinador:</label>
+                                <select
+                                    id="tipoMovil"
+                                    className="form-select"
+                                    value={selectedItemCoordinador}
+                                    onChange={(e) => handleSelectCoordinador(e.target.value)}
+                                >
+                                    <option value="">Seleccione una opción</option>
+                                    {coordinadores.map((option, index) => (
+                                        <option key={index} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                        <div className="Principal-Agregar-Botones-Red form-group carpeta">
-                            <label htmlFor="carpeta" className="form-label">Carpeta:</label>
-                            <input type="text" className="form-control" placeholder="Ingresa la Carpeta" value={carpeta} onChange={(e) => setCarpeta(e.target.value)} required />
-                            <div className="invalid-feedback">Campo Obligatorio</div>
-                        </div>
+                            <div className="Principal-Agregar-Botones-Red form-group carpeta">
+                                <label htmlFor="carpeta" className="form-label">Carpeta:</label>
+                                <input type="text" className="form-control" placeholder="Ingresa la Carpeta" value={carpeta} onChange={(e) => setCarpeta(e.target.value)} required />
+                                <div className="invalid-feedback">Campo Obligatorio</div>
+                            </div>
 
-                        <div className="Principal-Agregar-Botones-Red form-group placa">
-                            <label htmlFor="placa" className="form-label">Placa:</label>
-                            <input type="text" className="form-control" placeholder="Ingresa la Placa" value={placa} onChange={(e) => setPlaca(e.target.value)} maxLength={6} required />
-                            {!isPlacaValida && <p style={{ color: 'red' }}>Placa no válida</p>}
-                            <div className="invalid-feedback">Campo Obligatorio</div>
-                        </div>
+                            <div className="Principal-Agregar-Botones-Red form-group placa">
+                                <label htmlFor="placa" className="form-label">Placa:</label>
+                                <input type="text" className="form-control" placeholder="Ingresa la Placa" value={placa} onChange={(e) => setPlaca(e.target.value)} maxLength={6} required />
+                                {!isPlacaValida && <p style={{ color: 'red' }}>Placa no válida</p>}
+                                <div className="invalid-feedback">Campo Obligatorio</div>
+                            </div>
 
-                        <div className='Botones-Accion'>
-                            <button className='Boton-Limpiar btn btn-secondary' onClick={BotonLimpiarFiltros}>Limpiar</button>
-                            <button className='Boton-Aplicar btn btn-secondary' onClick={botonAplicar}>Aplicar</button>
+                            <div className='Botones-Accion'>
+                                <label htmlFor="accion" className="form-label">Accion:</label>
+                                <div className='botones'>
+                                    <button className='Boton-Limpiar btn btn-secondary' onClick={BotonLimpiarFiltros}>Limpiar</button>
+                                    <button className='Boton-Aplicar btn btn-secondary' onClick={botonAplicar}>Aplicar</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

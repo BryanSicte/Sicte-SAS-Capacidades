@@ -65,8 +65,9 @@ const ValidarPersonal = ({
                 const coordinadores2 = new Set(coordinadores);
                 const datosFiltrados3 = datosFiltrados2.filter(item => coordinadores2.has(item.COORDINADOR));
                 const datosFiltrados4 = datosFiltrados3.filter(item => validarPlaca(item));
-                setDatos(datosFiltrados4);
-                setTotalItems(datosFiltrados4.length);
+                const datosFiltrados5 = datosFiltrados4.filter(item => item.segmento);
+                setDatos(datosFiltrados5);
+                setTotalItems(datosFiltrados5.length);
                 setLoading(false);
             })
             .catch(error => {
@@ -283,7 +284,8 @@ const ValidarPersonal = ({
                 id: 1,
                 carpeta: item.CARPETA,
                 placa: item.PLACA,
-                segmento: item.AREA,
+                segmento: item.SEGMENTO,
+                area: item.AREA,
                 tipoFacturacion: item.TIPO_FACTURACION,
                 tipoMovil: item.TIPO_DE_MOVIL,
                 cedula: item.CEDULA,

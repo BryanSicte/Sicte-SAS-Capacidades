@@ -26,16 +26,27 @@
 
         .Principal-Agregar-Botones {
             display: flex !important;
+            flex-direction: column !important;
             align-items: center !important;
             justify-content: center !important;
             height: auto;
             width: 100% !important;
             padding-bottom: 10px;
 
+            .primeraFila,
+            .segundaFila {
+                display: flex !important;
+                width: 100%;
+                align-items: center !important;
+                justify-content: center !important;
+                height: auto;
+            }
+
             button {
                 background-color: #1ea029;
             }
 
+            .area,
             .tipoFacturacion,
             .tipoMovil,
             .coordinador,
@@ -43,6 +54,10 @@
             .placa,
             .Botones-Accion {
                 margin-left: 10px;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
             }
 
             .Botones-Accion {
@@ -51,9 +66,14 @@
                 align-items: center !important;
                 justify-content: center !important;
                 width: auto;
+                height: 100%;
+
+                .botones {
+                    display: flex
+                }
 
                 .Boton-Limpiar {
-                    margin-bottom: 10px;
+                    margin-right: 10px;
                     background-color: #0B1A46;
                 }
             }
@@ -115,7 +135,7 @@
                             div {
                                 margin-bottom: 5px;
                             }
-                            
+
                             input {
                                 width: 100%;
                             }
@@ -124,20 +144,20 @@
 
                     tbody {
 
-                    tr {
+                        tr {
 
-                        &.fila-seleccionada {
-                            background-color: #29c780 !important;
-                        }
+                            &.fila-seleccionada {
+                                background-color: #29c780 !important;
+                            }
 
-                        td {
-                            .Checkbox-Filas {
-                                height: 20px;
-                                width: 20px;
+                            td {
+                                .Checkbox-Filas {
+                                    height: 20px;
+                                    width: 20px;
+                                }
                             }
                         }
                     }
-                }
 
                     tbody tr:nth-child(odd) {
                         background-color: white;
