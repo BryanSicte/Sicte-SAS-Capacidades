@@ -77,6 +77,10 @@
                     background-color: #0B1A46;
                 }
             }
+
+            select:disabled {
+                background-color: rgb(173, 173, 173);
+            }
         }
 
         .Principal-Agregar-Agregados,

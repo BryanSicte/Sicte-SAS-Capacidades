@@ -23,10 +23,10 @@ const Agregar = ({ role }) => {
     const [placa, setPlaca] = useState("");
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const [isPlacaValida, setIsPlacaValida] = useState(true);
-    const [selectedItemSegmento, setSelectedItemSegmento] = useState('Seleccionar opción');
-    const [selectedItemArea, setSelectedItemArea] = useState('Seleccionar opción');
-    const [selectedItemTipoFacturacion, setSelectedItemTipoFacturacion] = useState('Seleccionar opción');
-    const [selectedItemTipoMovil, setSelectedItemTipoMovil] = useState('Seleccionar opción');
+    const [selectedItemSegmento, setSelectedItemSegmento] = useState('');
+    const [selectedItemArea, setSelectedItemArea] = useState('');
+    const [selectedItemTipoFacturacion, setSelectedItemTipoFacturacion] = useState('');
+    const [selectedItemTipoMovil, setSelectedItemTipoMovil] = useState('');
     const [selectedItemCoordinador, setSelectedItemCoordinador] = useState('Seleccionar opción');
     const [segmentoOptions, setSegmentoOptions] = useState([]);
     const [areaOptions, setAreaOptions] = useState([]);
@@ -237,27 +237,58 @@ const Agregar = ({ role }) => {
     };
 
     const handleSelectTipoFacturacionSegmentoArea = (fact, segm, area) => {
+
+        console.log("-----")
         setSelectedItemTipoFacturacion(fact);
         setSelectedItemSegmento(segm);
         setSelectedItemArea(area);
+        let filtroSegm = segm;
 
-        if (fact === "ADMON") {
-            segm = "NA"
-            area = "ADMON"
+        const opcionesAdicionales = ['PARQUE AUTOMOTOR', 'LOGISTICA', 'RECURSOS HUMANOS', 'IT', 'PRODUCCION'];
+
+        if (opcionesAdicionales.includes(segm) && segm !== selectedItemSegmento) {
+            segm = "NA";
+            area = "ADMON";
+            fact = "ADMON";
+            console.log("solo admon")
+            setSelectedItemArea("ADMON");
+            setSelectedItemTipoFacturacion("ADMON");
+        } else if (segm !== selectedItemSegmento && area) {
+            setSelectedItemArea("");
+            console.log("borro area")
+            area = "";
+            setSelectedItemTipoFacturacion("");
+            fact = "";
+        } else if (area !== selectedItemArea) {
+            setSelectedItemTipoFacturacion("");
+            fact = "";
+        } else if (fact === "ADMON") {
+            segm = "NA";
+            area = "ADMON";
         }
 
-        let opcionesFiltradas;
+        const opcionesFiltradas = datosMovil.filter(dato => (!fact || dato.tipo_facturacion === fact) && (!segm || dato.segmento === segm) && (!area || dato.area === area));
+        console.log(opcionesFiltradas)
 
-        opcionesFiltradas = datosMovil
-            .filter(dato => (!fact || dato.tipo_facturacion === fact) && (!segm || dato.segmento === segm) && (!area || dato.area === area))
-            .map(dato => dato.tipo_movil);
+        if (fact !== "ADMON" && segm !== selectedItemSegmento) {
+            const opcionesFiltradasArea = opcionesFiltradas.map(dato => dato.area);
+            const opcionesFiltradasArea2 = [...new Set(opcionesFiltradasArea)].sort((a, b) => a.localeCompare(b));
+            setAreaOptions(opcionesFiltradasArea2);
+            console.log(opcionesFiltradasArea2)
+            console.log("Estoy aqui")
+        } else if (opcionesAdicionales.includes(filtroSegm) && segm === "NA") {
+            console.log("Esra pasando")
+            const opcionesFiltradasArea = opcionesFiltradas.map(dato => dato.area);
+            const opcionesFiltradasArea2 = [...new Set(opcionesFiltradasArea)].sort((a, b) => a.localeCompare(b));
+            setAreaOptions(opcionesFiltradasArea2)
+            console.log(opcionesFiltradasArea2)
+            console.log("Estoy aqui 2")
+        }
 
+        const opcionesFiltradasTipoMovil = opcionesFiltradas.map(dato => dato.tipo_movil);
+        const opcionesFiltradasTipoMovil2 = [...new Set(opcionesFiltradasTipoMovil)].sort((a, b) => a.localeCompare(b));
+        setTipoMovilOptions(opcionesFiltradasTipoMovil2);
 
-        const opcionesUnicasOrdenadas = [...new Set(opcionesFiltradas)].sort((a, b) =>
-            a.localeCompare(b)
-        );
-
-        setTipoMovilOptions(opcionesUnicasOrdenadas);
         setSelectedItemTipoMovil('Seleccionar opción');
     };
 
@@ -551,7 +582,9 @@ const Agregar = ({ role }) => {
                                     id="tipoFacturacion"
                                     className="form-select"
                                     value={selectedItemSegmento}
-                                    onChange={(e) => handleSelectTipoFacturacionSegmentoArea(selectedItemTipoFacturacion, e.target.value, selectedItemArea)}
+                                    onChange={(e) => {
+                                        handleSelectTipoFacturacionSegmentoArea(selectedItemTipoFacturacion, e.target.value, selectedItemArea);
+                                    }}
                                 >
                                     <option value="">Seleccione una opción</option>
                                     {segmentoOptions.map((option, index) => (
@@ -568,6 +601,7 @@ const Agregar = ({ role }) => {
                                     className="form-select"
                                     value={selectedItemArea}
                                     onChange={(e) => handleSelectTipoFacturacionSegmentoArea(selectedItemTipoFacturacion, selectedItemSegmento, e.target.value)}
+                                    disabled={!selectedItemSegmento}
                                 >
                                     <option value="">Seleccione una opción</option>
                                     {areaOptions.map((option, index) => (
@@ -584,6 +618,7 @@ const Agregar = ({ role }) => {
                                     className="form-select"
                                     value={selectedItemTipoFacturacion}
                                     onChange={(e) => handleSelectTipoFacturacionSegmentoArea(e.target.value, selectedItemSegmento, selectedItemArea)}
+                                    disabled={!selectedItemSegmento || !selectedItemArea}
                                 >
                                     <option value="">Seleccione una opción</option>
                                     {tipoFacturacionOptions.map((option, index) => (
