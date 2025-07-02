@@ -348,8 +348,10 @@ const ImportarDatos = ({ role }) => {
                 );
 
                 if (existeRelacion) {
-                    if (item.tipoFacturacion === "ADMON") {
-                        item.segmento = "NA"
+
+                    if(item.tipoFacturacion === "ADMON" && item.area !== "ADMON") {
+                        item.segmento = "NA";
+                        item.area = "ADMON";
                     }
 
                     let opcionesFiltradas;
